@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/proxusiiotplatform/modbus-register-maps/schema/verification-report.schema.json",
+  "$id": "https://github.com/proxus-io/modbus-register-maps/schema/verification-report.schema.json",
   "title": "Hardware verification report",
   "description": "What a tool such as proxus-mcp's verify_device_map found when it read a map's registers from a real device. Holds check results, not plant data: no addresses, host names or full serial numbers.",
   "type": "object",

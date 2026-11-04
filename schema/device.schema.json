@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/proxusiiotplatform/modbus-register-maps/schema/device.schema.json",
+  "$id": "https://github.com/proxus-io/modbus-register-maps/schema/device.schema.json",
   "title": "Modbus register map",
   "description": "One device model's Modbus register map. Addresses are zero-based protocol addresses, the value sent on the wire.",
   "type": "object",

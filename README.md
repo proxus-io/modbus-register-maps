@@ -79,7 +79,7 @@ The full contract is [schema/device.schema.json](schema/device.schema.json).
 30001-style `reference`, `address_hex`, Modbus `function_code`, effective `byte_order` and a
 `proxus_mcp_address`.
 
-The last one plugs into [Proxus Industrial MCP Server](https://github.com/proxusiiotplatform/proxus-mcp), which
+The last one plugs into [Proxus Industrial MCP Server](https://github.com/proxus-io/proxus-mcp), which
 lets AI assistants such as Claude read Modbus devices. With a map at hand you can ask:
 
 > Read ir:52 on meter-1 as float32 ABCD. It's the total active power of an Eastron SDM630.

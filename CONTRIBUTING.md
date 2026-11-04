@@ -45,7 +45,7 @@ maps) into maps. When a vendor publishes a new revision, rerun the importer with
 
 ## Verify a device
 
-The easy way is [proxus-mcp](https://github.com/proxusiiotplatform/proxus-mcp): connect it to your device, ask your
+The easy way is [proxus-mcp](https://github.com/proxus-io/proxus-mcp): connect it to your device, ask your
 AI assistant to verify the device's map, and confirm two values against the device's display when it asks. Its
 `verify_device_map` tool reads the map's registers (read-only), runs plausibility checks and gives you a link that
 opens a prefilled verification issue. A bot checks the report and opens a pull request that adds you to the map.
