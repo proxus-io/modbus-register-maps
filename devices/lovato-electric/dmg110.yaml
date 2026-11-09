@@ -1,0 +1,83 @@
+# Transcribed from Lovato Electric's Modbus protocol document; not yet checked against a meter.
+schema_version: 1
+vendor: Lovato Electric
+model: DMG110
+aliases: [DMG 110]
+category: power-analyzer
+summary: Lovato DMG110 modular multimeter with built-in RS485; scaled 32-bit integers, 64-bit energy counters.
+connection:
+  interfaces: [rtu, ascii]
+  default_unit_id: 1
+  default_byte_order: ABCD
+  max_registers_per_read: 64
+  serial_defaults: 9600 baud, 8 data bits, no parity, 1 stop bit
+  notes:
+    - "Addresses here are the table addresses minus one, as the protocol document requires (its example reads L2 active power, table address 0016H, with start address 0015H)."
+    - "Function 03 or 04 reads the measurements; 32-bit values are sent high word first, as the document's example response shows (00 01 FB 00 = 129792)."
+    - "Energy counters at 1B20H and up are 4-word counters; the document marks them with software revision 07 in the DMG110/210 column and says earlier revisions roll over like the 2-word counters (at 19,999,999.99 kWh)."
+    - "Frequency is in Hz/1000 on the DMG110 (Hz/100 only on the DMG210)."
+sources:
+  - title: "DMG series digital multimeters-analyzers: Modbus communication protocol"
+    publisher: Lovato Electric
+    document_id: "I317IGB02_22"
+    version: "07/02/2022"
+    url: https://catalogue.lovatoelectric.com/gl_en/Product/GetDocument?doc=Technical%5CTechInstructions%5C28.%20CONTATORI%20DI%20ENERGIA%20E%20ANALIZZATORI%20DI%20RETE%5CI317IGB02_22.pdf
+    accessed: 2026-11-09
+    sha256: 08fcb9a2d47376476d25f1d6e398fdc9331cb0c4eeb45628e30fb164f90649f9
+    notes: "Table 2 (pages 9-14): instantaneous measures, THD, energy counters, hour meters, phase sequence."
+registers:
+  - {key: voltage_l1_n, name: "L1 Phase Voltage", group: voltage, table: input, address: 1, type: uint32, scale: 0.01, unit: "V", access: r}
+  - {key: voltage_l2_n, name: "L2 Phase Voltage", group: voltage, table: input, address: 3, type: uint32, scale: 0.01, unit: "V", access: r}
+  - {key: voltage_l3_n, name: "L3 Phase Voltage", group: voltage, table: input, address: 5, type: uint32, scale: 0.01, unit: "V", access: r}
+  - {key: current_l1, name: "L1 Current", group: current, table: input, address: 7, type: uint32, scale: 0.0001, unit: "A", access: r}
+  - {key: current_l2, name: "L2 Current", group: current, table: input, address: 9, type: uint32, scale: 0.0001, unit: "A", access: r}
+  - {key: current_l3, name: "L3 Current", group: current, table: input, address: 11, type: uint32, scale: 0.0001, unit: "A", access: r}
+  - {key: voltage_l1_l2, name: "L1-L2 Voltage", group: voltage, table: input, address: 13, type: uint32, scale: 0.01, unit: "V", access: r}
+  - {key: voltage_l2_l3, name: "L2-L3 Voltage", group: voltage, table: input, address: 15, type: uint32, scale: 0.01, unit: "V", access: r}
+  - {key: voltage_l3_l1, name: "L3-L1 Voltage", group: voltage, table: input, address: 17, type: uint32, scale: 0.01, unit: "V", access: r}
+  - {key: active_power_l1, name: "L1 Active Power", group: power, table: input, address: 19, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: active_power_l2, name: "L2 Active Power", group: power, table: input, address: 21, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: active_power_l3, name: "L3 Active Power", group: power, table: input, address: 23, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: reactive_power_l1, name: "L1 Reactive Power", group: power, table: input, address: 25, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: reactive_power_l2, name: "L2 Reactive Power", group: power, table: input, address: 27, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: reactive_power_l3, name: "L3 Reactive Power", group: power, table: input, address: 29, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: apparent_power_l1, name: "L1 Apparent Power", group: power, table: input, address: 31, type: uint32, scale: 0.01, unit: "VA", access: r}
+  - {key: apparent_power_l2, name: "L2 Apparent Power", group: power, table: input, address: 33, type: uint32, scale: 0.01, unit: "VA", access: r}
+  - {key: apparent_power_l3, name: "L3 Apparent Power", group: power, table: input, address: 35, type: uint32, scale: 0.01, unit: "VA", access: r}
+  - {key: power_factor_l1, name: "L1 Power Factor", group: power_factor, table: input, address: 37, type: int32, scale: 0.0001, access: r}
+  - {key: power_factor_l2, name: "L2 Power Factor", group: power_factor, table: input, address: 39, type: int32, scale: 0.0001, access: r}
+  - {key: power_factor_l3, name: "L3 Power Factor", group: power_factor, table: input, address: 41, type: int32, scale: 0.0001, access: r}
+  - {key: frequency, name: "Frequency", group: frequency, table: input, address: 49, type: uint32, scale: 0.001, unit: "Hz", access: r}
+  - {key: voltage_phase_equivalent, name: "Eqv. Phase Voltage", group: voltage, table: input, address: 51, type: uint32, scale: 0.01, unit: "V", access: r}
+  - {key: voltage_phase_to_phase_equivalent, name: "Eqv. Phase-To-Phase Voltage", group: voltage, table: input, address: 53, type: uint32, scale: 0.01, unit: "V", access: r}
+  - {key: current_equivalent, name: "Eqv. Current", group: current, table: input, address: 55, type: uint32, scale: 0.0001, unit: "A", access: r}
+  - {key: active_power_equivalent, name: "Eqv. Active Power", group: power, table: input, address: 57, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: reactive_power_equivalent, name: "Eqv. Reactive Power", group: power, table: input, address: 59, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: apparent_power_equivalent, name: "Eqv. Apparent Power", group: power, table: input, address: 61, type: uint32, scale: 0.01, unit: "VA", access: r}
+  - {key: power_factor_equivalent, name: "Eqv Power Factor", group: power_factor, table: input, address: 63, type: int32, scale: 0.0001, access: r}
+  - {key: voltage_asymmetry_phase_phase, name: "Phase-Phase Voltage Asymmetry", group: quality, table: input, address: 65, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: voltage_asymmetry_phase_neutral, name: "Phase-Neutral Voltage Asymmetry", group: quality, table: input, address: 67, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: current_asymmetry, name: "Current Asymmetry", group: quality, table: input, address: 69, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: current_n, name: "Neutral Current", group: current, table: input, address: 71, type: uint32, scale: 0.0001, unit: "A", access: r}
+  - {key: thd_voltage_l1, name: "L1 Voltage Thd", group: harmonics, table: input, address: 83, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: thd_voltage_l2, name: "L2 Voltage Thd", group: harmonics, table: input, address: 85, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: thd_voltage_l3, name: "L3 Voltage Thd", group: harmonics, table: input, address: 87, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: thd_current_l1, name: "L1 Current Thd", group: harmonics, table: input, address: 89, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: thd_current_l2, name: "L2 Current Thd", group: harmonics, table: input, address: 91, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: thd_current_l3, name: "L3 Current Thd", group: harmonics, table: input, address: 93, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: thd_voltage_l1_l2, name: "L1-2 Voltage Thd", group: harmonics, table: input, address: 95, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: thd_voltage_l2_l3, name: "L2-3 Voltage Thd", group: harmonics, table: input, address: 97, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: thd_voltage_l3_l1, name: "L3-1 Voltage Thd", group: harmonics, table: input, address: 99, type: uint32, scale: 0.01, unit: "%", access: r}
+  - {key: phase_sequence, name: "Phase sequence", group: status, table: input, address: 8431, type: uint16, access: r, values: {"1": "good", "0": "not good"}}
+  - {key: active_energy_imported_total, name: "Total imp. Active Energy", group: energy, table: input, address: 6943, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_energy_exported_total, name: "Total exported Active Energy", group: energy, table: input, address: 6947, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: reactive_energy_imported_total, name: "Total imp. Reactive Energy", group: energy, table: input, address: 6951, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_energy_exported_total, name: "Total exp. Reactive Energy", group: energy, table: input, address: 6955, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: apparent_energy_total, name: "Total Apparent Energy", group: energy, table: input, address: 6959, type: uint64, scale: 0.01, unit: "kVAh", access: r}
+  - {key: active_energy_imported_partial, name: "Partial imp. Active Energy", group: energy, table: input, address: 6963, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_energy_exported_partial, name: "Partial exp. Active Energy", group: energy, table: input, address: 6967, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: reactive_energy_imported_partial, name: "Partial imp. Reactive Energy", group: energy, table: input, address: 6971, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_energy_exported_partial, name: "Partial exp Reactive Energy", group: energy, table: input, address: 6975, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: apparent_energy_partial, name: "Partial Apparent Energy", group: energy, table: input, address: 6979, type: uint64, scale: 0.01, unit: "kVAh", access: r}
+  - {key: hour_meter_total, name: "Total Hour meter", group: counters, table: input, address: 7679, type: uint32, unit: "s", access: r}
+  - {key: hour_meter_partial, name: "Partial Hour meter", group: counters, table: input, address: 7681, type: uint32, unit: "s", access: r}

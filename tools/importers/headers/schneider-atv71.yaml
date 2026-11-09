@@ -1,0 +1,24 @@
+# Generated with tools/importers/schneider_altivar.py from Schneider's parameter workbook (column titles with line breaks collapsed before import); not yet checked against a drive.
+schema_version: 1
+vendor: Schneider Electric
+model: ATV71
+aliases: [Altivar 71, ATV71H]
+category: vfd
+summary: Altivar 71 variable speed drive; every parameter is a 16-bit holding register at its logic address, except the 32-bit CiA 402 settings.
+connection:
+  interfaces: [rtu, tcp]
+  default_byte_order: ABCD
+  notes:
+    - Logic addresses are sent unchanged, the convention of Schneider's ATV320 and ATV900 Modbus manuals; not yet confirmed in an ATV71 manual.
+    - CMD and ETA have two logic addresses in the workbook; the map keeps the speed-profile one and names the other in the notes.
+    - Parameter codes (ETA, CMD, LFR...) are in each register's notes; the drive's display uses the same codes.
+    - Writing CMD or setpoints moves the motor. Read-only access is the safe default.
+sources:
+  - title: ATV71_communication_parameters_EN_V5.7_IE67 (2)
+    publisher: Schneider Electric
+    document_id: FA225538
+    version: V5.7
+    url: https://www.se.com/us/en/faqs/FA225538/
+    accessed: 2026-11-09
+    sha256: e12d9a79fb288faa25e3ad87178d89deee130e907871b4b37713384d5ceddc84
+    notes: XLSX attachment of the support article (https://se.my.site.com/ckmContent/sfc/servlet.shepherd/document/download/069Kj00000kGiIKIA0).

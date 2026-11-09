@@ -1,0 +1,125 @@
+# Transcribed from Schneider's iEM3000 series user manual (DOCA0005EN-07, Modbus chapter); not yet checked against a meter.
+schema_version: 1
+vendor: Schneider Electric
+model: iEM3000
+aliases: [Acti9 iEM3000, iEM3150, iEM3155, iEM3250, iEM3255, iEM3350, iEM3355, iEM3455, iEM3555, A9MEM3150, A9MEM3155, A9MEM3250, A9MEM3255, A9MEM3350, A9MEM3355, A9MEM3455, A9MEM3555]
+category: energy-meter
+summary: Acti9 iEM3000 DIN-rail energy meters with Modbus RTU (iEM3150 to iEM3555); measurements are 32-bit floats, energies also as 64-bit integers.
+variants: [iEM3150, iEM3155, iEM3250, iEM3255, iEM3350, iEM3355, iEM3455, iEM3555]
+connection:
+  interfaces: [rtu]
+  default_byte_order: ABCD
+  serial_defaults: 9600, 19200 or 38400 baud, even/odd/none parity, 1 stop bit (set on the display)
+  notes:
+    - Every register here is a holding register (function code 3).
+    - Addresses are the manual's register numbers minus one, the convention of the other PowerLogic maps here (the numbers match the PM5000 lists, e.g. Current I1 = 3000). The manual calls its numbers the address in the frame; if every read is off by one register, use the manual's number.
+    - Word order is not stated in the manual; ABCD as for the PM5000 lists.
+    - Settings marked in the notes are changed with setup commands written to register 5250 (function 16); the command interface registers are left out.
+    - The per-phase reactive energy registers 45128-45132 of the manual's 1PH4W addendum are left out because their unit (kVARh) contradicts the other float energies (VARh).
+sources:
+  - title: iEM3000 series user manual, Communications via Modbus (iEM3000 modbus register)
+    publisher: Schneider Electric
+    document_id: DOCA0005EN-07
+    url: https://www.se.com/in/en/faqs/FA370395/
+    accessed: 2026-11-09
+    sha256: b107a89f107984b64bbe06729f0122a1e737e357462cb581e85b27e0a73af88a
+    notes: PDF attachment of the support article (https://se.my.site.com/ckmContent/sfc/servlet.shepherd/document/download/0698V00000alUpKQAU), pages 37-51 of the manual.
+registers:
+  - {key: meter_name, name: "Meter Name", group: system, table: holding, address: 29, type: string, length: 20, access: r}
+  - {key: meter_model, name: "Meter Model", group: system, table: holding, address: 49, type: string, length: 20, access: r}
+  - {key: manufacturer, name: "Manufacturer", group: system, table: holding, address: 69, type: string, length: 20, access: r}
+  - {key: serial_number, name: "Serial Number", group: system, table: holding, address: 129, type: uint32, access: r}
+  - {key: date_of_manufacture, name: "Date of Manufacture", group: system, table: holding, address: 131, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: hardware_revision, name: "Hardware Revision", group: system, table: holding, address: 135, type: string, length: 5, access: r}
+  - {key: present_firmware_version, name: "Present Firmware Version", group: system, table: holding, address: 1636, type: uint16, access: r, notes: "DLF format X.Y.ZTT."}
+  - {key: date_time, name: "Date/Time", group: system, table: holding, address: 1844, type: raw, length: 4, access: r, notes: "Reg. 1845 year (0-99 from 2000), 1846 month/weekday/day, 1847 hour/minute, 1848 milliseconds. Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: meter_operation_timer, name: "Meter Operation Timer", group: meter_setup, table: holding, address: 2003, type: uint32, unit: "s", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: number_of_phases, name: "Number of Phases", group: meter_setup, table: holding, address: 2013, type: uint16, access: r}
+  - {key: number_of_wires, name: "Number of Wires", group: meter_setup, table: holding, address: 2014, type: uint16, access: r}
+  - {key: power_system, name: "Power System", group: meter_setup, table: holding, address: 2015, type: uint16, access: r, values: {"0": "1PH2W L-N", "1": "1PH2W L-L", "2": "1PH3W L-L with N", "3": "3PH3W", "11": "3PH4W", "13": "1PH4W multi L with N"}, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: nominal_frequency, name: "Nominal Frequency", group: meter_setup, table: holding, address: 2016, type: uint16, unit: "Hz", access: r, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: number_vts, name: "Number VTs", group: meter_setup, table: holding, address: 2024, type: uint16, access: r, applies_to: ["iEM3250", "iEM3255", "iEM3455", "iEM3555"]}
+  - {key: vt_primary, name: "VT Primary", group: meter_setup, table: holding, address: 2025, type: float32, unit: "V", access: r, applies_to: ["iEM3250", "iEM3255", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: vt_secondary, name: "VT Secondary", group: meter_setup, table: holding, address: 2027, type: uint16, unit: "V", access: r, applies_to: ["iEM3250", "iEM3255", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: number_cts, name: "Number CTs", group: meter_setup, table: holding, address: 2028, type: uint16, access: r, applies_to: ["iEM3250", "iEM3255", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: ct_primary, name: "CT Primary", group: meter_setup, table: holding, address: 2029, type: uint16, unit: "A", access: r, applies_to: ["iEM3250", "iEM3255", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: ct_secondary, name: "CT Secondary", group: meter_setup, table: holding, address: 2030, type: uint16, unit: "A", access: r, applies_to: ["iEM3250", "iEM3255", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: vt_connection_type, name: "VT Connection Type", group: meter_setup, table: holding, address: 2035, type: uint16, access: r, values: {"0": "Direct Connect", "1": "3PH3W (2 VTs)", "2": "3PH4W (3 VTs)"}, applies_to: ["iEM3250", "iEM3255", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: energy_pulse_duration, name: "Energy Pulse Duration", group: energy_pulse_output, table: holding, address: 2128, type: uint16, unit: "ms", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: digital_output_association, name: "Digital Output Association", group: energy_pulse_output, table: holding, address: 2130, type: uint16, access: r, values: {"0": "Disable", "1": "DO1 enable for active energy pulse output"}, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: pulse_weight, name: "Pulse Weight", group: energy_pulse_output, table: holding, address: 2131, type: float32, unit: "pulse/kWh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: protocol, name: "Protocol", group: communications, table: holding, address: 6499, type: uint16, access: r, values: {"0": "Modbus"}}
+  - {key: address, name: "Address", group: communications, table: holding, address: 6500, type: uint16, access: r, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: baud_rate, name: "Baud Rate", group: communications, table: holding, address: 6501, type: uint16, access: r, values: {"0": "9600", "1": "19200", "2": "38400"}, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: parity, name: "Parity", group: communications, table: holding, address: 6502, type: uint16, access: r, values: {"0": "Even", "1": "Odd", "2": "None"}, notes: "One stop bit. Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: input_metering_label, name: "Input Metering Label", group: inputs_outputs, table: holding, address: 7031, type: string, length: 20, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: input_metering_pulse_constant, name: "Input Metering Pulse Constant", group: inputs_outputs, table: holding, address: 7051, type: float32, unit: "pulse/unit", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: input_metering_digital_input_association, name: "Input Metering Digital Input Association", group: inputs_outputs, table: holding, address: 7054, type: uint16, access: r, values: {"0": "Disable for input metering", "1": "Enable for input metering"}, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: digital_input_control_mode, name: "Digital Input Control Mode", group: inputs_outputs, table: holding, address: 7273, type: uint16, access: r, values: {"0": "Normal (Input Status)", "2": "Multi Tariff Control", "3": "Input Metering", "5": "All Energy Reset"}, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: digital_input_status, name: "Digital Input Status", group: inputs_outputs, table: holding, address: 8904, type: bitfield, length: 2, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Only bit 1 is used: 0 = relay open, 1 = relay closed."}
+  - {key: digital_output_control_mode_status, name: "Digital Output Control Mode Status", group: inputs_outputs, table: holding, address: 9672, type: uint16, access: r, values: {"2": "Alarm", "3": "Pulse (kWh)", "65535": "Disable"}, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: current_i1, name: "Current I1", group: meter_data, table: holding, address: 2999, type: float32, unit: "A", access: r}
+  - {key: current_i2, name: "Current I2", group: meter_data, table: holding, address: 3001, type: float32, unit: "A", access: r}
+  - {key: current_i3, name: "Current I3", group: meter_data, table: holding, address: 3003, type: float32, unit: "A", access: r}
+  - {key: current_avg, name: "Current Avg", group: meter_data, table: holding, address: 3009, type: float32, unit: "A", access: r}
+  - {key: voltage_l1_l2, name: "Voltage L1-L2", group: meter_data, table: holding, address: 3019, type: float32, unit: "V", access: r}
+  - {key: voltage_l2_l3, name: "Voltage L2-L3", group: meter_data, table: holding, address: 3021, type: float32, unit: "V", access: r}
+  - {key: voltage_l3_l1, name: "Voltage L3-L1", group: meter_data, table: holding, address: 3023, type: float32, unit: "V", access: r}
+  - {key: voltage_l_l_avg, name: "Voltage L-L Avg", group: meter_data, table: holding, address: 3025, type: float32, unit: "V", access: r}
+  - {key: voltage_l1_n, name: "Voltage L1-N", group: meter_data, table: holding, address: 3027, type: float32, unit: "V", access: r}
+  - {key: voltage_l2_n, name: "Voltage L2-N", group: meter_data, table: holding, address: 3029, type: float32, unit: "V", access: r}
+  - {key: voltage_l3_n, name: "Voltage L3-N", group: meter_data, table: holding, address: 3031, type: float32, unit: "V", access: r}
+  - {key: voltage_l_n_avg, name: "Voltage L-N Avg", group: meter_data, table: holding, address: 3035, type: float32, unit: "V", access: r}
+  - {key: active_power_phase_1, name: "Active Power Phase 1", group: meter_data, table: holding, address: 3053, type: float32, unit: "kW", access: r}
+  - {key: active_power_phase_2, name: "Active Power Phase 2", group: meter_data, table: holding, address: 3055, type: float32, unit: "kW", access: r}
+  - {key: active_power_phase_3, name: "Active Power Phase 3", group: meter_data, table: holding, address: 3057, type: float32, unit: "kW", access: r}
+  - {key: total_active_power, name: "Total Active Power", group: meter_data, table: holding, address: 3059, type: float32, unit: "kW", access: r}
+  - {key: total_reactive_power, name: "Total Reactive Power", group: meter_data, table: holding, address: 3067, type: float32, unit: "kVAR", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: total_apparent_power, name: "Total Apparent Power", group: meter_data, table: holding, address: 3075, type: float32, unit: "kVA", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: total_power_factor, name: "Total Power Factor", group: meter_data, table: holding, address: 3083, type: float32, access: r, notes: "Quadrant-coded per the manual: -1<PF<0 Q2, -2<PF<-1 Q3, 0<PF<1 Q1, 1<PF<2 Q4."}
+  - {key: frequency, name: "Frequency", group: meter_data, table: holding, address: 3109, type: float32, unit: "Hz", access: r}
+  - {key: power_factor_total_iec, name: "Power Factor Total IEC", group: meter_data, table: holding, address: 3191, type: float32, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"], notes: "Added in the PF firmware update of the iEM3x55 meters; values range from +1 to -1."}
+  - {key: power_factor_total_lead_lag, name: "Power Factor Total Lead Lag", group: meter_data, table: holding, address: 3193, type: float32, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"], notes: "Added in the PF firmware update of the iEM3x55 meters; values range from +1 to -1."}
+  - {key: power_factor_total_iec_uint16, name: "Power Factor Total IEC (UInt16)", group: meter_data, table: holding, address: 3195, type: uint16, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"], notes: "Added in the PF firmware update of the iEM3x55 meters; values range from +1 to -1."}
+  - {key: power_factor_total_lead_lag_uint16, name: "Power Factor Total Lead Lag (UInt16)", group: meter_data, table: holding, address: 3196, type: uint16, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"], notes: "Added in the PF firmware update of the iEM3x55 meters; values range from +1 to -1."}
+  - {key: energy_reset_date_and_time, name: "Energy Reset Date and Time", group: energy, table: holding, address: 3251, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: input_metering_accumulation_reset_date_and_time, name: "Input Metering Accumulation Reset Date and Time", group: energy, table: holding, address: 3553, type: raw, length: 4, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: multitariffs_energy_active_rate, name: "MultiTariffs Energy Active Rate", group: energy, table: holding, address: 4190, type: uint16, access: r, values: {"0": "Multi tariff disabled", "1": "Rate A", "2": "Rate B", "3": "Rate C", "4": "Rate D"}, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Settable this way only when the tariff mode is set to communication. Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: total_active_energy_import, name: "Total Active Energy Import", group: energy, table: holding, address: 3203, type: int64, unit: "Wh", access: r}
+  - {key: total_active_energy_export, name: "Total Active Energy Export", group: energy, table: holding, address: 3207, type: int64, unit: "Wh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: total_reactive_energy_import, name: "Total Reactive Energy Import", group: energy, table: holding, address: 3219, type: int64, unit: "VARh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: total_reactive_energy_export, name: "Total Reactive Energy Export", group: energy, table: holding, address: 3223, type: int64, unit: "VARh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: partial_active_energy_import, name: "Partial Active Energy Import", group: energy, table: holding, address: 3255, type: int64, unit: "Wh", access: r}
+  - {key: partial_reactive_energy_import, name: "Partial Reactive Energy Import", group: energy, table: holding, address: 3271, type: int64, unit: "VARh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: active_energy_import_phase_1, name: "Active Energy Import Phase 1", group: energy, table: holding, address: 3517, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_import_phase_2, name: "Active Energy Import Phase 2", group: energy, table: holding, address: 3521, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_import_phase_3, name: "Active Energy Import Phase 3", group: energy, table: holding, address: 3525, type: int64, unit: "Wh", access: r}
+  - {key: input_metering_accumulation, name: "Input Metering Accumulation", group: energy, table: holding, address: 3557, type: int64, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: rate_a_active_energy_import, name: "Rate A Active Energy Import", group: energy, table: holding, address: 4195, type: int64, unit: "Wh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"]}
+  - {key: rate_b_active_energy_import, name: "Rate B Active Energy Import", group: energy, table: holding, address: 4199, type: int64, unit: "Wh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"]}
+  - {key: rate_c_active_energy_import, name: "Rate C Active Energy Import", group: energy, table: holding, address: 4203, type: int64, unit: "Wh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"]}
+  - {key: rate_d_active_energy_import, name: "Rate D Active Energy Import", group: energy, table: holding, address: 4207, type: int64, unit: "Wh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"]}
+  - {key: total_active_energy_import_float, name: "Total Active Energy Import (float)", group: energy_float, table: holding, address: 45099, type: float32, unit: "Wh", access: r}
+  - {key: total_active_energy_export_float, name: "Total Active Energy Export (float)", group: energy_float, table: holding, address: 45101, type: float32, unit: "Wh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: total_reactive_energy_import_float, name: "Total Reactive Energy Import (float)", group: energy_float, table: holding, address: 45103, type: float32, unit: "VARh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: total_reactive_energy_export_float, name: "Total Reactive Energy Export (float)", group: energy_float, table: holding, address: 45105, type: float32, unit: "VARh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: partial_active_energy_import_float, name: "Partial Active Energy Import (float)", group: energy_float, table: holding, address: 45107, type: float32, unit: "Wh", access: r}
+  - {key: partial_reactive_energy_import_float, name: "Partial Reactive Energy Import (float)", group: energy_float, table: holding, address: 45109, type: float32, unit: "VARh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: active_energy_import_phase_1_float, name: "Active Energy Import Phase 1 (float)", group: energy_float, table: holding, address: 45111, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_import_phase_2_float, name: "Active Energy Import Phase 2 (float)", group: energy_float, table: holding, address: 45113, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_import_phase_3_float, name: "Active Energy Import Phase 3 (float)", group: energy_float, table: holding, address: 45115, type: float32, unit: "Wh", access: r}
+  - {key: input_metering_accumulation_float, name: "Input Metering Accumulation (float)", group: energy_float, table: holding, address: 45117, type: float32, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: rate_a_active_energy_import_float, name: "Rate A Active Energy Import (float)", group: energy_float, table: holding, address: 45119, type: float32, unit: "Wh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"]}
+  - {key: rate_b_active_energy_import_float, name: "Rate B Active Energy Import (float)", group: energy_float, table: holding, address: 45121, type: float32, unit: "Wh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"]}
+  - {key: rate_c_active_energy_import_float, name: "Rate C Active Energy Import (float)", group: energy_float, table: holding, address: 45123, type: float32, unit: "Wh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"]}
+  - {key: rate_d_active_energy_import_float, name: "Rate D Active Energy Import (float)", group: energy_float, table: holding, address: 45125, type: float32, unit: "Wh", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"]}
+  - {key: overload_alarm_setup, name: "Overload Alarm Setup", group: overload_alarm, table: holding, address: 45000, type: bitfield16, access: r, values: {"0": "Disabled", "256": "Enabled"}, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: overload_alarm_pickup_setpoint, name: "Overload Alarm Pickup Setpoint", group: overload_alarm, table: holding, address: 45001, type: float32, unit: "kW", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: overload_alarm_digital_output_association, name: "Overload Alarm Digital Output Association", group: overload_alarm, table: holding, address: 45003, type: bitfield16, access: r, values: {"0": "Unassociated", "256": "Associated"}, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: overload_alarm_activated_status, name: "Overload Alarm Activated Status", group: overload_alarm, table: holding, address: 45004, type: bitfield16, access: r, values: {"0": "Inactive", "256": "Active"}, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: overload_alarm_unacknowledged_status, name: "Overload Alarm Unacknowledged Status", group: overload_alarm, table: holding, address: 45005, type: bitfield16, access: r, values: {"0": "Acknowledged", "256": "Unacknowledged"}, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: overload_alarm_last_time_stamp, name: "Overload Alarm Last Time Stamp", group: overload_alarm, table: holding, address: 45006, type: raw, length: 4, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"], notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: overload_alarm_last_value, name: "Overload Alarm Last Value", group: overload_alarm, table: holding, address: 45010, type: float32, unit: "kW", access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355", "iEM3455", "iEM3555"]}
+  - {key: phase_1_name, name: "Phase 1 Name", group: phase_names, table: holding, address: 56999, type: string, length: 5, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"], notes: "Added for 1PH4W multi L-N wiring on the iEM3x55 meters."}
+  - {key: phase_2_name, name: "Phase 2 Name", group: phase_names, table: holding, address: 57004, type: string, length: 5, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"], notes: "Added for 1PH4W multi L-N wiring on the iEM3x55 meters."}
+  - {key: phase_3_name, name: "Phase 3 Name", group: phase_names, table: holding, address: 57009, type: string, length: 5, access: r, applies_to: ["iEM3155", "iEM3255", "iEM3355"], notes: "Added for 1PH4W multi L-N wiring on the iEM3x55 meters."}

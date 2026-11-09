@@ -1,0 +1,25 @@
+# Generated with tools/importers/schneider_powerlogic.py from Schneider's PM2xxx register list, EM6400 NG column only (access column renamed before import); not yet checked against a meter.
+schema_version: 1
+vendor: Schneider Electric
+model: EM6400NG
+aliases: [EasyLogic EM6400NG, EM6400 NG]
+category: power-analyzer
+summary: EasyLogic EM6400NG power meter; measurements are 32-bit floats. Its registers come from the PM2100/PM2200 register list.
+connection:
+  interfaces: [rtu]
+  default_unit_id: 1
+  default_byte_order: ABCD
+  notes:
+    - Every register here is a holding register (function code 3).
+    - Addresses are Schneider's register numbers minus one, as for the PM5000 lists.
+    - The source is register list v1001 (2016); Schneider publishes a newer list (v1050) for later firmware.
+    - Unavailable values read as the N/A pattern of their type, e.g. 0xFFC00000 for FLOAT32.
+sources:
+  - title: Public_PM2xxx_PMC Register List_v1001
+    publisher: Schneider Electric
+    document_id: FAQ000268336
+    version: v1001
+    url: https://www.se.com/gr/el/faqs/FAQ000268336/
+    accessed: 2026-11-09
+    sha256: 1a7e6aeeb588679bf304bdb831ffdd39a99eb9cb7aa61bbe3c56779f38f94cfe
+    notes: XLS attachment of the support article "EasyLogic PM2000 | Modbus Registers" (https://se.my.site.com/ckmContent/sfc/servlet.shepherd/document/download/069Kj00000hvzQGIAY).

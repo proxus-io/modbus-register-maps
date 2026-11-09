@@ -1,0 +1,64 @@
+# Transcribed from SMA's Modbus parameter list for the Sunny Tripower Smart Energy; not yet checked against an inverter.
+schema_version: 1
+vendor: SMA
+model: Sunny Tripower Smart Energy
+aliases: [STP5.0-3SE-40, STP6.0-3SE-40, STP8.0-3SE-40, STP10.0-3SE-40, STPxx-3SE-40]
+category: inverter
+summary: SMA Sunny Tripower Smart Energy hybrid inverters through the SMA Modbus profile over Modbus TCP.
+connection:
+  interfaces: [tcp]
+  default_unit_id: 3
+  default_byte_order: ABCD
+  notes:
+    - "SMA Modbus register addresses are sent unchanged (only SunSpec addresses are reduced by 1). Read with function 03 or 04."
+    - Enable the Modbus server in the inverter first. Values are big-endian, high word first; read each value as one block.
+    - "FIXn formats are given as scale (FIX2 = 0.01). The parameter list names no units for most values, so units are left out except for energy."
+    - "NaN is 0x80000000 for S32, 0xFFFFFFFF for U32 (0xFFFFFD for status values) and 0xFFFFFFFFFFFFFFFF for U64."
+    - Writable registers are stored in flash; do not write them cyclically.
+sources:
+  - title: Parameters and Measured Values STP5.0-3SE-40 / STP6.0-3SE-40 / STP8.0-3SE-40 / STP10.0-3SE-40 (PARAMETER-HTML_STPxx-3SE-40_30109R_V11.zip)
+    publisher: SMA Solar Technology AG
+    version: "V11, firmware 3.01.09.R"
+    url: https://files.sma.de/downloads/PARAMETER-HTML_STPxx-3SE-40_30109R_V11.zip
+    accessed: 2026-11-09
+    sha256: 06a2f13b3da5e1a7f984cc30657e876bca71fb008aa8740a5086b1bf154d3f1e
+    notes: SHA-256 of the ZIP archive; registers from parameterlist_en.html.
+  - title: SMA Modbus Interface (Technical Information)
+    publisher: SMA Solar Technology AG
+    document_id: SMA-Modbus-general-TI-en-10
+    url: https://files.sma.de/downloads/SMA-Modbus-general-TI-en-10.pdf
+    accessed: 2026-11-09
+    sha256: 1cda68d8bcfd39c4a8694e8d9b7e7159d16425c92014f4f13c45addce903cd58
+    notes: Unit ID default 3, big-endian transmission, SMA data types, NaN values and FIXn formats.
+registers:
+  - {key: condition, name: "Condition", group: status, table: holding, address: 30201, type: uint32, access: r, values: {"35": "Fault (Alm)", "303": "Off (Off)", "307": "Ok (Ok)", "455": "Warning (Wrn)"}, notes: "SMA channel Operation.Health; U32 TAGLIST."}
+  - {key: grid_relay_status, name: "Grid relay status", group: status, table: holding, address: 30217, type: uint32, access: r, values: {"51": "Closed (Cls)", "311": "Open (Opn)", "16777213": "Information not available (NaNStt)"}, notes: "SMA channel Operation.GriSwStt; U32 TAGLIST."}
+  - {key: operating_status, name: "Operating status", group: status, table: holding, address: 33003, type: uint32, access: r, values: {"235": "Parallel grid operation (GriOp)", "1463": "Backup (Bck)", "1469": "Shut down (Shtdwn)", "2119": "Derating (Drt)", "16777213": "Information not available (NaNStt)"}, notes: "SMA channel Operation.RunStt; U32 TAGLIST."}
+  - {key: general_operating_status, name: "General operating status", group: status, table: holding, address: 40029, type: uint32, access: r, values: {"303": "Off (Off)", "569": "Activated (Run)", "1295": "Standby (Stdby)", "1795": "Bolted (Lok)", "16777213": "Information not available (NaNStt)"}, notes: "SMA channel Operation.OpStt; U32 TAGLIST."}
+  - {key: total_yield, name: "Total yield", group: energy, table: holding, address: 30513, type: uint64, unit: "Wh", access: r, notes: "SMA channel Metering.TotWhOut; U64 FIX0."}
+  - {key: active_power, name: "Power", group: ac, table: holding, address: 30775, type: int32, access: r, notes: "SMA channel GridMs.TotW; S32 FIX0."}
+  - {key: active_power_l1, name: "Active power phase L1", group: ac, table: holding, address: 30777, type: int32, access: r, notes: "SMA channel GridMs.W.phsA; S32 FIX0."}
+  - {key: active_power_l2, name: "Active power phase L2", group: ac, table: holding, address: 30779, type: int32, access: r, notes: "SMA channel GridMs.W.phsB; S32 FIX0."}
+  - {key: active_power_l3, name: "Active power phase L3", group: ac, table: holding, address: 30781, type: int32, access: r, notes: "SMA channel GridMs.W.phsC; S32 FIX0."}
+  - {key: voltage_l1_n, name: "Grid voltage phase L1", group: ac, table: holding, address: 30783, type: uint32, scale: 0.01, access: r, notes: "SMA channel GridMs.PhV.phsA; U32 FIX2."}
+  - {key: voltage_l2_n, name: "Grid voltage phase L2", group: ac, table: holding, address: 30785, type: uint32, scale: 0.01, access: r, notes: "SMA channel GridMs.PhV.phsB; U32 FIX2."}
+  - {key: voltage_l3_n, name: "Grid voltage phase L3", group: ac, table: holding, address: 30787, type: uint32, scale: 0.01, access: r, notes: "SMA channel GridMs.PhV.phsC; U32 FIX2."}
+  - {key: voltage_l1_l2, name: "Grid voltage phase L1 against L2", group: ac, table: holding, address: 30789, type: uint32, scale: 0.01, access: r, notes: "SMA channel GridMs.PhV.phsA2B; U32 FIX2."}
+  - {key: voltage_l2_l3, name: "Grid voltage phase L2 against L3", group: ac, table: holding, address: 30791, type: uint32, scale: 0.01, access: r, notes: "SMA channel GridMs.PhV.phsB2C; U32 FIX2."}
+  - {key: voltage_l3_l1, name: "Grid voltage phase L3 against L1", group: ac, table: holding, address: 30793, type: uint32, scale: 0.01, access: r, notes: "SMA channel GridMs.PhV.phsC2A; U32 FIX2."}
+  - {key: current_total, name: "Phase total current", group: ac, table: holding, address: 30795, type: uint32, scale: 0.001, access: r, notes: "SMA channel GridMs.TotA; U32 FIX3."}
+  - {key: current_l1, name: "Grid current phase L1", group: ac, table: holding, address: 30977, type: int32, scale: 0.001, access: r, notes: "SMA channel GridMs.A.phsA; S32 FIX3."}
+  - {key: current_l2, name: "Grid current phase L2", group: ac, table: holding, address: 30979, type: int32, scale: 0.001, access: r, notes: "SMA channel GridMs.A.phsB; S32 FIX3."}
+  - {key: current_l3, name: "Grid current phase L3", group: ac, table: holding, address: 30981, type: int32, scale: 0.001, access: r, notes: "SMA channel GridMs.A.phsC; S32 FIX3."}
+  - {key: frequency, name: "Grid frequency", group: ac, table: holding, address: 30803, type: uint32, scale: 0.01, access: r, notes: "SMA channel GridMs.Hz; U32 FIX2."}
+  - {key: reactive_power, name: "Reactive power", group: ac, table: holding, address: 31497, type: int32, access: r, notes: "SMA channel GridMs.TotVAr; S32 FIX0."}
+  - {key: apparent_power, name: "Apparent power", group: ac, table: holding, address: 30813, type: int32, access: r, notes: "SMA channel GridMs.TotVA; S32 FIX0."}
+  - {key: displacement_power_factor, name: "Displacement power factor", group: ac, table: holding, address: 30949, type: uint32, scale: 0.001, access: r, notes: "SMA channel GridMs.TotPFPrc; U32 FIX3."}
+  - {key: insulation_resistance, name: "Insulation resistance", group: dc, table: holding, address: 30225, type: uint32, access: r, notes: "SMA channel Isolation.LeakRis; U32 FIX0."}
+  - {key: battery_soc, name: "Current battery state of charge", group: battery, table: holding, address: 30845, type: uint32, access: r, notes: "SMA channel Bat.ChaStt; U32 FIX0."}
+  - {key: battery_current, name: "Battery current", group: battery, table: holding, address: 30843, type: int32, scale: 0.001, access: r, notes: "SMA channel Bat.Amp; S32 FIX3."}
+  - {key: battery_voltage, name: "Battery voltage", group: battery, table: holding, address: 30851, type: uint32, scale: 0.01, access: r, notes: "SMA channel Bat.Vol; U32 FIX2."}
+  - {key: battery_operating_status, name: "Battery general operating status", group: battery, table: holding, address: 30955, type: uint32, access: r, values: {"303": "Off (Off)", "2291": "Battery standby (BatWait)", "3664": "Emergency charge mode (EmgCha)", "2292": "Charge battery (BatChaStt)", "2293": "Discharge battery (BatDschStt)", "16777213": "Information not available (NaNStt)"}, notes: "SMA channel Bat.OpStt; U32 TAGLIST."}
+  - {key: battery_charge_present, name: "Present battery charge", group: battery, table: holding, address: 31393, type: uint32, access: r, notes: "SMA channel BatChrg.CurBatCha; U32 FIX0."}
+  - {key: battery_discharge_present, name: "Present battery discharge", group: battery, table: holding, address: 31395, type: uint32, access: r, notes: "SMA channel BatDsch.CurBatDsch; U32 FIX0."}
+  - {key: operating_mode, name: "General operating mode", group: control, table: holding, address: 40009, type: uint32, access: rw, values: {"381": "Stop (Stop)", "1467": "Start (Str)"}, notes: "SMA channel Operation.OpMod; U32 TAGLIST."}

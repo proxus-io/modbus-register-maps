@@ -1,0 +1,93 @@
+# Transcribed from Siemens' fieldbus function manual (11/2020); not yet checked against a drive.
+schema_version: 1
+vendor: Siemens
+model: SINAMICS G120C
+aliases: [G120C, G120C USS/MB, SINAMICS G120C USS/MB]
+category: vfd
+summary: SINAMICS G120C converter (USS/MB version) over Modbus RTU on RS485; 16-bit holding registers with fixed scaling factors.
+connection:
+  interfaces: [rtu]
+  default_unit_id: 1
+  default_byte_order: ABCD
+  serial_defaults: 19200 baud, 8 data bits, even parity, 1 stop bit
+  notes:
+    - The manual numbers holding registers from 40001; the address here is the register minus 40001 (its example frames read 40110 at 0x006D and write 40100 at 0x0063).
+    - Select Modbus with p2030 = 2; address p2021 (or the address switch), baud rate p2020, parity p2031.
+    - Scaled registers hold value x scaling factor (factor 100 is scale 0.01 here). The main setpoint and actual value are unscaled process data.
+    - On/off registers list the source's on text as 1 and its off text as 0.
+    - The same function manual lists this register table for G120 Control Units CU230P-2, CU240B-2, CU240E-2 and CU250S-2; check their own manuals before reusing this map.
+    - Registers 40601-40722 (acyclic DS47 access) and 40800-40811 (multi-pump control) are left out.
+    - Writing the control word or setpoint moves the motor. Read-only access is the safe default.
+sources:
+  - title: SINAMICS G120 Fieldbuses Function Manual
+    publisher: Siemens
+    document_id: A5E34229197B AG
+    version: 11/2020, FW V4.7 SP13
+    url: https://cache.industry.siemens.com/dl/files/930/109791930/att_1049446/v1/G120_fieldbus_fct_man_1120_en-US.pdf
+    accessed: 2026-11-09
+    sha256: 79e81a74052e0eb52832f02778452312c253a46967204b49717f387ed923a5a7
+    notes: Section 5.4 Communication using Modbus RTU, tables 5-12 to 5-17 and the example frames in tables 5-20 and 5-23.
+registers:
+  - {key: stw1, name: "Control word (STW1)", group: control, table: holding, address: 99, type: bitfield16, access: rw, notes: "Register 40100; process data 1."}
+  - {key: main_setpoint, name: "Main setpoint", group: control, table: holding, address: 100, type: int16, access: rw, notes: "Register 40101; process data 2."}
+  - {key: zsw1, name: "Status word (ZSW1)", group: status, table: holding, address: 109, type: bitfield16, access: r, notes: "Register 40110; process data 1."}
+  - {key: main_actual_value, name: "Main actual value", group: status, table: holding, address: 110, type: int16, access: r, notes: "Register 40111; process data 2."}
+  - {key: digital_output_0, name: "DO 0", group: io, table: holding, address: 199, type: uint16, access: rw, values: {"0": "Low", "1": "High"}, notes: "Register 40200; p0730, r747.0, p748.0."}
+  - {key: digital_output_1, name: "DO 1", group: io, table: holding, address: 200, type: uint16, access: rw, values: {"0": "Low", "1": "High"}, notes: "Register 40201; p0731, r747.1, p748.1."}
+  - {key: digital_output_2, name: "DO 2", group: io, table: holding, address: 201, type: uint16, access: rw, values: {"0": "Low", "1": "High"}, notes: "Register 40202; p0732, r747.2, p748.2."}
+  - {key: analog_output_0, name: "AO 0", group: io, table: holding, address: 219, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40220; r0774.0."}
+  - {key: analog_output_1, name: "AO 1", group: io, table: holding, address: 220, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40221; r0774.1."}
+  - {key: analog_output_2, name: "AO 2", group: io, table: holding, address: 221, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40222; r0774.2."}
+  - {key: digital_input_0, name: "DI 0", group: io, table: holding, address: 239, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40240; r0722.0."}
+  - {key: digital_input_1, name: "DI 1", group: io, table: holding, address: 240, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40241; r0722.1."}
+  - {key: digital_input_2, name: "DI 2", group: io, table: holding, address: 241, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40242; r0722.2."}
+  - {key: digital_input_3, name: "DI 3", group: io, table: holding, address: 242, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40243; r0722.3."}
+  - {key: digital_input_4, name: "DI 4", group: io, table: holding, address: 243, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40244; r0722.4."}
+  - {key: digital_input_5, name: "DI 5", group: io, table: holding, address: 244, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40245; r0722.5."}
+  - {key: analog_input_0, name: "AI 0", group: io, table: holding, address: 259, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40260; r0755[0]."}
+  - {key: analog_input_1, name: "AI 1", group: io, table: holding, address: 260, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40261; r0755[1]."}
+  - {key: analog_input_2, name: "AI 2", group: io, table: holding, address: 261, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40262; r0755[2]."}
+  - {key: analog_input_3, name: "AI 3", group: io, table: holding, address: 262, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40263; r0755[3]."}
+  - {key: powerstack_number, name: "Powerstack number", group: identification, table: holding, address: 299, type: uint16, access: r, notes: "Register 40300; r0200."}
+  - {key: converter_firmware, name: "Converter firmware", group: identification, table: holding, address: 300, type: uint16, access: r, notes: "Register 40301; r0018 / 10000. For example 470."}
+  - {key: rated_power, name: "Rated power", group: identification, table: holding, address: 319, type: uint16, scale: 0.01, unit: "kW", access: r, notes: "Register 40320; r0206."}
+  - {key: current_limit, name: "Current limit", group: settings, table: holding, address: 320, type: uint16, scale: 0.1, unit: "A", access: rw, notes: "Register 40321; p0640."}
+  - {key: ramp_up_time, name: "Ramp-up time", group: settings, table: holding, address: 321, type: uint16, scale: 0.01, unit: "s", access: rw, notes: "Register 40322; p1120."}
+  - {key: ramp_down_time, name: "Ramp-down time", group: settings, table: holding, address: 322, type: uint16, scale: 0.01, unit: "s", access: rw, notes: "Register 40323; p1121."}
+  - {key: reference_speed, name: "Reference speed", group: settings, table: holding, address: 323, type: uint16, unit: "rpm", access: rw, notes: "Register 40324; p2000."}
+  - {key: speed_setpoint, name: "Speed setpoint", group: actual_values, table: holding, address: 339, type: int16, unit: "rpm", access: r, notes: "Register 40340; r0020."}
+  - {key: actual_speed, name: "Actual speed value", group: actual_values, table: holding, address: 340, type: int16, unit: "rpm", access: r, notes: "Register 40341; r0022."}
+  - {key: output_frequency, name: "Output frequency", group: actual_values, table: holding, address: 341, type: int16, scale: 0.01, unit: "Hz", access: r, notes: "Register 40342; r0024."}
+  - {key: output_voltage, name: "Output voltage", group: actual_values, table: holding, address: 342, type: uint16, unit: "V", access: r, notes: "Register 40343; r0025."}
+  - {key: dc_link_voltage, name: "DC link voltage", group: actual_values, table: holding, address: 343, type: uint16, unit: "V", access: r, notes: "Register 40344; r0026."}
+  - {key: actual_current, name: "Current actual value", group: actual_values, table: holding, address: 344, type: uint16, scale: 0.01, unit: "A", access: r, notes: "Register 40345; r0027."}
+  - {key: actual_torque, name: "Actual torque value", group: actual_values, table: holding, address: 345, type: int16, scale: 0.01, unit: "Nm", access: r, notes: "Register 40346; r0031."}
+  - {key: actual_active_power, name: "Actual active power", group: actual_values, table: holding, address: 346, type: uint16, scale: 0.01, unit: "kW", access: r, notes: "Register 40347; r0032."}
+  - {key: energy_consumption, name: "Energy consumption", group: actual_values, table: holding, address: 347, type: uint16, unit: "kWh", access: r, notes: "Register 40348; r0039."}
+  - {key: control_priority, name: "Control priority", group: status, table: holding, address: 348, type: uint16, access: r, values: {"0": "AUTO", "1": "HAND"}, notes: "Register 40349; r0807."}
+  - {key: fault_number_0, name: "Fault number, index 0", group: faults, table: holding, address: 399, type: uint16, access: r, notes: "Register 40400; r0947[0]."}
+  - {key: fault_number_1, name: "Fault number, index 1", group: faults, table: holding, address: 400, type: uint16, access: r, notes: "Register 40401; r0947[1]."}
+  - {key: fault_number_2, name: "Fault number, index 2", group: faults, table: holding, address: 401, type: uint16, access: r, notes: "Register 40402; r0947[2]."}
+  - {key: fault_number_3, name: "Fault number, index 3", group: faults, table: holding, address: 402, type: uint16, access: r, notes: "Register 40403; r0947[3]."}
+  - {key: fault_number_4, name: "Fault number, index 4", group: faults, table: holding, address: 403, type: uint16, access: r, notes: "Register 40404; r0947[4]."}
+  - {key: fault_number_5, name: "Fault number, index 5", group: faults, table: holding, address: 404, type: uint16, access: r, notes: "Register 40405; r0947[5]."}
+  - {key: fault_number_6, name: "Fault number, index 6", group: faults, table: holding, address: 405, type: uint16, access: r, notes: "Register 40406; r0947[6]."}
+  - {key: fault_number_7, name: "Fault number, index 7", group: faults, table: holding, address: 406, type: uint16, access: r, notes: "Register 40407; r0947[7]."}
+  - {key: alarm_number, name: "Alarm number", group: faults, table: holding, address: 407, type: uint16, access: r, notes: "Register 40408; r2110[0]."}
+  - {key: actual_alarm_code, name: "Actual alarm code", group: faults, table: holding, address: 408, type: uint16, access: r, notes: "Register 40409; r2132."}
+  - {key: parameter_error_code, name: "PRM ERROR code", group: diagnostics, table: holding, address: 498, type: uint16, access: r, notes: "Register 40499."}
+  - {key: tc_enable, name: "Technology controller enable", group: pid, table: holding, address: 499, type: uint16, access: rw, notes: "Register 40500; p2200, r2349.0."}
+  - {key: tc_mop, name: "Technology controller MOP", group: pid, table: holding, address: 500, type: int16, scale: 0.01, unit: "%", access: rw, notes: "Register 40501; p2240."}
+  - {key: tc_filter_time, name: "Technology controller actual value filter time constant", group: pid, table: holding, address: 509, type: uint16, scale: 0.01, access: rw, notes: "Register 40510; p2265."}
+  - {key: tc_feedback_scaling, name: "Technology controller actual value scaling", group: pid, table: holding, address: 510, type: uint16, scale: 0.01, unit: "%", access: rw, notes: "Register 40511; p2269."}
+  - {key: tc_proportional_gain, name: "Technology controller proportional gain", group: pid, table: holding, address: 511, type: uint16, scale: 0.001, access: rw, notes: "Register 40512; p2280."}
+  - {key: tc_integral_time, name: "Technology controller integral time", group: pid, table: holding, address: 512, type: uint16, unit: "s", access: rw, notes: "Register 40513; p2285."}
+  - {key: tc_derivative_time, name: "Technology controller D-component time constant", group: pid, table: holding, address: 513, type: uint16, access: rw, notes: "Register 40514; p2274."}
+  - {key: tc_max_limit, name: "Technology controller max. limit", group: pid, table: holding, address: 514, type: int16, scale: 0.01, unit: "%", access: rw, notes: "Register 40515; p2291."}
+  - {key: tc_min_limit, name: "Technology controller min. limit", group: pid, table: holding, address: 515, type: int16, scale: 0.01, unit: "%", access: rw, notes: "Register 40516; p2292."}
+  - {key: tc_effective_setpoint, name: "Technology controller effective setpoint", group: pid, table: holding, address: 519, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40520; r2250."}
+  - {key: tc_actual_value, name: "Technology controller actual value after filter", group: pid, table: holding, address: 520, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40521; r2266."}
+  - {key: tc_output, name: "Technology controller output signal", group: pid, table: holding, address: 521, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40522; r2294."}
+  - {key: analog_output_0_setting, name: "AO 0 (write)", group: io, table: holding, address: 522, type: int16, scale: 0.01, unit: "%", access: rw, notes: "Register 40523; p0791.0."}
+  - {key: analog_output_1_setting, name: "AO 1 (write)", group: io, table: holding, address: 523, type: int16, scale: 0.01, unit: "%", access: rw, notes: "Register 40524; p0791.1."}
+  - {key: analog_output_2_setting, name: "AO 2 (write)", group: io, table: holding, address: 524, type: int16, scale: 0.01, unit: "%", access: rw, notes: "Register 40525; p0791.2."}

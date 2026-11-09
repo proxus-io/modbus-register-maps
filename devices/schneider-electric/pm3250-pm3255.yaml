@@ -1,0 +1,295 @@
+# Transcribed from Schneider's PM3200 series user manual (DOCA0006EN-06); not yet checked against a meter.
+schema_version: 1
+vendor: Schneider Electric
+model: PM3250/PM3255
+aliases: [PowerLogic PM3250, PowerLogic PM3255]
+category: power-analyzer
+summary: PowerLogic PM3250 and PM3255 DIN-rail power meters (the Modbus models of the PM3200 series); measurements are 32-bit floats.
+variants: [PM3250, PM3255]
+connection:
+  interfaces: [rtu]
+  default_unit_id: 1
+  default_byte_order: ABCD
+  serial_defaults: 19200 baud, even parity, address 1
+  notes:
+    - Every register here is a holding register (function code 3).
+    - Addresses are the manual's register numbers minus one, the convention of the other PowerLogic maps here (the numbers match the PM5000 lists, e.g. Current I1 = 3000). The manual calls its numbers the address in the frame; if every read is off by one register, use the manual's number.
+    - Word order is not stated in the manual; ABCD as for the PM5000 lists.
+    - Settings marked in the notes are changed with setup commands written to register 5250 (function 16); the command interface, alarm and log registers are left out.
+sources:
+  - title: PM3200 series user manual
+    publisher: Schneider Electric
+    document_id: DOCA0006EN-06
+    version: 08/2016
+    url: https://www.se.com/us/en/faqs/FA408593/
+    accessed: 2026-11-09
+    sha256: 1d10531ed2326b9506d62476e860d9458082fd23aa5a8bfaa9c87ebc806ab8bf
+    notes: PDF attachment "PM3200 Series User Guide 2016" of the support article (https://se.my.site.com/ckmContent/sfc/servlet.shepherd/document/download/0698V00000jE2KFQA0); section "Modbus Register Table".
+registers:
+  - {key: meter_name, name: "Meter Name", group: system, table: holding, address: 29, type: string, length: 20, access: r}
+  - {key: meter_model, name: "Meter Model", group: system, table: holding, address: 49, type: string, length: 20, access: r}
+  - {key: manufacturer, name: "Manufacturer", group: system, table: holding, address: 69, type: string, length: 20, access: r}
+  - {key: serial_number, name: "Serial Number", group: system, table: holding, address: 129, type: uint32, access: r}
+  - {key: date_of_manufacture, name: "Date of Manufacture", group: system, table: holding, address: 131, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: hardware_revision, name: "Hardware Revision", group: system, table: holding, address: 135, type: string, length: 5, access: r}
+  - {key: present_firmware_version, name: "Present Firmware Version", group: system, table: holding, address: 1636, type: uint16, access: r, notes: "DLF format X.Y.ZTT."}
+  - {key: date_time, name: "Date/Time", group: system, table: holding, address: 1844, type: raw, length: 4, access: r, notes: "Reg. 1845 year (0-99 from 2000), 1846 month/weekday/day, 1847 hour/minute, 1848 milliseconds. Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: meter_operation_timer_status, name: "Meter Operation Timer Status", group: meter_setup, table: holding, address: 2003, type: uint32, unit: "s", access: r}
+  - {key: number_of_phases, name: "Number of Phases", group: meter_setup, table: holding, address: 2013, type: uint16, access: r}
+  - {key: number_of_wires, name: "Number of Wires", group: meter_setup, table: holding, address: 2014, type: uint16, access: r}
+  - {key: power_system_configuration, name: "Power System Configuration", group: meter_setup, table: holding, address: 2015, type: uint16, access: r, values: {"0": "1PH2W L-N", "1": "1PH2W L-L", "2": "1PH3W L-L with N", "3": "3PH3W", "11": "3PH4W", "13": "1PH4W multi-L with N"}, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: nominal_frequency, name: "Nominal Frequency", group: meter_setup, table: holding, address: 2016, type: uint16, unit: "Hz", access: r, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: nominal_phase_order, name: "Nominal Phase Order", group: meter_setup, table: holding, address: 2023, type: uint16, access: r, values: {"0": "A-B-C", "1": "C-B-A"}, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: number_vts, name: "Number VTs", group: meter_setup, table: holding, address: 2024, type: uint16, access: r}
+  - {key: vt_primary, name: "VT Primary", group: meter_setup, table: holding, address: 2025, type: float32, unit: "V", access: r, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: vt_secondary, name: "VT Secondary", group: meter_setup, table: holding, address: 2027, type: uint16, unit: "V", access: r, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: number_cts, name: "Number CTs", group: meter_setup, table: holding, address: 2028, type: uint16, access: r, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: ct_primary, name: "CT Primary", group: meter_setup, table: holding, address: 2029, type: uint16, unit: "A", access: r, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: ct_secondary, name: "CT Secondary", group: meter_setup, table: holding, address: 2030, type: uint16, unit: "A", access: r, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: vt_connection_type, name: "VT Connection Type", group: meter_setup, table: holding, address: 2035, type: uint16, access: r, values: {"0": "Direct Connect", "1": "3PH3W (2 VTs)", "2": "3PH4W (3 VTs)"}, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: protocol, name: "Protocol", group: communications, table: holding, address: 6499, type: uint16, access: r, values: {"0": "Modbus"}}
+  - {key: address, name: "Address", group: communications, table: holding, address: 6500, type: uint16, access: r, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: baud_rate, name: "Baud Rate", group: communications, table: holding, address: 6501, type: uint16, access: r, values: {"0": "9600", "1": "19200", "2": "38400"}, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: parity, name: "Parity", group: communications, table: holding, address: 6502, type: uint16, access: r, values: {"0": "Even", "1": "Odd", "2": "None"}, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: digital_input_1_control_mode, name: "Digital Input 1 Control Mode", group: inputs_outputs, table: holding, address: 7273, type: uint16, access: r, values: {"0": "Normal (Input Status)", "2": "Multi-tariff Control", "3": "Input Metering", "5": "Energy Reset"}, applies_to: ["PM3255"]}
+  - {key: digital_input_2_control_mode, name: "Digital Input 2 Control Mode", group: inputs_outputs, table: holding, address: 7297, type: uint16, access: r, applies_to: ["PM3255"], notes: "Same values as Digital Input 1 Control Mode."}
+  - {key: digital_input_status, name: "Digital Input Status", group: inputs_outputs, table: holding, address: 8904, type: bitfield, length: 2, access: r, applies_to: ["PM3255"], notes: "Bit 1 = DI1, bit 2 = DI2; 0 = relay open, 1 = relay closed."}
+  - {key: digital_output_status, name: "Digital Output Status", group: inputs_outputs, table: holding, address: 9666, type: bitfield16, access: r, applies_to: ["PM3255"], notes: "Bit 1 = DO1, bit 2 = DO2; 0 = relay open, 1 = relay closed."}
+  - {key: digital_output_1_control_mode_status, name: "Digital Output 1 Control Mode Status", group: inputs_outputs, table: holding, address: 9672, type: uint16, access: r, values: {"2": "Alarm", "3": "Energy", "65535": "Disable"}, applies_to: ["PM3255"]}
+  - {key: digital_output_2_control_mode_status, name: "Digital Output 2 Control Mode Status", group: inputs_outputs, table: holding, address: 9680, type: uint16, access: r, applies_to: ["PM3255"], notes: "Same values as Digital Output 1 Control Mode Status."}
+  - {key: current_i1, name: "Current I1", group: basic_meter_data, table: holding, address: 2999, type: float32, unit: "A", access: r}
+  - {key: current_i2, name: "Current I2", group: basic_meter_data, table: holding, address: 3001, type: float32, unit: "A", access: r}
+  - {key: current_i3, name: "Current I3", group: basic_meter_data, table: holding, address: 3003, type: float32, unit: "A", access: r}
+  - {key: current_n, name: "Current N", group: basic_meter_data, table: holding, address: 3005, type: float32, unit: "A", access: r}
+  - {key: current_avg, name: "Current Avg", group: basic_meter_data, table: holding, address: 3009, type: float32, unit: "A", access: r}
+  - {key: current_unbalance_i1, name: "Current Unbalance I1", group: basic_meter_data, table: holding, address: 3011, type: float32, unit: "%", access: r}
+  - {key: current_unbalance_i2, name: "Current Unbalance I2", group: basic_meter_data, table: holding, address: 3013, type: float32, unit: "%", access: r}
+  - {key: current_unbalance_i3, name: "Current Unbalance I3", group: basic_meter_data, table: holding, address: 3015, type: float32, unit: "%", access: r}
+  - {key: current_unbalance_worst, name: "Current Unbalance Worst", group: basic_meter_data, table: holding, address: 3017, type: float32, unit: "%", access: r}
+  - {key: voltage_l1_l2, name: "Voltage L1-L2", group: basic_meter_data, table: holding, address: 3019, type: float32, unit: "V", access: r}
+  - {key: voltage_l2_l3, name: "Voltage L2-L3", group: basic_meter_data, table: holding, address: 3021, type: float32, unit: "V", access: r}
+  - {key: voltage_l3_l1, name: "Voltage L3-L1", group: basic_meter_data, table: holding, address: 3023, type: float32, unit: "V", access: r}
+  - {key: voltage_l_l_avg, name: "Voltage L-L Avg", group: basic_meter_data, table: holding, address: 3025, type: float32, unit: "V", access: r}
+  - {key: voltage_l1_n, name: "Voltage L1-N", group: basic_meter_data, table: holding, address: 3027, type: float32, unit: "V", access: r}
+  - {key: voltage_l2_n, name: "Voltage L2-N", group: basic_meter_data, table: holding, address: 3029, type: float32, unit: "V", access: r}
+  - {key: voltage_l3_n, name: "Voltage L3-N", group: basic_meter_data, table: holding, address: 3031, type: float32, unit: "V", access: r}
+  - {key: voltage_l_n_avg, name: "Voltage L-N Avg", group: basic_meter_data, table: holding, address: 3035, type: float32, unit: "V", access: r}
+  - {key: voltage_unbalance_l1_l2, name: "Voltage Unbalance L1-L2", group: basic_meter_data, table: holding, address: 3037, type: float32, unit: "%", access: r}
+  - {key: voltage_unbalance_l2_l3, name: "Voltage Unbalance L2-L3", group: basic_meter_data, table: holding, address: 3039, type: float32, unit: "%", access: r}
+  - {key: voltage_unbalance_l3_l1, name: "Voltage Unbalance L3-L1", group: basic_meter_data, table: holding, address: 3041, type: float32, unit: "%", access: r}
+  - {key: voltage_unbalance_l_l_worst, name: "Voltage Unbalance L-L Worst", group: basic_meter_data, table: holding, address: 3043, type: float32, unit: "%", access: r}
+  - {key: voltage_unbalance_l1_n, name: "Voltage Unbalance L1-N", group: basic_meter_data, table: holding, address: 3045, type: float32, unit: "%", access: r}
+  - {key: voltage_unbalance_l2_n, name: "Voltage Unbalance L2-N", group: basic_meter_data, table: holding, address: 3047, type: float32, unit: "%", access: r}
+  - {key: voltage_unbalance_l3_n, name: "Voltage Unbalance L3-N", group: basic_meter_data, table: holding, address: 3049, type: float32, unit: "%", access: r}
+  - {key: voltage_unbalance_l_n_worst, name: "Voltage Unbalance L-N Worst", group: basic_meter_data, table: holding, address: 3051, type: float32, unit: "%", access: r}
+  - {key: active_power_phase_1, name: "Active Power Phase 1", group: basic_meter_data, table: holding, address: 3053, type: float32, unit: "kW", access: r}
+  - {key: active_power_phase_2, name: "Active Power Phase 2", group: basic_meter_data, table: holding, address: 3055, type: float32, unit: "kW", access: r}
+  - {key: active_power_phase_3, name: "Active Power Phase 3", group: basic_meter_data, table: holding, address: 3057, type: float32, unit: "kW", access: r}
+  - {key: total_active_power, name: "Total Active Power", group: basic_meter_data, table: holding, address: 3059, type: float32, unit: "kW", access: r}
+  - {key: reactive_power_phase_1, name: "Reactive Power Phase 1", group: basic_meter_data, table: holding, address: 3061, type: float32, unit: "kVAR", access: r}
+  - {key: reactive_power_phase_2, name: "Reactive Power Phase 2", group: basic_meter_data, table: holding, address: 3063, type: float32, unit: "kVAR", access: r}
+  - {key: reactive_power_phase_3, name: "Reactive Power Phase 3", group: basic_meter_data, table: holding, address: 3065, type: float32, unit: "kVAR", access: r}
+  - {key: total_reactive_power, name: "Total Reactive Power", group: basic_meter_data, table: holding, address: 3067, type: float32, unit: "kVAR", access: r}
+  - {key: apparent_power_phase_1, name: "Apparent Power Phase 1", group: basic_meter_data, table: holding, address: 3069, type: float32, unit: "kVA", access: r}
+  - {key: apparent_power_phase_2, name: "Apparent Power Phase 2", group: basic_meter_data, table: holding, address: 3071, type: float32, unit: "kVA", access: r}
+  - {key: apparent_power_phase_3, name: "Apparent Power Phase 3", group: basic_meter_data, table: holding, address: 3073, type: float32, unit: "kVA", access: r}
+  - {key: total_apparent_power, name: "Total Apparent Power", group: basic_meter_data, table: holding, address: 3075, type: float32, unit: "kVA", access: r}
+  - {key: power_factor_phase_1, name: "Power Factor Phase 1", group: basic_meter_data, table: holding, address: 3077, type: float32, access: r, notes: "Quadrant-coded: -2<PF<-1 Q2, -1<PF<0 Q3, 0<PF<1 Q1, 1<PF<2 Q4."}
+  - {key: power_factor_phase_2, name: "Power Factor Phase 2", group: basic_meter_data, table: holding, address: 3079, type: float32, access: r, notes: "Quadrant-coded: -2<PF<-1 Q2, -1<PF<0 Q3, 0<PF<1 Q1, 1<PF<2 Q4."}
+  - {key: power_factor_phase_3, name: "Power Factor Phase 3", group: basic_meter_data, table: holding, address: 3081, type: float32, access: r, notes: "Quadrant-coded: -2<PF<-1 Q2, -1<PF<0 Q3, 0<PF<1 Q1, 1<PF<2 Q4."}
+  - {key: power_factor_total, name: "Power Factor Total", group: basic_meter_data, table: holding, address: 3083, type: float32, access: r, notes: "Quadrant-coded: -2<PF<-1 Q2, -1<PF<0 Q3, 0<PF<1 Q1, 1<PF<2 Q4."}
+  - {key: tangent_phi_total, name: "Tangent Phi Total", group: basic_meter_data, table: holding, address: 3107, type: float32, access: r}
+  - {key: frequency, name: "Frequency", group: basic_meter_data, table: holding, address: 3109, type: float32, unit: "Hz", access: r}
+  - {key: temperature, name: "Temperature", group: basic_meter_data, table: holding, address: 3131, type: float32, unit: "°C", access: r}
+  - {key: total_active_energy_import, name: "Total Active Energy Import", group: energy, table: holding, address: 3203, type: int64, unit: "Wh", access: r}
+  - {key: total_active_energy_export, name: "Total Active Energy Export", group: energy, table: holding, address: 3207, type: int64, unit: "Wh", access: r}
+  - {key: total_reactive_energy_import, name: "Total Reactive Energy Import", group: energy, table: holding, address: 3219, type: int64, unit: "VARh", access: r}
+  - {key: total_reactive_energy_export, name: "Total Reactive Energy Export", group: energy, table: holding, address: 3223, type: int64, unit: "VARh", access: r}
+  - {key: total_apparent_energy_import, name: "Total Apparent Energy Import", group: energy, table: holding, address: 3235, type: int64, unit: "VAh", access: r}
+  - {key: total_apparent_energy_export, name: "Total Apparent Energy Export", group: energy, table: holding, address: 3239, type: int64, unit: "VAh", access: r}
+  - {key: partial_active_energy_import, name: "Partial Active Energy Import", group: energy, table: holding, address: 3255, type: int64, unit: "Wh", access: r}
+  - {key: partial_reactive_energy_import, name: "Partial Reactive Energy Import", group: energy, table: holding, address: 3271, type: int64, unit: "VARh", access: r}
+  - {key: partial_apparent_energy_import, name: "Partial Apparent Energy Import", group: energy, table: holding, address: 3287, type: int64, unit: "VAh", access: r}
+  - {key: active_energy_import_phase_1, name: "Active Energy Import Phase 1", group: energy, table: holding, address: 3517, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_import_phase_2, name: "Active Energy Import Phase 2", group: energy, table: holding, address: 3521, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_import_phase_3, name: "Active Energy Import Phase 3", group: energy, table: holding, address: 3525, type: int64, unit: "Wh", access: r}
+  - {key: reactive_energy_import_phase_1, name: "Reactive Energy Import Phase 1", group: energy, table: holding, address: 3529, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_import_phase_2, name: "Reactive Energy Import Phase 2", group: energy, table: holding, address: 3533, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_import_phase_3, name: "Reactive Energy Import Phase 3", group: energy, table: holding, address: 3537, type: int64, unit: "VARh", access: r}
+  - {key: apparent_energy_import_phase_1, name: "Apparent Energy Import Phase 1", group: energy, table: holding, address: 3541, type: int64, unit: "VAh", access: r}
+  - {key: apparent_energy_import_phase_2, name: "Apparent Energy Import Phase 2", group: energy, table: holding, address: 3545, type: int64, unit: "VAh", access: r}
+  - {key: apparent_energy_import_phase_3, name: "Apparent Energy Import Phase 3", group: energy, table: holding, address: 3549, type: int64, unit: "VAh", access: r}
+  - {key: rate_1_active_energy_import, name: "Rate 1 Active Energy Import", group: energy, table: holding, address: 4195, type: int64, unit: "Wh", access: r}
+  - {key: rate_2_active_energy_import, name: "Rate 2 Active Energy Import", group: energy, table: holding, address: 4199, type: int64, unit: "Wh", access: r}
+  - {key: rate_3_active_energy_import, name: "Rate 3 Active Energy Import", group: energy, table: holding, address: 4203, type: int64, unit: "Wh", access: r}
+  - {key: rate_4_active_energy_import, name: "Rate 4 Active Energy Import", group: energy, table: holding, address: 4207, type: int64, unit: "Wh", access: r}
+  - {key: energy_reset_date_time, name: "Energy Reset Date/Time", group: energy, table: holding, address: 3251, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: input_metering_accumulation_reset_date_time, name: "Input Metering Accumulation Reset Date/Time", group: energy, table: holding, address: 3553, type: raw, length: 4, access: r, applies_to: ["PM3255"], notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: input_metering_accumulation_channel_01, name: "Input Metering Accumulation Channel 01", group: energy, table: holding, address: 3557, type: int64, access: r, applies_to: ["PM3255"]}
+  - {key: input_metering_accumulation_channel_02, name: "Input Metering Accumulation Channel 02", group: energy, table: holding, address: 3561, type: int64, access: r, applies_to: ["PM3255"]}
+  - {key: active_tariff, name: "Active Tariff", group: energy, table: holding, address: 4190, type: uint16, access: r, notes: "0 = multi-tariff disabled, 1-4 = rate 1 to 4. Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: total_active_energy_import_float, name: "Total Active Energy Import (float)", group: energy_float, table: holding, address: 45165, type: float32, unit: "Wh", access: r}
+  - {key: total_active_energy_export_float, name: "Total Active Energy Export (float)", group: energy_float, table: holding, address: 45167, type: float32, unit: "Wh", access: r}
+  - {key: total_reactive_energy_import_float, name: "Total Reactive Energy Import (float)", group: energy_float, table: holding, address: 45169, type: float32, unit: "VARh", access: r}
+  - {key: total_reactive_energy_export_float, name: "Total Reactive Energy Export (float)", group: energy_float, table: holding, address: 45171, type: float32, unit: "VARh", access: r}
+  - {key: total_apparent_energy_import_float, name: "Total Apparent Energy Import (float)", group: energy_float, table: holding, address: 45173, type: float32, unit: "VAh", access: r}
+  - {key: total_apparent_energy_export_float, name: "Total Apparent Energy Export (float)", group: energy_float, table: holding, address: 45175, type: float32, unit: "VAh", access: r}
+  - {key: partial_active_energy_import_float, name: "Partial Active Energy Import (float)", group: energy_float, table: holding, address: 45177, type: float32, unit: "Wh", access: r}
+  - {key: partial_reactive_energy_import_float, name: "Partial Reactive Energy Import (float)", group: energy_float, table: holding, address: 45179, type: float32, unit: "VARh", access: r}
+  - {key: partial_apparent_energy_import_float, name: "Partial Apparent Energy Import (float)", group: energy_float, table: holding, address: 45181, type: float32, unit: "VAh", access: r}
+  - {key: active_energy_import_phase_1_float, name: "Active Energy Import Phase 1 (float)", group: energy_float, table: holding, address: 45183, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_import_phase_2_float, name: "Active Energy Import Phase 2 (float)", group: energy_float, table: holding, address: 45185, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_import_phase_3_float, name: "Active Energy Import Phase 3 (float)", group: energy_float, table: holding, address: 45187, type: float32, unit: "Wh", access: r}
+  - {key: reactive_energy_import_phase_1_float, name: "Reactive Energy Import Phase 1 (float)", group: energy_float, table: holding, address: 45189, type: float32, unit: "VARh", access: r}
+  - {key: reactive_energy_import_phase_2_float, name: "Reactive Energy Import Phase 2 (float)", group: energy_float, table: holding, address: 45191, type: float32, unit: "VARh", access: r}
+  - {key: reactive_energy_import_phase_3_float, name: "Reactive Energy Import Phase 3 (float)", group: energy_float, table: holding, address: 45193, type: float32, unit: "VARh", access: r}
+  - {key: apparent_energy_import_phase_1_float, name: "Apparent Energy Import Phase 1 (float)", group: energy_float, table: holding, address: 45195, type: float32, unit: "VAh", access: r}
+  - {key: apparent_energy_import_phase_2_float, name: "Apparent Energy Import Phase 2 (float)", group: energy_float, table: holding, address: 45197, type: float32, unit: "VAh", access: r}
+  - {key: apparent_energy_import_phase_3_float, name: "Apparent Energy Import Phase 3 (float)", group: energy_float, table: holding, address: 45199, type: float32, unit: "VAh", access: r}
+  - {key: rate_1_active_energy_import_float, name: "Rate 1 Active Energy Import (float)", group: energy_float, table: holding, address: 45205, type: float32, unit: "Wh", access: r}
+  - {key: rate_2_active_energy_import_float, name: "Rate 2 Active Energy Import (float)", group: energy_float, table: holding, address: 45207, type: float32, unit: "Wh", access: r}
+  - {key: rate_3_active_energy_import_float, name: "Rate 3 Active Energy Import (float)", group: energy_float, table: holding, address: 45209, type: float32, unit: "Wh", access: r}
+  - {key: rate_4_active_energy_import_float, name: "Rate 4 Active Energy Import (float)", group: energy_float, table: holding, address: 45211, type: float32, unit: "Wh", access: r}
+  - {key: input_metering_accumulation_channel_01_float, name: "Input Metering Accumulation Channel 01 (float)", group: energy_float, table: holding, address: 45201, type: float32, access: r, applies_to: ["PM3255"]}
+  - {key: input_metering_accumulation_channel_02_float, name: "Input Metering Accumulation Channel 02 (float)", group: energy_float, table: holding, address: 45203, type: float32, access: r, applies_to: ["PM3255"]}
+  - {key: demand_method, name: "Demand Method", group: demand, table: holding, address: 3700, type: uint16, access: r, values: {"1": "Timed Interval Sliding Block", "2": "Timed Interval Fixed Block"}, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: demand_interval_duration, name: "Demand Interval Duration", group: demand, table: holding, address: 3701, type: uint16, unit: "min", access: r, notes: "Change it with the meter's setup commands (command interface, register 5250); a direct write is refused."}
+  - {key: demand_peak_reset_date_time, name: "Demand Peak Reset Date/Time", group: demand, table: holding, address: 3705, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: active_power_present_demand, name: "Active Power Present Demand", group: demand, table: holding, address: 3765, type: float32, unit: "kW", access: r}
+  - {key: active_power_peak_demand, name: "Active Power Peak Demand", group: demand, table: holding, address: 3769, type: float32, unit: "kW", access: r}
+  - {key: active_power_peak_demand_date_time, name: "Active Power Peak Demand Date/Time", group: demand, table: holding, address: 3771, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: reactive_power_present_demand, name: "Reactive Power Present Demand", group: demand, table: holding, address: 3781, type: float32, unit: "kVAR", access: r}
+  - {key: reactive_power_peak_demand, name: "Reactive Power Peak Demand", group: demand, table: holding, address: 3785, type: float32, unit: "kVAR", access: r}
+  - {key: reactive_power_peak_demand_date_time, name: "Reactive Power Peak Demand Date/Time", group: demand, table: holding, address: 3787, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: apparent_power_present_demand, name: "Apparent Power Present Demand", group: demand, table: holding, address: 3797, type: float32, unit: "kVA", access: r}
+  - {key: apparent_power_peak_demand, name: "Apparent Power Peak Demand", group: demand, table: holding, address: 3801, type: float32, unit: "kVA", access: r}
+  - {key: apparent_power_peak_demand_date_time, name: "Apparent Power Peak Demand Date/Time", group: demand, table: holding, address: 3803, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: current_i1_present_demand, name: "Current I1 Present Demand", group: demand, table: holding, address: 3813, type: float32, unit: "A", access: r}
+  - {key: current_i1_peak_demand, name: "Current I1 Peak Demand", group: demand, table: holding, address: 3817, type: float32, unit: "A", access: r}
+  - {key: current_i1_peak_demand_date_time, name: "Current I1 Peak Demand Date/Time", group: demand, table: holding, address: 3819, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: current_i2_present_demand, name: "Current I2 Present Demand", group: demand, table: holding, address: 3829, type: float32, unit: "A", access: r}
+  - {key: current_i2_peak_demand, name: "Current I2 Peak Demand", group: demand, table: holding, address: 3833, type: float32, unit: "A", access: r}
+  - {key: current_i2_peak_demand_date_time, name: "Current I2 Peak Demand Date/Time", group: demand, table: holding, address: 3835, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: current_i3_present_demand, name: "Current I3 Present Demand", group: demand, table: holding, address: 3845, type: float32, unit: "A", access: r}
+  - {key: current_i3_peak_demand, name: "Current I3 Peak Demand", group: demand, table: holding, address: 3849, type: float32, unit: "A", access: r}
+  - {key: current_i3_peak_demand_date_time, name: "Current I3 Peak Demand Date/Time", group: demand, table: holding, address: 3851, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: current_in_present_demand, name: "Current In Present Demand", group: demand, table: holding, address: 3861, type: float32, unit: "A", access: r}
+  - {key: current_in_peak_demand, name: "Current In Peak Demand", group: demand, table: holding, address: 3865, type: float32, unit: "A", access: r}
+  - {key: current_in_peak_demand_date_time, name: "Current In Peak Demand Date/Time", group: demand, table: holding, address: 3867, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: current_avg_present_demand, name: "Current Avg Present Demand", group: demand, table: holding, address: 3877, type: float32, unit: "A", access: r}
+  - {key: current_avg_peak_demand, name: "Current Avg Peak Demand", group: demand, table: holding, address: 3881, type: float32, unit: "A", access: r}
+  - {key: current_avg_peak_demand_date_time, name: "Current Avg Peak Demand Date/Time", group: demand, table: holding, address: 3883, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: thd_current_i1, name: "THD Current I1", group: power_quality, table: holding, address: 45099, type: float32, unit: "%", access: r}
+  - {key: thd_current_i2, name: "THD Current I2", group: power_quality, table: holding, address: 45101, type: float32, unit: "%", access: r}
+  - {key: thd_current_i3, name: "THD Current I3", group: power_quality, table: holding, address: 45103, type: float32, unit: "%", access: r}
+  - {key: thd_current_neutral, name: "THD Current Neutral", group: power_quality, table: holding, address: 45105, type: float32, unit: "%", access: r}
+  - {key: thd_phase_current_worst, name: "THD Phase Current Worst", group: power_quality, table: holding, address: 45107, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l1_l2, name: "THD Voltage L1-L2", group: power_quality, table: holding, address: 45109, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l2_l3, name: "THD Voltage L2-L3", group: power_quality, table: holding, address: 45111, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l3_l1, name: "THD Voltage L3-L1", group: power_quality, table: holding, address: 45113, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l_l_avg, name: "THD Voltage L-L Avg", group: power_quality, table: holding, address: 45115, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l_l_worst, name: "THD Voltage L-L Worst", group: power_quality, table: holding, address: 45117, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l1_n, name: "THD Voltage L1-N", group: power_quality, table: holding, address: 45119, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l2_n, name: "THD Voltage L2-N", group: power_quality, table: holding, address: 45121, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l3_n, name: "THD Voltage L3-N", group: power_quality, table: holding, address: 45123, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l_n_avg, name: "THD Voltage L-N Avg", group: power_quality, table: holding, address: 45125, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l_n_worst, name: "THD Voltage L-N Worst", group: power_quality, table: holding, address: 45127, type: float32, unit: "%", access: r}
+  - {key: minimum_maximum_reset_date_time, name: "Minimum/Maximum Reset Date/Time", group: min_max, table: holding, address: 27213, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: minimum_current_i1, name: "Minimum Current I1", group: min_max, table: holding, address: 27217, type: float32, unit: "A", access: r}
+  - {key: maximum_current_i1, name: "Maximum Current I1", group: min_max, table: holding, address: 27693, type: float32, unit: "A", access: r}
+  - {key: minimum_current_i2, name: "Minimum Current I2", group: min_max, table: holding, address: 27219, type: float32, unit: "A", access: r}
+  - {key: maximum_current_i2, name: "Maximum Current I2", group: min_max, table: holding, address: 27695, type: float32, unit: "A", access: r}
+  - {key: minimum_current_i3, name: "Minimum Current I3", group: min_max, table: holding, address: 27221, type: float32, unit: "A", access: r}
+  - {key: maximum_current_i3, name: "Maximum Current I3", group: min_max, table: holding, address: 27697, type: float32, unit: "A", access: r}
+  - {key: minimum_current_n, name: "Minimum Current N", group: min_max, table: holding, address: 27223, type: float32, unit: "A", access: r}
+  - {key: maximum_current_n, name: "Maximum Current N", group: min_max, table: holding, address: 27699, type: float32, unit: "A", access: r}
+  - {key: minimum_current_avg, name: "Minimum Current Avg", group: min_max, table: holding, address: 27227, type: float32, unit: "A", access: r}
+  - {key: maximum_current_avg, name: "Maximum Current Avg", group: min_max, table: holding, address: 27703, type: float32, unit: "A", access: r}
+  - {key: minimum_voltage_l1_l2, name: "Minimum Voltage L1-L2", group: min_max, table: holding, address: 27237, type: float32, unit: "V", access: r}
+  - {key: maximum_voltage_l1_l2, name: "Maximum Voltage L1-L2", group: min_max, table: holding, address: 27713, type: float32, unit: "V", access: r}
+  - {key: minimum_voltage_l2_l3, name: "Minimum Voltage L2-L3", group: min_max, table: holding, address: 27239, type: float32, unit: "V", access: r}
+  - {key: maximum_voltage_l2_l3, name: "Maximum Voltage L2-L3", group: min_max, table: holding, address: 27715, type: float32, unit: "V", access: r}
+  - {key: minimum_voltage_l3_l1, name: "Minimum Voltage L3-L1", group: min_max, table: holding, address: 27241, type: float32, unit: "V", access: r}
+  - {key: maximum_voltage_l3_l1, name: "Maximum Voltage L3-L1", group: min_max, table: holding, address: 27717, type: float32, unit: "V", access: r}
+  - {key: minimum_voltage_l_l_avg, name: "Minimum Voltage L-L Avg", group: min_max, table: holding, address: 27243, type: float32, unit: "V", access: r}
+  - {key: maximum_voltage_l_l_avg, name: "Maximum Voltage L-L Avg", group: min_max, table: holding, address: 27719, type: float32, unit: "V", access: r}
+  - {key: minimum_voltage_l1_n, name: "Minimum Voltage L1-N", group: min_max, table: holding, address: 27245, type: float32, unit: "V", access: r}
+  - {key: maximum_voltage_l1_n, name: "Maximum Voltage L1-N", group: min_max, table: holding, address: 27721, type: float32, unit: "V", access: r}
+  - {key: minimum_voltage_l2_n, name: "Minimum Voltage L2-N", group: min_max, table: holding, address: 27247, type: float32, unit: "V", access: r}
+  - {key: maximum_voltage_l2_n, name: "Maximum Voltage L2-N", group: min_max, table: holding, address: 27723, type: float32, unit: "V", access: r}
+  - {key: minimum_voltage_l3_n, name: "Minimum Voltage L3-N", group: min_max, table: holding, address: 27249, type: float32, unit: "V", access: r}
+  - {key: maximum_voltage_l3_n, name: "Maximum Voltage L3-N", group: min_max, table: holding, address: 27725, type: float32, unit: "V", access: r}
+  - {key: minimum_voltage_l_n_avg, name: "Minimum Voltage L-N Avg", group: min_max, table: holding, address: 27253, type: float32, unit: "V", access: r}
+  - {key: maximum_voltage_l_n_avg, name: "Maximum Voltage L-N Avg", group: min_max, table: holding, address: 27729, type: float32, unit: "V", access: r}
+  - {key: minimum_active_power_phase_1, name: "Minimum Active Power Phase 1", group: min_max, table: holding, address: 27271, type: float32, unit: "kW", access: r}
+  - {key: maximum_active_power_phase_1, name: "Maximum Active Power Phase 1", group: min_max, table: holding, address: 27747, type: float32, unit: "kW", access: r}
+  - {key: minimum_active_power_phase_2, name: "Minimum Active Power Phase 2", group: min_max, table: holding, address: 27273, type: float32, unit: "kW", access: r}
+  - {key: maximum_active_power_phase_2, name: "Maximum Active Power Phase 2", group: min_max, table: holding, address: 27749, type: float32, unit: "kW", access: r}
+  - {key: minimum_active_power_phase_3, name: "Minimum Active Power Phase 3", group: min_max, table: holding, address: 27275, type: float32, unit: "kW", access: r}
+  - {key: maximum_active_power_phase_3, name: "Maximum Active Power Phase 3", group: min_max, table: holding, address: 27751, type: float32, unit: "kW", access: r}
+  - {key: minimum_active_power_total, name: "Minimum Active Power Total", group: min_max, table: holding, address: 27277, type: float32, unit: "kW", access: r}
+  - {key: maximum_active_power_total, name: "Maximum Active Power Total", group: min_max, table: holding, address: 27753, type: float32, unit: "kW", access: r}
+  - {key: minimum_reactive_power_phase_1, name: "Minimum Reactive Power Phase 1", group: min_max, table: holding, address: 27279, type: float32, unit: "kVAR", access: r}
+  - {key: maximum_reactive_power_phase_1, name: "Maximum Reactive Power Phase 1", group: min_max, table: holding, address: 27755, type: float32, unit: "kVAR", access: r}
+  - {key: minimum_reactive_power_phase_2, name: "Minimum Reactive Power Phase 2", group: min_max, table: holding, address: 27281, type: float32, unit: "kVAR", access: r}
+  - {key: maximum_reactive_power_phase_2, name: "Maximum Reactive Power Phase 2", group: min_max, table: holding, address: 27757, type: float32, unit: "kVAR", access: r}
+  - {key: minimum_reactive_power_phase_3, name: "Minimum Reactive Power Phase 3", group: min_max, table: holding, address: 27283, type: float32, unit: "kVAR", access: r}
+  - {key: maximum_reactive_power_phase_3, name: "Maximum Reactive Power Phase 3", group: min_max, table: holding, address: 27759, type: float32, unit: "kVAR", access: r}
+  - {key: minimum_reactive_power_total, name: "Minimum Reactive Power Total", group: min_max, table: holding, address: 27285, type: float32, unit: "kVAR", access: r}
+  - {key: maximum_reactive_power_total, name: "Maximum Reactive Power Total", group: min_max, table: holding, address: 27761, type: float32, unit: "kVAR", access: r}
+  - {key: minimum_apparent_power_phase_1, name: "Minimum Apparent Power Phase 1", group: min_max, table: holding, address: 27287, type: float32, unit: "kVA", access: r}
+  - {key: maximum_apparent_power_phase_1, name: "Maximum Apparent Power Phase 1", group: min_max, table: holding, address: 27763, type: float32, unit: "kVA", access: r}
+  - {key: minimum_apparent_power_phase_2, name: "Minimum Apparent Power Phase 2", group: min_max, table: holding, address: 27289, type: float32, unit: "kVA", access: r}
+  - {key: maximum_apparent_power_phase_2, name: "Maximum Apparent Power Phase 2", group: min_max, table: holding, address: 27765, type: float32, unit: "kVA", access: r}
+  - {key: minimum_apparent_power_phase_3, name: "Minimum Apparent Power Phase 3", group: min_max, table: holding, address: 27291, type: float32, unit: "kVA", access: r}
+  - {key: maximum_apparent_power_phase_3, name: "Maximum Apparent Power Phase 3", group: min_max, table: holding, address: 27767, type: float32, unit: "kVA", access: r}
+  - {key: minimum_apparent_power_total, name: "Minimum Apparent Power Total", group: min_max, table: holding, address: 27293, type: float32, unit: "kVA", access: r}
+  - {key: maximum_apparent_power_total, name: "Maximum Apparent Power Total", group: min_max, table: holding, address: 27769, type: float32, unit: "kVA", access: r}
+  - {key: minimum_power_factor_phase_1, name: "Minimum Power Factor Phase 1", group: min_max, table: holding, address: 27305, type: float32, access: r, notes: "Four-quadrant power factor encoding (4Q FP PF)."}
+  - {key: maximum_power_factor_phase_1, name: "Maximum Power Factor Phase 1", group: min_max, table: holding, address: 27781, type: float32, access: r, notes: "Four-quadrant power factor encoding (4Q FP PF)."}
+  - {key: minimum_power_factor_phase_2, name: "Minimum Power Factor Phase 2", group: min_max, table: holding, address: 27307, type: float32, access: r, notes: "Four-quadrant power factor encoding (4Q FP PF)."}
+  - {key: maximum_power_factor_phase_2, name: "Maximum Power Factor Phase 2", group: min_max, table: holding, address: 27783, type: float32, access: r, notes: "Four-quadrant power factor encoding (4Q FP PF)."}
+  - {key: minimum_power_factor_phase_3, name: "Minimum Power Factor Phase 3", group: min_max, table: holding, address: 27309, type: float32, access: r, notes: "Four-quadrant power factor encoding (4Q FP PF)."}
+  - {key: maximum_power_factor_phase_3, name: "Maximum Power Factor Phase 3", group: min_max, table: holding, address: 27785, type: float32, access: r, notes: "Four-quadrant power factor encoding (4Q FP PF)."}
+  - {key: minimum_power_factor_total, name: "Minimum Power Factor Total", group: min_max, table: holding, address: 27311, type: float32, access: r, notes: "Four-quadrant power factor encoding (4Q FP PF)."}
+  - {key: maximum_power_factor_total, name: "Maximum Power Factor Total", group: min_max, table: holding, address: 27787, type: float32, access: r, notes: "Four-quadrant power factor encoding (4Q FP PF)."}
+  - {key: minimum_tangent_phi_total, name: "Minimum Tangent Phi Total", group: min_max, table: holding, address: 27335, type: float32, access: r}
+  - {key: maximum_tangent_phi_total, name: "Maximum Tangent Phi Total", group: min_max, table: holding, address: 27811, type: float32, access: r}
+  - {key: minimum_thd_current_i1, name: "Minimum THD Current I1", group: min_max, table: holding, address: 27337, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_current_i1, name: "Maximum THD Current I1", group: min_max, table: holding, address: 27813, type: float32, unit: "%", access: r}
+  - {key: minimum_thd_current_i2, name: "Minimum THD Current I2", group: min_max, table: holding, address: 27339, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_current_i2, name: "Maximum THD Current I2", group: min_max, table: holding, address: 27815, type: float32, unit: "%", access: r}
+  - {key: minimum_thd_current_i3, name: "Minimum THD Current I3", group: min_max, table: holding, address: 27341, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_current_i3, name: "Maximum THD Current I3", group: min_max, table: holding, address: 27817, type: float32, unit: "%", access: r}
+  - {key: minimum_thd_current_n, name: "Minimum THD Current N", group: min_max, table: holding, address: 27343, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_current_n, name: "Maximum THD Current N", group: min_max, table: holding, address: 27819, type: float32, unit: "%", access: r}
+  - {key: minimum_thd_voltage_l1_l2, name: "Minimum THD Voltage L1-L2", group: min_max, table: holding, address: 27359, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_voltage_l1_l2, name: "Maximum THD Voltage L1-L2", group: min_max, table: holding, address: 27835, type: float32, unit: "%", access: r}
+  - {key: minimum_thd_voltage_l2_l3, name: "Minimum THD Voltage L2-L3", group: min_max, table: holding, address: 27361, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_voltage_l2_l3, name: "Maximum THD Voltage L2-L3", group: min_max, table: holding, address: 27837, type: float32, unit: "%", access: r}
+  - {key: minimum_thd_voltage_l3_l1, name: "Minimum THD Voltage L3-L1", group: min_max, table: holding, address: 27363, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_voltage_l3_l1, name: "Maximum THD Voltage L3-L1", group: min_max, table: holding, address: 27839, type: float32, unit: "%", access: r}
+  - {key: minimum_thd_voltage_l_l_avg, name: "Minimum THD Voltage L-L Avg", group: min_max, table: holding, address: 27365, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_voltage_l_l_avg, name: "Maximum THD Voltage L-L Avg", group: min_max, table: holding, address: 27841, type: float32, unit: "%", access: r}
+  - {key: minimum_thd_voltage_l1_n, name: "Minimum THD Voltage L1-N", group: min_max, table: holding, address: 27367, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_voltage_l1_n, name: "Maximum THD Voltage L1-N", group: min_max, table: holding, address: 27843, type: float32, unit: "%", access: r}
+  - {key: minimum_thd_voltage_l2_n, name: "Minimum THD Voltage L2-N", group: min_max, table: holding, address: 27369, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_voltage_l2_n, name: "Maximum THD Voltage L2-N", group: min_max, table: holding, address: 27845, type: float32, unit: "%", access: r}
+  - {key: minimum_thd_voltage_l3_n, name: "Minimum THD Voltage L3-N", group: min_max, table: holding, address: 27371, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_voltage_l3_n, name: "Maximum THD Voltage L3-N", group: min_max, table: holding, address: 27847, type: float32, unit: "%", access: r}
+  - {key: minimum_thd_voltage_l_n_avg, name: "Minimum THD Voltage L-N Avg", group: min_max, table: holding, address: 27375, type: float32, unit: "%", access: r}
+  - {key: maximum_thd_voltage_l_n_avg, name: "Maximum THD Voltage L-N Avg", group: min_max, table: holding, address: 27851, type: float32, unit: "%", access: r}
+  - {key: minimum_frequency, name: "Minimum Frequency", group: min_max, table: holding, address: 27615, type: float32, unit: "Hz", access: r}
+  - {key: maximum_frequency, name: "Maximum Frequency", group: min_max, table: holding, address: 28091, type: float32, unit: "Hz", access: r}
+  - {key: minimum_current_of_i1_i2_i3_date_time, name: "Minimum Current of I1,I2,I3 - Date/Time", group: min_max_timestamped, table: holding, address: 45129, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: minimum_current_of_i1_i2_i3_value, name: "Minimum Current of I1,I2,I3 - Value", group: min_max_timestamped, table: holding, address: 45133, type: float32, unit: "A", access: r}
+  - {key: minimum_power_factor_total_date_time, name: "Minimum Power Factor Total - Date/Time", group: min_max_timestamped, table: holding, address: 45135, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: minimum_power_factor_total_value, name: "Minimum Power Factor Total - Value", group: min_max_timestamped, table: holding, address: 45139, type: float32, access: r}
+  - {key: maximum_current_of_i1_i2_i3_date_time, name: "Maximum Current of I1,I2,I3 - Date/Time", group: min_max_timestamped, table: holding, address: 45141, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: maximum_current_of_i1_i2_i3_value, name: "Maximum Current of I1,I2,I3 - Value", group: min_max_timestamped, table: holding, address: 45145, type: float32, unit: "A", access: r}
+  - {key: maximum_active_power_total_date_time, name: "Maximum Active Power Total - Date/Time", group: min_max_timestamped, table: holding, address: 45147, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: maximum_active_power_total_value, name: "Maximum Active Power Total - Value", group: min_max_timestamped, table: holding, address: 45151, type: float32, unit: "kW", access: r}
+  - {key: maximum_apparent_power_total_date_time, name: "Maximum Apparent Power Total - Date/Time", group: min_max_timestamped, table: holding, address: 45153, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: maximum_apparent_power_total_value, name: "Maximum Apparent Power Total - Value", group: min_max_timestamped, table: holding, address: 45157, type: float32, unit: "kVA", access: r}
+  - {key: maximum_power_factor_total_date_time, name: "Maximum Power Factor Total - Date/Time", group: min_max_timestamped, table: holding, address: 45159, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words): year, month/weekday/day, hour/minute, milliseconds."}
+  - {key: maximum_power_factor_total_value, name: "Maximum Power Factor Total - Value", group: min_max_timestamped, table: holding, address: 45163, type: float32, access: r}

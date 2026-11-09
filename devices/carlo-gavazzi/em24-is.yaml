@@ -1,0 +1,328 @@
+# Transcribed from Carlo Gavazzi's protocol document; not yet checked against a meter.
+schema_version: 1
+vendor: Carlo Gavazzi
+model: EM24-IS
+aliases: [EM24-IS SFA, EM24-IS SFB, EM24DINAV23XISSFA, EM24DINAV53XISSFA, EM24DINAV23XISSFB, EM24DINAV53XISSFB]
+category: energy-meter
+summary: EM24-IS SFA and SFB three-phase DIN-rail meters with RS485 Modbus RTU; a reduced EM24 map of scaled integers, low word first.
+connection:
+  interfaces: [rtu]
+  default_unit_id: 1
+  default_byte_order: CDAB
+  max_registers_per_read: 11
+  notes:
+    - Function codes 03 and 04 return the same values; input registers here can also be read as holding registers.
+    - 32-bit values are sent low word first (LSW, MSW); bytes inside each word are high byte first.
+    - The document limits a read to 11 registers; registers in tables 2.4 to 2.8 are read one word at a time.
+    - Many EM24-DIN addresses (power, demand, tariff and phase energies) are reserved on these models and are not listed.
+    - Serial settings are 8 data bits, no parity, 1 stop bit; only the baud rate is selectable.
+    - SFA and SFB models support only the 3Pn measuring system.
+sources:
+  - title: EM24-IS SFA and SFB versions Communication Protocol
+    publisher: Carlo Gavazzi
+    version: Revision 2.0
+    url: https://www.gavazziautomation.com/fileadmin/images/PIM/OTHERSTUFF/COMPRO/EM24_IS_SFA_SFB.pdf
+    accessed: 2026-11-09
+    sha256: 801b04f86bde4d14e3d1ef2a20784724b92882f0ec85764c7a46efe4ef9eb1b4
+registers:
+  - key: voltage_l1_n
+    name: "Phase 1 line to neutral voltage"
+    group: voltage
+    table: input
+    address: 0
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l2_n
+    name: "Phase 2 line to neutral voltage"
+    group: voltage
+    table: input
+    address: 2
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l3_n
+    name: "Phase 3 line to neutral voltage"
+    group: voltage
+    table: input
+    address: 4
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l1_l2
+    name: "Line 1 to line 2 voltage"
+    group: voltage
+    table: input
+    address: 6
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l2_l3
+    name: "Line 2 to line 3 voltage"
+    group: voltage
+    table: input
+    address: 8
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l3_l1
+    name: "Line 3 to line 1 voltage"
+    group: voltage
+    table: input
+    address: 10
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: current_l1
+    name: "Phase 1 current"
+    group: current
+    table: input
+    address: 12
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: current_l2
+    name: "Phase 2 current"
+    group: current
+    table: input
+    address: 14
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: current_l3
+    name: "Phase 3 current"
+    group: current
+    table: input
+    address: 16
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: voltage_l_n_sys
+    name: "System line to neutral voltage"
+    group: voltage
+    table: input
+    address: 36
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l_l_sys
+    name: "System line to line voltage"
+    group: voltage
+    table: input
+    address: 38
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: power_factor_l1
+    name: "Phase 1 power factor"
+    group: power
+    table: input
+    address: 50
+    type: int16
+    scale: 0.001
+    access: r
+    notes: "Negative values mean leading (capacitive), positive lagging (inductive); same for every power factor register."
+
+  - key: power_factor_l2
+    name: "Phase 2 power factor"
+    group: power
+    table: input
+    address: 51
+    type: int16
+    scale: 0.001
+    access: r
+
+  - key: power_factor_l3
+    name: "Phase 3 power factor"
+    group: power
+    table: input
+    address: 52
+    type: int16
+    scale: 0.001
+    access: r
+
+  - key: power_factor_total
+    name: "System power factor"
+    group: power
+    table: input
+    address: 53
+    type: int16
+    scale: 0.001
+    access: r
+
+  - key: phase_sequence
+    name: "Phase sequence"
+    group: status
+    table: input
+    address: 54
+    type: int16
+    access: r
+    values:
+      "-1": "L1-L3-L2"
+      "0": "L1-L2-L3"
+    notes: "Meaningful only in 3-phase systems."
+
+  - key: frequency
+    name: "Frequency"
+    group: voltage
+    table: input
+    address: 55
+    type: int16
+    scale: 0.1
+    unit: "Hz"
+    access: r
+
+  - key: import_active_energy
+    name: "Total imported active energy"
+    group: energy
+    table: input
+    address: 62
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: digital_input_status
+    name: "Digital input status"
+    group: status
+    table: input
+    address: 768
+    type: bitfield16
+    access: r
+    notes: "Bit 0 = input 1, bit 1 = input 2, bit 2 = input 3; 0 = closed, 1 = open."
+
+  - key: firmware_version
+    name: "Version and revision code"
+    group: info
+    table: input
+    address: 770
+    type: uint16
+    access: r
+    notes: "High byte: bits 4-7 major, bits 0-3 minor; low byte: revision. 101Eh reads as 1.0.30."
+
+  - key: front_selector_status
+    name: "Front selector status"
+    group: status
+    table: input
+    address: 772
+    type: uint16
+    access: r
+    values:
+      "0": "Keypad unlocked"
+      "1": "Keypad unlocked"
+      "2": "Keypad unlocked"
+      "3": "Keypad locked"
+
+  - key: password
+    name: "Password"
+    group: setup
+    table: holding
+    address: 4352
+    type: uint16
+    access: rw
+    notes: "0 to 9999."
+
+  - key: measuring_system
+    name: "Measuring system"
+    group: setup
+    table: holding
+    address: 4354
+    type: uint16
+    access: rw
+    values:
+      "0": "3Pn"
+      "1": "3P1"
+      "2": "2P"
+      "3": "1P"
+      "4": "3P"
+    notes: "SFA and SFB models support only 3Pn."
+
+  - key: filter_span
+    name: "Filter span parameter"
+    group: setup
+    table: holding
+    address: 4360
+    type: uint16
+    access: rw
+    notes: "0 to 100."
+
+  - key: filter_coefficient
+    name: "Filter coefficient"
+    group: setup
+    table: holding
+    address: 4361
+    type: uint16
+    access: rw
+    notes: "1 to 32."
+
+  - key: modbus_address
+    name: "RS485 instrument address"
+    group: setup
+    table: holding
+    address: 4362
+    type: uint16
+    access: rw
+    notes: "1 to 247."
+
+  - key: baud_rate
+    name: "RS485 baud rate"
+    group: setup
+    table: holding
+    address: 4363
+    type: uint16
+    access: rw
+    values:
+      "0": "4800"
+      "1": "9600"
+
+  - key: ct_ratio
+    name: "Current transformer ratio"
+    group: setup
+    table: holding
+    address: 4396
+    type: uint32
+    scale: 0.1
+    access: rw
+    notes: "Raw 10 to 600000 (CT ratio 1.0 to 60000.0)."
+
+  - key: vt_ratio
+    name: "Voltage transformer ratio"
+    group: setup
+    table: holding
+    address: 4398
+    type: uint32
+    scale: 0.1
+    access: rw
+    notes: "Raw 10 to 60000 (VT ratio 1.0 to 6000.0)."
+
+  - key: serial_number
+    name: "Serial number"
+    group: info
+    table: input
+    address: 4864
+    type: string
+    length: 7
+    access: r
+    notes: "Two ASCII characters per register, high byte first."

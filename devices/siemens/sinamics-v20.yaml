@@ -1,0 +1,106 @@
+# Transcribed from Siemens' operating instructions (01/2018); not yet checked against a drive.
+schema_version: 1
+vendor: Siemens
+model: SINAMICS V20
+aliases: [V20, SINAMICS V20 inverter, 6SL3210-5BB, 6SL3210-5BE]
+category: vfd
+summary: SINAMICS V20 inverter over Modbus RTU on its RS485 port; 16-bit holding registers with fixed scaling factors.
+connection:
+  interfaces: [rtu]
+  default_unit_id: 1
+  default_byte_order: ABCD
+  serial_defaults: 9600 baud, 8 data bits, even parity, 1 stop bit
+  notes:
+    - The manual lists each register twice, as the inverter register number and as the 40001-based Modbus number; the address here is the inverter number, which is the Modbus number minus 40001.
+    - Set P2023 = 2 (Modbus) and power-cycle; P0700 = 5 makes RS485 the command source. Address P2021 (default 1), baud rate P2010, parity P2034, stop bits P2035.
+    - Scaled registers hold value x scaling factor (factor 100 is scale 0.01 here).
+    - On/off registers list the source's on text as 1 and its off text as 0.
+    - Most values also appear in a second register set from 40200 on; only registers that the first set lacks are listed from it.
+    - Writing control registers or setpoints moves the motor. Read-only access is the safe default.
+sources:
+  - title: SINAMICS V20 Inverter Operating Instructions
+    publisher: Siemens
+    document_id: A5E34559884-009
+    version: 01/2018
+    url: https://cache.industry.siemens.com/dl/files/193/109756193/att_942991/v1/V20_op_instr_0118_en-US.pdf
+    accessed: 2026-11-09
+    sha256: fe2ff65823b9db291791533d342cae2ea5a10411485e4423528086f0f4eef220
+    notes: Section 7.2 MODBUS communication, mapping table; parameter list for P2010, P2021, P2034 and P2035 defaults.
+registers:
+  - {key: watchdog_time, name: "Watchdog time", group: settings, table: holding, address: 0, type: uint16, unit: "ms", access: rw, notes: "Register 40001; no parameter."}
+  - {key: watchdog_action, name: "Watchdog action", group: settings, table: holding, address: 1, type: uint16, access: rw, notes: "Register 40002; no parameter."}
+  - {key: frequency_setpoint, name: "Frequency setpoint", group: control, table: holding, address: 2, type: uint16, scale: 0.01, unit: "%", access: rw, notes: "Register 40003; HSW. 0.00-100.00 %."}
+  - {key: run_enable, name: "Run enable", group: control, table: holding, address: 3, type: uint16, access: rw, notes: "Register 40004; STW bit 3."}
+  - {key: forward_reverse_command, name: "Forward/reverse command", group: control, table: holding, address: 4, type: uint16, access: rw, notes: "Register 40005; STW bit 11."}
+  - {key: start_command, name: "Start command", group: control, table: holding, address: 5, type: uint16, access: rw, notes: "Register 40006; STW bit 0."}
+  - {key: fault_acknowledge, name: "Fault acknowledgement", group: control, table: holding, address: 6, type: uint16, access: rw, notes: "Register 40007; STW bit 7."}
+  - {key: pid_setpoint_reference, name: "PID setpoint reference", group: pid, table: holding, address: 7, type: int16, scale: 0.01, unit: "%", access: rw, notes: "Register 40008; P2240."}
+  - {key: pid_enable, name: "PID enable", group: pid, table: holding, address: 8, type: uint16, access: rw, notes: "Register 40009; reads r0055.8, writes P2200 (BICO)."}
+  - {key: current_limit, name: "Current limit", group: settings, table: holding, address: 9, type: uint16, scale: 0.1, unit: "%", access: rw, notes: "Register 40010; P0640."}
+  - {key: acceleration_time, name: "Acceleration time", group: settings, table: holding, address: 10, type: uint16, scale: 0.01, unit: "s", access: rw, notes: "Register 40011; P1120."}
+  - {key: deceleration_time, name: "Deceleration time", group: settings, table: holding, address: 11, type: uint16, scale: 0.01, unit: "s", access: rw, notes: "Register 40012; P1121."}
+  - {key: digital_output_1, name: "Digital output 1", group: io, table: holding, address: 13, type: uint16, access: rw, values: {"0": "Low", "1": "High"}, notes: "Register 40014; reads r0747.0, writes P0731 (BICO)."}
+  - {key: digital_output_2, name: "Digital output 2", group: io, table: holding, address: 14, type: uint16, access: rw, values: {"0": "Low", "1": "High"}, notes: "Register 40015; reads r0747.1, writes P0732 (BICO)."}
+  - {key: reference_frequency, name: "Reference frequency", group: settings, table: holding, address: 15, type: uint16, scale: 0.01, unit: "Hz", access: rw, notes: "Register 40016; P2000."}
+  - {key: pid_upper_limit, name: "PID upper limit", group: pid, table: holding, address: 16, type: int16, scale: 0.01, unit: "%", access: rw, notes: "Register 40017; P2291."}
+  - {key: pid_lower_limit, name: "PID lower limit", group: pid, table: holding, address: 17, type: int16, scale: 0.01, unit: "%", access: rw, notes: "Register 40018; P2292."}
+  - {key: pid_proportional_gain, name: "PID proportional gain", group: pid, table: holding, address: 18, type: uint16, scale: 0.001, access: rw, notes: "Register 40019; P2280."}
+  - {key: pid_integral_gain, name: "PID integral gain", group: pid, table: holding, address: 19, type: uint16, unit: "s", access: rw, notes: "Register 40020; P2285."}
+  - {key: pid_differential_gain, name: "PID differential gain", group: pid, table: holding, address: 20, type: uint16, access: rw, notes: "Register 40021; P2274."}
+  - {key: pid_feedback_gain, name: "PID feedback gain", group: pid, table: holding, address: 21, type: uint16, scale: 0.01, unit: "%", access: rw, notes: "Register 40022; P2269."}
+  - {key: pid_low_pass, name: "PID low pass", group: pid, table: holding, address: 22, type: uint16, scale: 0.01, access: rw, notes: "Register 40023; P2265."}
+  - {key: output_frequency, name: "Frequency output", group: actual_values, table: holding, address: 23, type: int16, scale: 0.01, unit: "Hz", access: r, notes: "Register 40024; r0024."}
+  - {key: speed, name: "Speed", group: actual_values, table: holding, address: 24, type: int16, unit: "rpm", access: r, notes: "Register 40025; r0022."}
+  - {key: current_filtered, name: "Current filtered", group: actual_values, table: holding, address: 25, type: uint16, scale: 0.01, unit: "A", access: r, notes: "Register 40026; r0027."}
+  - {key: torque, name: "Torque", group: actual_values, table: holding, address: 26, type: int16, scale: 0.01, unit: "Nm", access: r, notes: "Register 40027; r0031."}
+  - {key: actual_power, name: "Actual power", group: actual_values, table: holding, address: 27, type: uint16, scale: 0.01, unit: "kW", access: r, notes: "Register 40028; r0032."}
+  - {key: total_kwh, name: "Total kWh", group: actual_values, table: holding, address: 28, type: uint16, unit: "kWh", access: r, notes: "Register 40029; r0039."}
+  - {key: dc_bus_voltage, name: "DC bus voltage", group: actual_values, table: holding, address: 29, type: uint16, unit: "V", access: r, notes: "Register 40030; r0026."}
+  - {key: frequency_reference, name: "Reference", group: actual_values, table: holding, address: 30, type: int16, scale: 0.01, unit: "Hz", access: r, notes: "Register 40031; r0020."}
+  - {key: rated_power, name: "Rated power", group: identification, table: holding, address: 31, type: uint16, scale: 0.01, unit: "kW", access: r, notes: "Register 40032; r0206."}
+  - {key: output_voltage, name: "Voltage output", group: actual_values, table: holding, address: 32, type: uint16, unit: "V", access: r, notes: "Register 40033; r0025."}
+  - {key: status_forward_reverse, name: "Forward/reverse", group: status, table: holding, address: 33, type: uint16, access: r, values: {"0": "REV", "1": "FWD"}, notes: "Register 40034; ZSW bit 14."}
+  - {key: status_stop_run, name: "Stop/run", group: status, table: holding, address: 34, type: uint16, access: r, notes: "Register 40035; ZSW bit 2. The source gives the texts STOP and RUN without saying which is 1; ZSW bit 2 is the run state."}
+  - {key: status_at_max_frequency, name: "Run at maximum frequency", group: status, table: holding, address: 35, type: uint16, access: r, values: {"0": "NO", "1": "MAX"}, notes: "Register 40036; ZSW bit 10."}
+  - {key: status_control_mode, name: "Control mode", group: status, table: holding, address: 36, type: uint16, access: r, values: {"0": "LOCAL", "1": "SERIAL"}, notes: "Register 40037; ZSW bit 9."}
+  - {key: status_enabled, name: "Enabled", group: status, table: holding, address: 37, type: uint16, access: r, values: {"0": "OFF", "1": "ON"}, notes: "Register 40038; ZSW bit 0."}
+  - {key: status_ready_to_run, name: "Ready to run", group: status, table: holding, address: 38, type: uint16, access: r, values: {"0": "OFF", "1": "READY"}, notes: "Register 40039; ZSW bit 1."}
+  - {key: analog_input_1, name: "Analog input 1", group: io, table: holding, address: 39, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40040; r0754[0]."}
+  - {key: analog_input_2, name: "Analog input 2", group: io, table: holding, address: 40, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40041; r0754[1]."}
+  - {key: analog_output_1, name: "Analog output 1", group: io, table: holding, address: 41, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40042; r0774[0]."}
+  - {key: actual_frequency_percent, name: "Actual frequency", group: actual_values, table: holding, address: 43, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40044; HIW."}
+  - {key: pid_setpoint_output, name: "PID setpoint output", group: pid, table: holding, address: 44, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40045; r2250."}
+  - {key: pid_output, name: "PID output", group: pid, table: holding, address: 45, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40046; r2294."}
+  - {key: pid_feedback, name: "PID feedback", group: pid, table: holding, address: 46, type: int16, scale: 0.01, unit: "%", access: r, notes: "Register 40047; r2266."}
+  - {key: digital_input_1, name: "Digital input 1", group: io, table: holding, address: 47, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40048; r0722.0."}
+  - {key: digital_input_2, name: "Digital input 2", group: io, table: holding, address: 48, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40049; r0722.1."}
+  - {key: digital_input_3, name: "Digital input 3", group: io, table: holding, address: 49, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40050; r0722.2."}
+  - {key: digital_input_4, name: "Digital input 4", group: io, table: holding, address: 50, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40051; r0722.3."}
+  - {key: status_fault, name: "Fault", group: status, table: holding, address: 53, type: uint16, access: r, values: {"0": "OFF", "1": "FAULT"}, notes: "Register 40054; ZSW bit 3."}
+  - {key: last_fault, name: "Last fault", group: faults, table: holding, address: 54, type: uint16, access: r, notes: "Register 40055; r0947[0]."}
+  - {key: fault_index_1, name: "Fault number, index 1", group: faults, table: holding, address: 55, type: uint16, access: r, notes: "Register 40056; r0947[1]. The source calls it Fault 1."}
+  - {key: fault_index_2, name: "Fault number, index 2", group: faults, table: holding, address: 56, type: uint16, access: r, notes: "Register 40057; r0947[2]. The source calls it Fault 2."}
+  - {key: fault_index_3, name: "Fault number, index 3", group: faults, table: holding, address: 57, type: uint16, access: r, notes: "Register 40058; r0947[3]. The source calls it Fault 3."}
+  - {key: status_warning, name: "Warning", group: status, table: holding, address: 58, type: uint16, access: r, values: {"0": "OK", "1": "WARN"}, notes: "Register 40059; ZSW bit 7."}
+  - {key: last_warning, name: "Last warning", group: faults, table: holding, address: 59, type: uint16, access: r, notes: "Register 40060; r2110."}
+  - {key: inverter_version, name: "Inverter version", group: identification, table: holding, address: 60, type: uint16, scale: 0.01, access: r, notes: "Register 40061; r0018."}
+  - {key: inverter_model, name: "Inverter model", group: identification, table: holding, address: 61, type: uint16, access: r, notes: "Register 40062; r0201."}
+  - {key: stw, name: "Control word (STW)", group: control, table: holding, address: 99, type: bitfield16, access: rw, notes: "Register 40100; PZD 1."}
+  - {key: hsw, name: "Speed setpoint (HSW)", group: control, table: holding, address: 100, type: int16, access: rw, notes: "Register 40101; PZD 2."}
+  - {key: zsw, name: "Status word (ZSW)", group: status, table: holding, address: 109, type: bitfield16, access: r, notes: "Register 40110; PZD 1."}
+  - {key: hiw, name: "Actual speed (HIW)", group: status, table: holding, address: 110, type: int16, access: r, notes: "Register 40111; PZD 2."}
+  - {key: digital_output_3, name: "Digital output 3", group: io, table: holding, address: 201, type: uint16, access: rw, values: {"0": "Low", "1": "High"}, notes: "Register 40202; reads r0747.2, writes P0733 (BICO). Only with the I/O Extension Module."}
+  - {key: digital_output_4, name: "Digital output 4", group: io, table: holding, address: 202, type: uint16, access: rw, values: {"0": "Low", "1": "High"}, notes: "Register 40203; reads r0747.3, writes P0734 (BICO). Only with the I/O Extension Module."}
+  - {key: digital_input_5, name: "Digital input 5", group: io, table: holding, address: 243, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40244; r0722.4. Only with the I/O Extension Module."}
+  - {key: digital_input_6, name: "Digital input 6", group: io, table: holding, address: 244, type: uint16, access: r, values: {"0": "Low", "1": "High"}, notes: "Register 40245; r0722.5. Only with the I/O Extension Module."}
+  - {key: fixed_frequency_1, name: "Fixed frequency 1", group: settings, table: holding, address: 324, type: int16, scale: 0.01, unit: "Hz", access: rw, notes: "Register 40325; P1001."}
+  - {key: fixed_frequency_2, name: "Fixed frequency 2", group: settings, table: holding, address: 325, type: int16, scale: 0.01, unit: "Hz", access: rw, notes: "Register 40326; P1002."}
+  - {key: fixed_frequency_3, name: "Fixed frequency 3", group: settings, table: holding, address: 326, type: int16, scale: 0.01, unit: "Hz", access: rw, notes: "Register 40327; P1003."}
+  - {key: fixed_frequency_4, name: "Fixed frequency 4", group: settings, table: holding, address: 327, type: int16, scale: 0.01, unit: "Hz", access: rw, notes: "Register 40328; P1004."}
+  - {key: hand_auto, name: "Hand/auto", group: status, table: holding, address: 348, type: uint16, access: r, values: {"0": "AUTO", "1": "HAND"}, notes: "Register 40349; r0807."}
+  - {key: current_unfiltered, name: "Current unfiltered", group: actual_values, table: holding, address: 349, type: uint16, scale: 0.01, unit: "A", access: r, notes: "Register 40350; r0068."}
+  - {key: fault_index_4, name: "Fault number, index 4", group: faults, table: holding, address: 403, type: uint16, access: r, notes: "Register 40404; r0947[4]. The source calls it Fault 5."}
+  - {key: fault_index_5, name: "Fault number, index 5", group: faults, table: holding, address: 404, type: uint16, access: r, notes: "Register 40405; r0947[5]. The source calls it Fault 6."}
+  - {key: fault_index_6, name: "Fault number, index 6", group: faults, table: holding, address: 405, type: uint16, access: r, notes: "Register 40406; r0947[6]. The source calls it Fault 7."}
+  - {key: fault_index_7, name: "Fault number, index 7", group: faults, table: holding, address: 406, type: uint16, access: r, notes: "Register 40407; r0947[7]. The source calls it Fault 8."}
+  - {key: parameter_error_code, name: "Parameter error code", group: diagnostics, table: holding, address: 498, type: uint16, access: r, notes: "Register 40499; no parameter."}

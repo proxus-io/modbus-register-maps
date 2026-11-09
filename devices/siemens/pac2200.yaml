@@ -1,0 +1,105 @@
+# Transcribed from Siemens' equipment manual (12/2022); not yet checked against a device.
+schema_version: 1
+vendor: Siemens
+model: PAC2200
+aliases: [SENTRON PAC2200, 7KM2200-2EA30-1JA1, 7KM2200-2EA40-1JA1, 7KM2200-2EA30-1HA1, 7KM2200-2EA40-1HA1]
+category: power-analyzer
+summary: SENTRON PAC2200 power monitoring device with Modbus TCP or Modbus RTU; measurements are 32-bit floats, energy counters 64-bit floats.
+connection:
+  interfaces: [tcp, rtu]
+  default_byte_order: ABCD
+  serial_defaults: 19200 baud, 8 data bits, no parity, 2 stop bits; address 126
+  notes:
+    - Addresses are the manual's offsets, sent unchanged, the convention of this repository's PAC3200 map; the manual has no example frame to settle it.
+    - Function code 3 or 4 reads the same registers; reading from the middle of a multi-register value is refused.
+    - Modbus TCP or RTU depends on the device version (Ethernet or RS485 interface); M-Bus versions do not answer Modbus.
+    - The 32-bit float copies of the energy counters at 2801-2883 are left out; their unit column lists varh for active export and Wh for reactive import.
+sources:
+  - title: SENTRON 7KM Power Monitoring Device PAC2200 Equipment Manual
+    publisher: Siemens
+    document_id: L1V30415167B-06
+    version: 12/2022
+    url: https://cache.industry.siemens.com/dl/files/835/109746835/att_1123515/v2/MAN_L1V30415167B-06_en_en-US.pdf
+    accessed: 2026-11-09
+    sha256: fa77d5328dcd82c2b43cbd7d93567129f411776c1e2c826f2b24a00eec9da6cf
+    notes: Appendix A.1.3, Modbus measured variables with the function codes 0x03 and 0x04; section 6.3 for the Modbus RTU defaults.
+registers:
+  - {key: voltage_l1_n, name: "Voltage L1-N", group: instantaneous, table: holding, address: 1, type: float32, unit: "V", access: r}
+  - {key: voltage_l2_n, name: "Voltage L2-N", group: instantaneous, table: holding, address: 3, type: float32, unit: "V", access: r}
+  - {key: voltage_l3_n, name: "Voltage L3-N", group: instantaneous, table: holding, address: 5, type: float32, unit: "V", access: r}
+  - {key: voltage_l1_l2, name: "Voltage L1-L2", group: instantaneous, table: holding, address: 7, type: float32, unit: "V", access: r}
+  - {key: voltage_l2_l3, name: "Voltage L2-L3", group: instantaneous, table: holding, address: 9, type: float32, unit: "V", access: r}
+  - {key: voltage_l3_l1, name: "Voltage L3-L1", group: instantaneous, table: holding, address: 11, type: float32, unit: "V", access: r}
+  - {key: current_l1, name: "Current L1", group: instantaneous, table: holding, address: 13, type: float32, unit: "A", access: r}
+  - {key: current_l2, name: "Current L2", group: instantaneous, table: holding, address: 15, type: float32, unit: "A", access: r}
+  - {key: current_l3, name: "Current L3", group: instantaneous, table: holding, address: 17, type: float32, unit: "A", access: r}
+  - {key: apparent_power_l1, name: "Apparent power L1", group: instantaneous, table: holding, address: 19, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_l2, name: "Apparent power L2", group: instantaneous, table: holding, address: 21, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_l3, name: "Apparent power L3", group: instantaneous, table: holding, address: 23, type: float32, unit: "VA", access: r}
+  - {key: active_power_l1, name: "Active power L1", group: instantaneous, table: holding, address: 25, type: float32, unit: "W", access: r}
+  - {key: active_power_l2, name: "Active power L2", group: instantaneous, table: holding, address: 27, type: float32, unit: "W", access: r}
+  - {key: active_power_l3, name: "Active power L3", group: instantaneous, table: holding, address: 29, type: float32, unit: "W", access: r}
+  - {key: reactive_power_l1, name: "Reactive power L1", group: instantaneous, table: holding, address: 31, type: float32, unit: "var", access: r}
+  - {key: reactive_power_l2, name: "Reactive power L2", group: instantaneous, table: holding, address: 33, type: float32, unit: "var", access: r}
+  - {key: reactive_power_l3, name: "Reactive power L3", group: instantaneous, table: holding, address: 35, type: float32, unit: "var", access: r}
+  - {key: power_factor_l1, name: "Power factor L1", group: instantaneous, table: holding, address: 37, type: float32, access: r}
+  - {key: power_factor_l2, name: "Power factor L2", group: instantaneous, table: holding, address: 39, type: float32, access: r}
+  - {key: power_factor_l3, name: "Power factor L3", group: instantaneous, table: holding, address: 41, type: float32, access: r}
+  - {key: frequency, name: "Frequency", group: instantaneous, table: holding, address: 55, type: float32, unit: "Hz", access: r}
+  - {key: average_voltage_l_n, name: "Average voltage L-N", group: instantaneous, table: holding, address: 57, type: float32, unit: "V", access: r}
+  - {key: average_voltage_l_l, name: "Average voltage L-L", group: instantaneous, table: holding, address: 59, type: float32, unit: "V", access: r}
+  - {key: average_current, name: "Average current", group: instantaneous, table: holding, address: 61, type: float32, unit: "A", access: r}
+  - {key: total_apparent_power, name: "Total apparent power", group: instantaneous, table: holding, address: 63, type: float32, unit: "VA", access: r}
+  - {key: total_active_power, name: "Total active power", group: instantaneous, table: holding, address: 65, type: float32, unit: "W", access: r}
+  - {key: total_reactive_power, name: "Total reactive power", group: instantaneous, table: holding, address: 67, type: float32, unit: "var", access: r}
+  - {key: total_power_factor, name: "Total power factor", group: instantaneous, table: holding, address: 69, type: float32, access: r}
+  - {key: current_n, name: "Neutral current", group: instantaneous, table: holding, address: 71, type: float32, unit: "A", access: r}
+  - {key: device_status, name: "Device diagnostics and device status", group: status, table: holding, address: 205, type: bitfield, length: 2, access: r}
+  - {key: digital_outputs_status, name: "Digital outputs status", group: status, table: holding, address: 207, type: bitfield, length: 2, access: r}
+  - {key: digital_inputs_status, name: "Digital inputs status", group: status, table: holding, address: 209, type: bitfield, length: 2, access: r}
+  - {key: active_tariff, name: "Active tariff", group: status, table: holding, address: 211, type: uint32, access: r, values: {"0": "Tariff 1", "1": "Tariff 2"}}
+  - {key: universal_counter, name: "Universal counter", group: counters, table: holding, address: 215, type: uint32, access: rw}
+  - {key: parameter_changes_relevant, name: "Relevant parameter changes counter", group: counters, table: holding, address: 217, type: uint32, access: r}
+  - {key: parameter_changes_all, name: "Counter all parameter changes", group: counters, table: holding, address: 219, type: uint32, access: r}
+  - {key: active_import_energy_t1, name: "Active energy import, tariff 1", group: energy, table: holding, address: 801, type: float64, unit: "Wh", access: r}
+  - {key: active_import_energy_t2, name: "Active energy import, tariff 2", group: energy, table: holding, address: 805, type: float64, unit: "Wh", access: r}
+  - {key: active_export_energy_t1, name: "Active energy export, tariff 1", group: energy, table: holding, address: 809, type: float64, unit: "Wh", access: r}
+  - {key: active_export_energy_t2, name: "Active energy export, tariff 2", group: energy, table: holding, address: 813, type: float64, unit: "Wh", access: r}
+  - {key: reactive_import_energy_t1, name: "Reactive energy import, tariff 1", group: energy, table: holding, address: 817, type: float64, unit: "varh", access: r}
+  - {key: reactive_import_energy_t2, name: "Reactive energy import, tariff 2", group: energy, table: holding, address: 821, type: float64, unit: "varh", access: r}
+  - {key: reactive_export_energy_t1, name: "Reactive energy export, tariff 1", group: energy, table: holding, address: 825, type: float64, unit: "varh", access: r}
+  - {key: reactive_export_energy_t2, name: "Reactive energy export, tariff 2", group: energy, table: holding, address: 829, type: float64, unit: "varh", access: r}
+  - {key: apparent_energy_t1, name: "Apparent energy, tariff 1", group: energy, table: holding, address: 833, type: float64, unit: "VAh", access: r}
+  - {key: apparent_energy_t2, name: "Apparent energy, tariff 2", group: energy, table: holding, address: 837, type: float64, unit: "VAh", access: r}
+  - {key: l1_active_import_energy_t1, name: "L1 active energy import, tariff 1", group: phase_energy, table: holding, address: 841, type: float64, unit: "Wh", access: r}
+  - {key: l1_active_import_energy_t2, name: "L1 active energy import, tariff 2", group: phase_energy, table: holding, address: 845, type: float64, unit: "Wh", access: r}
+  - {key: l1_active_export_energy_t1, name: "L1 active energy export, tariff 1", group: phase_energy, table: holding, address: 849, type: float64, unit: "Wh", access: r}
+  - {key: l1_active_export_energy_t2, name: "L1 active energy export, tariff 2", group: phase_energy, table: holding, address: 853, type: float64, unit: "Wh", access: r}
+  - {key: l1_reactive_import_energy_t1, name: "L1 reactive energy import, tariff 1", group: phase_energy, table: holding, address: 857, type: float64, unit: "varh", access: r}
+  - {key: l1_reactive_import_energy_t2, name: "L1 reactive energy import, tariff 2", group: phase_energy, table: holding, address: 861, type: float64, unit: "varh", access: r}
+  - {key: l1_reactive_export_energy_t1, name: "L1 reactive energy export, tariff 1", group: phase_energy, table: holding, address: 865, type: float64, unit: "varh", access: r}
+  - {key: l1_reactive_export_energy_t2, name: "L1 reactive energy export, tariff 2", group: phase_energy, table: holding, address: 869, type: float64, unit: "varh", access: r}
+  - {key: l1_apparent_energy_t1, name: "L1 apparent energy, tariff 1", group: phase_energy, table: holding, address: 873, type: float64, unit: "VAh", access: r}
+  - {key: l1_apparent_energy_t2, name: "L1 apparent energy, tariff 2", group: phase_energy, table: holding, address: 877, type: float64, unit: "VAh", access: r}
+  - {key: l2_active_import_energy_t1, name: "L2 active energy import, tariff 1", group: phase_energy, table: holding, address: 881, type: float64, unit: "Wh", access: r}
+  - {key: l2_active_import_energy_t2, name: "L2 active energy import, tariff 2", group: phase_energy, table: holding, address: 885, type: float64, unit: "Wh", access: r}
+  - {key: l2_active_export_energy_t1, name: "L2 active energy export, tariff 1", group: phase_energy, table: holding, address: 889, type: float64, unit: "Wh", access: r}
+  - {key: l2_active_export_energy_t2, name: "L2 active energy export, tariff 2", group: phase_energy, table: holding, address: 893, type: float64, unit: "Wh", access: r}
+  - {key: l2_reactive_import_energy_t1, name: "L2 reactive energy import, tariff 1", group: phase_energy, table: holding, address: 897, type: float64, unit: "varh", access: r}
+  - {key: l2_reactive_import_energy_t2, name: "L2 reactive energy import, tariff 2", group: phase_energy, table: holding, address: 901, type: float64, unit: "varh", access: r}
+  - {key: l2_reactive_export_energy_t1, name: "L2 reactive energy export, tariff 1", group: phase_energy, table: holding, address: 905, type: float64, unit: "varh", access: r}
+  - {key: l2_reactive_export_energy_t2, name: "L2 reactive energy export, tariff 2", group: phase_energy, table: holding, address: 909, type: float64, unit: "varh", access: r}
+  - {key: l2_apparent_energy_t1, name: "L2 apparent energy, tariff 1", group: phase_energy, table: holding, address: 913, type: float64, unit: "VAh", access: r}
+  - {key: l2_apparent_energy_t2, name: "L2 apparent energy, tariff 2", group: phase_energy, table: holding, address: 917, type: float64, unit: "VAh", access: r}
+  - {key: l3_active_import_energy_t1, name: "L3 active energy import, tariff 1", group: phase_energy, table: holding, address: 921, type: float64, unit: "Wh", access: r}
+  - {key: l3_active_import_energy_t2, name: "L3 active energy import, tariff 2", group: phase_energy, table: holding, address: 925, type: float64, unit: "Wh", access: r}
+  - {key: l3_active_export_energy_t1, name: "L3 active energy export, tariff 1", group: phase_energy, table: holding, address: 929, type: float64, unit: "Wh", access: r}
+  - {key: l3_active_export_energy_t2, name: "L3 active energy export, tariff 2", group: phase_energy, table: holding, address: 933, type: float64, unit: "Wh", access: r}
+  - {key: l3_reactive_import_energy_t1, name: "L3 reactive energy import, tariff 1", group: phase_energy, table: holding, address: 937, type: float64, unit: "varh", access: r}
+  - {key: l3_reactive_import_energy_t2, name: "L3 reactive energy import, tariff 2", group: phase_energy, table: holding, address: 941, type: float64, unit: "varh", access: r}
+  - {key: l3_reactive_export_energy_t1, name: "L3 reactive energy export, tariff 1", group: phase_energy, table: holding, address: 945, type: float64, unit: "varh", access: r}
+  - {key: l3_reactive_export_energy_t2, name: "L3 reactive energy export, tariff 2", group: phase_energy, table: holding, address: 949, type: float64, unit: "varh", access: r}
+  - {key: l3_apparent_energy_t1, name: "L3 apparent energy, tariff 1", group: phase_energy, table: holding, address: 953, type: float64, unit: "VAh", access: r}
+  - {key: l3_apparent_energy_t2, name: "L3 apparent energy, tariff 2", group: phase_energy, table: holding, address: 957, type: float64, unit: "VAh", access: r}
+  - {key: mid_secondary_active_import, name: "Secondary total active energy import (MID register)", group: energy, table: holding, address: 961, type: float64, unit: "Wh", access: r}
+  - {key: mid_secondary_active_export, name: "Secondary total active energy export (MID register)", group: energy, table: holding, address: 965, type: float64, unit: "Wh", access: r}

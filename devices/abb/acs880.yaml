@@ -1,0 +1,58 @@
+# Transcribed from ABB's firmware manual (revision Y); not yet checked against a drive.
+schema_version: 1
+vendor: ABB
+model: ACS880
+aliases: [ACS880-01, ACS880-04, ACS880-07, ACS880 primary control program, AINLX]
+category: vfd
+summary: ABB ACS880 industrial drive (primary control program AINLX) over the embedded fieldbus (EFB) Modbus RTU interface; control words and key 16-bit actual values.
+connection:
+  interfaces: [rtu]
+  default_unit_id: 1
+  default_byte_order: ABCD
+  serial_defaults: 19200 baud, 8 data bits, even parity, 1 stop bit
+  notes:
+    - Enable the EFB with 58.1 Protocol enable = Modbus RTU; node address is 58.3, baud rate 58.4, parity 58.5.
+    - The manual writes holding registers as 6-digit references (400001...); the address here is the reference minus 400001.
+    - Registers 400001-400006 hold the defaults of 58.101-58.106 Data I/O 1-6 and change if those are re-mapped.
+    - Parameter registers use 58.33 Addressing mode = Mode 0 (default), 16-bit access, register = 400000 + 100 x group + index; values use the parameter's 16-bit fieldbus scaling (FbEq 16b).
+    - 32-bit parameter access (420000 + 200 x group + 2 x index, word order 58.34, LO-HI by default) is not listed here.
+    - This manual covers the AINLX primary control program; drives with the UCU control board (YINLX) have a separate manual, 3AXD50001000998.
+    - Writing the control word or references moves the motor. Read-only access is the safe default.
+sources:
+  - title: ACS880 Primary control program Firmware manual (AINLX)
+    publisher: ABB
+    document_id: 3AUA0000085967
+    version: Revision Y, 2024-03-12
+    url: https://library.abb.com/d/3AUA0000085967
+    accessed: 2026-11-09
+    sha256: f5f3751af080c8b48325cb0e96dfc625380875079768631de30a793b5144934c
+    notes: Chapter "Fieldbus control through the embedded fieldbus interface (EFB)" (Modbus holding register addresses, error code registers), parameter 58.33 and the parameter listing (groups 1, 4, 5, 6, 46).
+registers:
+  - {key: control_word, name: "Control word (CW)", group: control, table: holding, address: 0, type: bitfield16, access: rw, notes: "Register 400001 by default (58.101 Data I/O 1). Bits per the ABB Drives profile control word, manual page 638."}
+  - {key: reference_1, name: "Reference 1 (REF1)", group: control, table: holding, address: 1, type: int16, access: rw, notes: "Register 400002 by default. ABB Drives profile: 20000 = the value of 46.1 (speed) or 46.2 (frequency), 10000 = 46.3 (torque) or 46.4 (power), as selected by 58.26."}
+  - {key: reference_2, name: "Reference 2 (REF2)", group: control, table: holding, address: 2, type: int16, access: rw, notes: "Register 400003 by default; scaled like reference 1, selected by 58.27."}
+  - {key: status_word, name: "Status word (SW)", group: status, table: holding, address: 3, type: bitfield16, access: r, notes: "Register 400004 by default. Bits per the ABB Drives profile status word, manual page 640."}
+  - {key: actual_value_1, name: "Actual value 1 (ACT1)", group: status, table: holding, address: 4, type: int16, access: r, notes: "Register 400005 by default; the signal and its scaling are selected by 58.28 and 58.31."}
+  - {key: actual_value_2, name: "Actual value 2 (ACT2)", group: status, table: holding, address: 5, type: int16, access: r, notes: "Register 400006 by default; selected by 58.29 and 58.32."}
+  - {key: reset_error_registers, name: "Reset error registers", group: diagnostics, table: holding, address: 89, type: uint16, access: rw, values: {"0": "Do nothing", "1": "Reset error registers 400091-400095"}}
+  - {key: error_function_code, name: "Function code of the failed query", group: diagnostics, table: holding, address: 90, type: uint16, access: r}
+  - {key: error_code, name: "Error code", group: diagnostics, table: holding, address: 91, type: uint16, access: r, values: {"0": "No error", "2": "Low/high limit exceeded", "3": "Faulty index", "5": "Incorrect data type", "101": "General error"}, notes: "Set when exception code 04h is generated. The manual lists the codes in hex (00h, 02h, 03h, 05h, 65h)."}
+  - {key: failed_register, name: "Failed register", group: diagnostics, table: holding, address: 92, type: uint16, access: r}
+  - {key: last_register_written, name: "Last register written successfully", group: diagnostics, table: holding, address: 93, type: uint16, access: r}
+  - {key: last_register_read, name: "Last register read successfully", group: diagnostics, table: holding, address: 94, type: uint16, access: r}
+  - {key: motor_speed_used, name: "Motor speed used", group: parameters, table: holding, address: 100, type: int16, unit: "rpm", access: r, notes: "Parameter 1.1, register 400101 (58.33 Mode 0, 16-bit). 20000 = the value of 46.1 Speed scaling."}
+  - {key: output_frequency, name: "Output frequency", group: parameters, table: holding, address: 105, type: int16, unit: "Hz", access: r, notes: "Parameter 1.6, register 400106 (58.33 Mode 0, 16-bit). 20000 = the value of 46.2 Frequency scaling."}
+  - {key: motor_current, name: "Motor current", group: parameters, table: holding, address: 106, type: uint16, unit: "A", access: r, notes: "Parameter 1.7, register 400107 (58.33 Mode 0, 16-bit). 10000 = the value of 46.5 Current scaling."}
+  - {key: motor_current_pct_motor_nom, name: "Motor current % of motor nominal", group: parameters, table: holding, address: 107, type: uint16, unit: "%", access: r, notes: "Parameter 1.8, register 400108 (58.33 Mode 0, 16-bit)."}
+  - {key: motor_torque, name: "Motor torque", group: parameters, table: holding, address: 109, type: int16, unit: "%", access: r, notes: "Parameter 1.10, register 400110 (58.33 Mode 0, 16-bit). 10000 = the value of 46.3 Torque scaling."}
+  - {key: dc_voltage, name: "DC voltage", group: parameters, table: holding, address: 110, type: uint16, scale: 0.1, unit: "V", access: r, notes: "Parameter 1.11, register 400111 (58.33 Mode 0, 16-bit)."}
+  - {key: output_voltage, name: "Output voltage", group: parameters, table: holding, address: 112, type: uint16, unit: "V", access: r, notes: "Parameter 1.13, register 400113 (58.33 Mode 0, 16-bit)."}
+  - {key: output_power, name: "Output power", group: parameters, table: holding, address: 113, type: int16, unit: "kW", access: r, notes: "Parameter 1.14, register 400114 (58.33 Mode 0, 16-bit). 10000 = the value of 46.4 Power scaling; unit set by 96.16."}
+  - {key: flux_actual, name: "Flux actual %", group: parameters, table: holding, address: 123, type: uint16, unit: "%", access: r, notes: "Parameter 1.24, register 400124 (58.33 Mode 0, 16-bit)."}
+  - {key: inu_cos_phi, name: "INU momentary cos phi", group: parameters, table: holding, address: 124, type: int16, scale: 0.01, access: r, notes: "Parameter 1.25, register 400125 (58.33 Mode 0, 16-bit)."}
+  - {key: tripping_fault, name: "Tripping fault", group: parameters, table: holding, address: 400, type: uint16, access: r, notes: "Parameter 4.1, register 400401 (58.33 Mode 0, 16-bit). Code of the active fault that caused the trip (shown in hex)."}
+  - {key: on_time_counter, name: "On-time counter", group: parameters, table: holding, address: 500, type: uint16, unit: "d", access: r, notes: "Parameter 5.1, register 400501 (58.33 Mode 0, 16-bit)."}
+  - {key: run_time_counter, name: "Run-time counter", group: parameters, table: holding, address: 501, type: uint16, unit: "d", access: r, notes: "Parameter 5.2, register 400502 (58.33 Mode 0, 16-bit)."}
+  - {key: inverter_temperature, name: "Inverter temperature", group: parameters, table: holding, address: 510, type: int16, unit: "%", access: r, notes: "Parameter 5.11, register 400511 (58.33 Mode 0, 16-bit). Percent of the fault limit; 0 % = 0 °C, 100 % = fault limit."}
+  - {key: main_control_word, name: "Main control word", group: parameters, table: holding, address: 600, type: bitfield16, access: r, notes: "Parameter 6.1, register 400601 (58.33 Mode 0, 16-bit)."}
+  - {key: main_status_word, name: "Main status word", group: parameters, table: holding, address: 610, type: bitfield16, access: r, notes: "Parameter 6.11, register 400611 (58.33 Mode 0, 16-bit)."}

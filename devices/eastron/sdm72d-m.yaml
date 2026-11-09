@@ -1,0 +1,191 @@
+# Transcribed from Eastron's protocol document; not yet checked against a meter.
+schema_version: 1
+vendor: Eastron
+model: SDM72D-M
+aliases: [SDM72DM, SDM72D-Modbus, SDM72D]
+category: energy-meter
+summary: Three-phase four-wire DIN-rail energy meter with RS485 Modbus RTU and a short register list; every value is a 32-bit float.
+connection:
+  interfaces: [rtu]
+  default_unit_id: 1
+  serial_defaults: 9600 baud, 8 data bits, no parity, 1 stop bit
+  notes:
+    - Read and write floats in register pairs (4 bytes per parameter).
+    - Up to 30 parameters per request.
+    - Write holding registers with function 16 (10h), one parameter per message.
+    - Neither document states the float word order; the user manual says the meter sets normal or reverse word order automatically.
+    - The SDM72DM-V2 has a longer register map in a different document; check yours before relying on this map.
+sources:
+  - title: SDM72D-M Modbus Protocol
+    publisher: Eastron
+    version: V1.1
+    url: https://docs.vekto.nl/media/eastron/eastron-sdm72dm-modbus-protocol-v1.1.pdf
+    accessed: 2026-11-09
+    sha256: 27a08af52a399b4f47e487e9550ace943472b6d3f51ed0a264e07f5c4fa5763a
+    notes: Copy hosted by Vekto, an Eastron reseller; Eastron publishes no copy that can be downloaded without a login.
+  - title: Eastron SDM72D-M User Manual
+    publisher: Eastron
+    version: V1.5
+    url: https://docs.vekto.nl/media/eastron/eastron-sdm72dm-user-manual-v1.5.pdf
+    accessed: 2026-11-09
+    sha256: 20eb31174b2229048ff409f0e1a7dcf7054a57c4a99a04c3599e32b9fe1020bc
+    notes: Copy hosted by Vekto. Part 3 repeats the register table and gives the 30-parameter read limit.
+registers:
+  - key: active_power_total
+    name: "Total system power"
+    group: power
+    table: input
+    address: 52
+    type: float32
+    unit: "W"
+    access: r
+
+  - key: import_active_energy
+    name: "Total import active energy"
+    group: energy
+    table: input
+    address: 72
+    type: float32
+    unit: "kWh"
+    access: r
+
+  - key: export_active_energy
+    name: "Total export active energy"
+    group: energy
+    table: input
+    address: 74
+    type: float32
+    unit: "kWh"
+    access: r
+
+  - key: total_active_energy
+    name: "Total active energy"
+    group: energy
+    table: input
+    address: 342
+    type: float32
+    unit: "kWh"
+    access: r
+    notes: "Import plus export."
+
+  - key: resettable_total_active_energy
+    name: "Resettable total active energy"
+    group: energy
+    table: input
+    address: 384
+    type: float32
+    unit: "kWh"
+    access: r
+    notes: "Import plus export."
+
+  - key: resettable_import_active_energy
+    name: "Resettable import active energy"
+    group: energy
+    table: input
+    address: 388
+    type: float32
+    unit: "kWh"
+    access: r
+
+  - key: resettable_export_active_energy
+    name: "Resettable export active energy"
+    group: energy
+    table: input
+    address: 390
+    type: float32
+    unit: "kWh"
+    access: r
+
+  - key: import_active_power_total
+    name: "Total import active power"
+    group: power
+    table: input
+    address: 1280
+    type: float32
+    unit: "W"
+    access: r
+
+  - key: export_active_power_total
+    name: "Total export active power"
+    group: power
+    table: input
+    address: 1282
+    type: float32
+    unit: "W"
+    access: r
+
+  - key: parity_stop
+    name: "Parity and stop bits"
+    group: setup
+    table: holding
+    address: 18
+    type: float32
+    access: rw
+    values:
+      "0": "1 stop bit, no parity"
+      "1": "1 stop bit, even parity"
+      "2": "1 stop bit, odd parity"
+      "3": "2 stop bits, no parity"
+    notes: "Default 0."
+
+  - key: modbus_address
+    name: "Modbus address"
+    group: setup
+    table: holding
+    address: 20
+    type: float32
+    access: rw
+    notes: "1 to 247, default 1."
+
+  - key: password
+    name: "Password"
+    group: setup
+    table: holding
+    address: 24
+    type: float32
+    access: rw
+    notes: "Password for protected registers; default 1000."
+
+  - key: baud_rate
+    name: "Network baud rate"
+    group: setup
+    table: holding
+    address: 28
+    type: float32
+    access: rw
+    values:
+      "0": "2400"
+      "1": "4800"
+      "2": "9600"
+      "5": "1200"
+    notes: "Default 2."
+
+  - key: scroll_time
+    name: "Automatic scroll display time"
+    group: setup
+    table: holding
+    address: 58
+    type: float32
+    unit: "s"
+    access: rw
+    notes: "0 to 30, default 0; 0 turns scrolling off."
+
+  - key: backlight_time
+    name: "Backlight time"
+    group: setup
+    table: holding
+    address: 60
+    type: float32
+    unit: "min"
+    access: rw
+    notes: "0 to 120, default 0; 0 keeps the backlight on."
+
+  - key: reset_resettable_energy
+    name: "Reset"
+    group: setup
+    table: holding
+    address: 61456
+    type: uint16
+    access: w
+    values:
+      "3": "Reset the resettable energy"

@@ -1,0 +1,52 @@
+# Transcribed from Danfoss's VLT AQUA Drive FC 202 programming guide and Modbus RTU operating instructions; not yet checked against a drive.
+schema_version: 1
+vendor: Danfoss
+model: VLT AQUA Drive FC 202
+aliases: [FC 202, FC202, VLT AQUA Drive]
+category: vfd
+summary: VLT AQUA Drive FC 202 built-in Modbus RTU; drive parameters are holding registers at parameter number x 10 minus 1.
+connection:
+  interfaces: [rtu]
+  default_byte_order: ABCD
+  notes:
+    - "Set 8-30 Protocol to Modbus RTU [2], 8-31 Address, 8-32 FC Port Baud Rate and 8-33 Parity / Stop Bits (default even parity, 1 stop bit) before connecting."
+    - "Every parameter is a holding register at parameter number x 10; the address sent on the wire is that register minus 1 (1-00 is register 1000, address 999 = 0x03E7 in the guide's example frame)."
+    - "32-bit parameters span two registers, high word first; read them with a count of 2."
+    - "Array parameters need the index written to holding register 9 first; none are listed here."
+    - "Writing parameters changes drive behaviour and can move the motor. Read-only access is the safe default."
+sources:
+  - title: Programming Guide VLT AQUA Drive FC 202
+    publisher: Danfoss A/S
+    document_id: AU361182657213en-002101 / 130R0338
+    version: "2024.06"
+    url: https://assets.danfoss.com/documents/397954/AU361182657213en-002101.pdf
+    accessed: 2026-11-09
+    sha256: 979342285fb0fb084c7d410628af98581220283f443f209236fe63f2178b5cdc
+    notes: Data type and conversion index of each parameter (group 16-** Data Readouts).
+  - title: Modbus RTU Operating Instructions
+    publisher: Danfoss A/S
+    document_id: MG92B102
+    url: https://assets.danfoss.com/documents/271338/AQ361181101347en-000101.pdf
+    accessed: 2026-11-09
+    sha256: 0d1331e3b6bcb306b0d7fed6f09562b514028961dcb404364238dbca94702e7d
+    notes: "Sections 4.1.12-4.1.18 and 6.1: parameter number x 10 rule, 32-bit byte mapping and example frames (1-00 at address 999, 3-03 at 3029, 1-24 at 1239). Written for the FC series with built-in Modbus RTU."
+registers:
+  - {key: control_word, name: "Control word (16-00)", group: status, table: holding, address: 15999, type: bitfield16, access: r, notes: "Parameter 16-00; register 16000, data type V2, conversion index 0."}
+  - {key: reference_pct, name: "Reference % (16-02)", group: status, table: holding, address: 16019, type: int16, scale: 0.1, unit: "%", access: r, notes: "Parameter 16-02; register 16020, data type Int16, conversion index -1."}
+  - {key: status_word, name: "Status word (16-03)", group: status, table: holding, address: 16029, type: bitfield16, access: r, notes: "Parameter 16-03; register 16030, data type V2, conversion index 0."}
+  - {key: motor_voltage, name: "Motor voltage (16-12)", group: motor, table: holding, address: 16119, type: uint16, scale: 0.1, unit: "V", access: r, notes: "Parameter 16-12; register 16120, data type Uint16, conversion index -1."}
+  - {key: output_frequency, name: "Frequency (16-13)", group: motor, table: holding, address: 16129, type: uint16, scale: 0.1, unit: "Hz", access: r, notes: "Parameter 16-13; register 16130, data type Uint16, conversion index -1."}
+  - {key: motor_current, name: "Motor current (16-14)", group: motor, table: holding, address: 16139, type: int32, scale: 0.01, unit: "A", access: r, notes: "Parameter 16-14; register 16140, data type Int32, conversion index -2."}
+  - {key: torque_nm, name: "Torque [Nm] (16-16)", group: motor, table: holding, address: 16159, type: int32, scale: 0.1, unit: "Nm", access: r, notes: "Parameter 16-16; register 16160, data type Int32, conversion index -1."}
+  - {key: motor_thermal, name: "Motor thermal (16-18)", group: motor, table: holding, address: 16179, type: uint16, unit: "%", access: r, notes: "Parameter 16-18; register 16180, data type Uint8, conversion index 0. Uint8 parameters fill one register."}
+  - {key: torque_pct, name: "Torque [%] (16-22)", group: motor, table: holding, address: 16219, type: int16, unit: "%", access: r, notes: "Parameter 16-22; register 16220, data type Int16, conversion index 0."}
+  - {key: dc_link_voltage, name: "DC link voltage (16-30)", group: drive, table: holding, address: 16299, type: uint16, unit: "V", access: r, notes: "Parameter 16-30; register 16300, data type Uint16, conversion index 0."}
+  - {key: inverter_thermal, name: "Inverter thermal (16-35)", group: drive, table: holding, address: 16349, type: uint16, unit: "%", access: r, notes: "Parameter 16-35; register 16350, data type Uint8, conversion index 0. Uint8 parameters fill one register."}
+  - {key: inverter_nominal_current, name: "Inverter nominal current (16-36)", group: drive, table: holding, address: 16359, type: uint32, scale: 0.01, unit: "A", access: r, notes: "Parameter 16-36; register 16360, data type Uint32, conversion index -2."}
+  - {key: inverter_max_current, name: "Inverter maximum current (16-37)", group: drive, table: holding, address: 16369, type: uint32, scale: 0.01, unit: "A", access: r, notes: "Parameter 16-37; register 16370, data type Uint32, conversion index -2."}
+  - {key: digital_inputs, name: "Digital input (16-60)", group: io, table: holding, address: 16599, type: uint16, access: r, notes: "Parameter 16-60; register 16600, data type Uint16, conversion index 0."}
+  - {key: alarm_word, name: "Alarm word (16-90)", group: diagnostics, table: holding, address: 16899, type: uint32, access: r, notes: "Parameter 16-90; register 16900, data type Uint32, conversion index 0."}
+  - {key: alarm_word_2, name: "Alarm word 2 (16-91)", group: diagnostics, table: holding, address: 16909, type: uint32, access: r, notes: "Parameter 16-91; register 16910, data type Uint32, conversion index 0."}
+  - {key: warning_word, name: "Warning word (16-92)", group: diagnostics, table: holding, address: 16919, type: uint32, access: r, notes: "Parameter 16-92; register 16920, data type Uint32, conversion index 0."}
+  - {key: warning_word_2, name: "Warning word 2 (16-93)", group: diagnostics, table: holding, address: 16929, type: uint32, access: r, notes: "Parameter 16-93; register 16930, data type Uint32, conversion index 0."}
+  - {key: ext_status_word, name: "Extended status word (16-94)", group: diagnostics, table: holding, address: 16939, type: uint32, access: r, notes: "Parameter 16-94; register 16940, data type Uint32, conversion index 0."}

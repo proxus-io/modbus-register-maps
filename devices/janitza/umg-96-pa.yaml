@@ -1,0 +1,81 @@
+# Transcribed from Janitza's Modbus address list; not yet checked against a meter.
+schema_version: 1
+vendor: Janitza
+model: UMG 96-PA
+aliases: [UMG 96-PA-MID+, UMG 96-PAMID+, UMG96PA]
+category: power-analyzer
+summary: Janitza UMG 96-PA panel power analyser (firmware 3.54 and later); 32-bit float readings from the common 19000 block.
+connection:
+  interfaces: [rtu]
+  default_byte_order: ABCD
+  serial_defaults: 9600 to 115200 baud, 8 data bits; 1 stop bit with no, even or odd parity, or 2 stop bits with no parity
+  notes:
+    - "Addresses are the list's register numbers, sent unchanged: Janitza's UMG address lists number from register 0 and give no example frame."
+    - "Only the float block of frequently required readings (19000-19120) is transcribed; the list repeats many of these values at other addresses, as floats and as scaled shorts."
+    - "Function 03 and 04 both read these registers; floats are big-endian (ABCD). The list says adding 32768 to an address returns the same value little-endian."
+    - "Float and integer values include the configured current and voltage transformer ratios."
+    - "Left out 19054-19058 and 19086-19092: the list labels them as duplicates of neighbouring registers (consumed energy, inductive reactive energy), so their meaning is unclear."
+sources:
+  - title: "UMG 96-PA, UMG 96-PAMID+ Modbus-address list and Formulary (from firmware 3.54)"
+    publisher: Janitza electronics GmbH
+    document_id: "2.061.029.3.e"
+    version: "12/2025"
+    url: https://assets.janitza.com/ce18jq9ih0x6/75730e79d6b9bb7b43018d/f90faad4edfd24d91b2db81eee1a4791/janitza-mal-umg96pa-fw3-en.zip
+    accessed: 2026-11-09
+    sha256: 7f26a760838175015ce6ab44c4938ecbd9b337ccedec457ea799e3c3d0bcba1e
+    notes: "SHA-256 is of the ZIP; transcribed from 20610293e-mal-umg96pa-fw3-en.pdf inside it, section \"Frequently required measured values\", pages 12-13."
+registers:
+  - {key: voltage_l1_n, name: "Voltage L1-N", group: voltage, table: holding, address: 19000, type: float32, unit: "V", access: r}
+  - {key: voltage_l2_n, name: "Voltage L2-N", group: voltage, table: holding, address: 19002, type: float32, unit: "V", access: r}
+  - {key: voltage_l3_n, name: "Voltage L3-N", group: voltage, table: holding, address: 19004, type: float32, unit: "V", access: r}
+  - {key: voltage_l1_l2, name: "Voltage L1-L2", group: voltage, table: holding, address: 19006, type: float32, unit: "V", access: r}
+  - {key: voltage_l2_l3, name: "Voltage L2-L3", group: voltage, table: holding, address: 19008, type: float32, unit: "V", access: r}
+  - {key: voltage_l3_l1, name: "Voltage L3-L1", group: voltage, table: holding, address: 19010, type: float32, unit: "V", access: r}
+  - {key: current_l1, name: "Current, L1", group: current, table: holding, address: 19012, type: float32, unit: "A", access: r}
+  - {key: current_l2, name: "Current, L2", group: current, table: holding, address: 19014, type: float32, unit: "A", access: r}
+  - {key: current_l3, name: "Current, L3", group: current, table: holding, address: 19016, type: float32, unit: "A", access: r}
+  - {key: current_vector_sum, name: "Vector sum, IN=I1+I2+I3", group: current, table: holding, address: 19018, type: float32, unit: "A", access: r}
+  - {key: active_power_l1, name: "Real power L1", group: power, table: holding, address: 19020, type: float32, unit: "W", access: r}
+  - {key: active_power_l2, name: "Real power L2", group: power, table: holding, address: 19022, type: float32, unit: "W", access: r}
+  - {key: active_power_l3, name: "Real power L3", group: power, table: holding, address: 19024, type: float32, unit: "W", access: r}
+  - {key: active_power_total, name: "Sum, Psum3=P1+P2+P3", group: power, table: holding, address: 19026, type: float32, unit: "W", access: r}
+  - {key: apparent_power_l1, name: "Apparent power L1", group: power, table: holding, address: 19028, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_l2, name: "Apparent power L2", group: power, table: holding, address: 19030, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_l3, name: "Apparent power L3", group: power, table: holding, address: 19032, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_total, name: "Sum, Ssum3=S1+S2+S3", group: power, table: holding, address: 19034, type: float32, unit: "VA", access: r}
+  - {key: reactive_power_l1, name: "Reactive power (mains frequ.) L1", group: power, table: holding, address: 19036, type: float32, unit: "var", access: r}
+  - {key: reactive_power_l2, name: "Reactive power (mains frequ.) L2", group: power, table: holding, address: 19038, type: float32, unit: "var", access: r}
+  - {key: reactive_power_l3, name: "Reactive power (mains frequ.) L3", group: power, table: holding, address: 19040, type: float32, unit: "var", access: r}
+  - {key: reactive_power_total, name: "Sum, Qsum3=Q1+Q2+Q3", group: power, table: holding, address: 19042, type: float32, unit: "var", access: r}
+  - {key: cos_phi_l1, name: "Power factor fundamental oscill., Cos(ϕ), UL1 IL1", group: power_factor, table: holding, address: 19044, type: float32, access: r}
+  - {key: cos_phi_l2, name: "Power factor fundamental oscill., Cos(ϕ),, UL2 IL2", group: power_factor, table: holding, address: 19046, type: float32, access: r}
+  - {key: cos_phi_l3, name: "Power factor fundamental oscill., Cos(ϕ),, UL3 IL3", group: power_factor, table: holding, address: 19048, type: float32, access: r}
+  - {key: frequency, name: "Measured frequency", group: frequency, table: holding, address: 19050, type: float32, unit: "Hz", access: r}
+  - {key: rotation_field, name: "Rotation field, 1=right, 0=none, -1=left", group: status, table: holding, address: 19052, type: float32, access: r, values: {"1": "right", "0": "none", "-1": "left"}}
+  - {key: active_energy_total, name: "Real energy L1..L3", group: energy, table: holding, address: 19060, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_consumed_l1, name: "Real energy L1, consumed", group: energy, table: holding, address: 19062, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_consumed_l2, name: "Real energy L2, consumed", group: energy, table: holding, address: 19064, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_consumed_l3, name: "Real energy L3, consumed", group: energy, table: holding, address: 19066, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_consumed_total_rate_1, name: "Real energy L1..L3, consumed, rate 1", group: energy, table: holding, address: 19068, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_delivered_l1, name: "Real energy L1, delivered", group: energy, table: holding, address: 19070, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_delivered_l2, name: "Real energy L2, delivered", group: energy, table: holding, address: 19072, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_delivered_l3, name: "Real energy L3, delivered", group: energy, table: holding, address: 19074, type: float32, unit: "Wh", access: r}
+  - {key: active_energy_delivered_total, name: "Real energy L1..L3, delivered", group: energy, table: holding, address: 19076, type: float32, unit: "Wh", access: r}
+  - {key: apparent_energy_l1, name: "Apparent energy L1", group: energy, table: holding, address: 19078, type: float32, unit: "VAh", access: r}
+  - {key: apparent_energy_l2, name: "Apparent energy L2", group: energy, table: holding, address: 19080, type: float32, unit: "VAh", access: r}
+  - {key: apparent_energy_l3, name: "Apparent energy L3", group: energy, table: holding, address: 19082, type: float32, unit: "VAh", access: r}
+  - {key: apparent_energy_total, name: "Apparent energy L1..L3", group: energy, table: holding, address: 19084, type: float32, unit: "VAh", access: r}
+  - {key: reactive_energy_inductive_l1, name: "Reactive energy, inductive, L1", group: energy, table: holding, address: 19094, type: float32, unit: "varh", access: r}
+  - {key: reactive_energy_inductive_l2, name: "Reactive energy, inductive, L2", group: energy, table: holding, address: 19096, type: float32, unit: "varh", access: r}
+  - {key: reactive_energy_inductive_l3, name: "Reactive energy, inductive, L3", group: energy, table: holding, address: 19098, type: float32, unit: "varh", access: r}
+  - {key: reactive_energy_inductive_total, name: "Reactive energy L1..L3, ind.", group: energy, table: holding, address: 19100, type: float32, unit: "varh", access: r}
+  - {key: reactive_energy_capacitive_l1, name: "Reactive energy, capacitive, L1", group: energy, table: holding, address: 19102, type: float32, unit: "varh", access: r}
+  - {key: reactive_energy_capacitive_l2, name: "Reactive energy, capacitive, L2", group: energy, table: holding, address: 19104, type: float32, unit: "varh", access: r}
+  - {key: reactive_energy_capacitive_l3, name: "Reactive energy, capacitive, L3", group: energy, table: holding, address: 19106, type: float32, unit: "varh", access: r}
+  - {key: reactive_energy_capacitive_total, name: "Reactive energy L1..L3, cap.", group: energy, table: holding, address: 19108, type: float32, unit: "varh", access: r}
+  - {key: thd_voltage_l1_n, name: "Harmonic, THD,U L1-N", group: harmonics, table: holding, address: 19110, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l2_n, name: "Harmonic, THD,U L2-N", group: harmonics, table: holding, address: 19112, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l3_n, name: "Harmonic, THD,U L3-N", group: harmonics, table: holding, address: 19114, type: float32, unit: "%", access: r}
+  - {key: thd_current_l1, name: "Harmonic, THD,I L1", group: harmonics, table: holding, address: 19116, type: float32, unit: "%", access: r}
+  - {key: thd_current_l2, name: "Harmonic, THD,I L2", group: harmonics, table: holding, address: 19118, type: float32, unit: "%", access: r}
+  - {key: thd_current_l3, name: "Harmonic, THD,I L3", group: harmonics, table: holding, address: 19120, type: float32, unit: "%", access: r}

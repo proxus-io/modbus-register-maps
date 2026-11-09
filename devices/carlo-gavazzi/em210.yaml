@@ -1,0 +1,695 @@
+# Transcribed from Carlo Gavazzi's protocol document; not yet checked against a meter.
+schema_version: 1
+vendor: Carlo Gavazzi
+model: EM210
+aliases: [EM210 AV, EM210_AV]
+category: energy-meter
+summary: Three-phase energy meter with RS485 Modbus RTU; scaled integers, low word first.
+connection:
+  interfaces: [rtu]
+  default_unit_id: 1
+  default_byte_order: CDAB
+  max_registers_per_read: 61
+  serial_defaults: 9600 baud, 8 data bits, no parity, 1 stop bit
+  notes:
+    - Function codes 03 and 04 return the same values; input registers here can also be read as holding registers.
+    - 32-bit values are sent low word first (LSW, MSW); bytes inside each word are high byte first.
+    - Up to 61 registers per read; firmware, lock and identification registers are read one word at a time.
+    - THD, neutral current and hour counters need firmware A.5 or later; the wrong-connection registers need A.6.
+    - Phase 2 and 3 values read as 0 when the meter is set to a 1-phase or 2-phase system.
+    - Frequency (0033h) is left out because the document gives its weight as Hz where sibling meters use Hz*10.
+sources:
+  - title: EM210 Communication Protocol
+    publisher: Carlo Gavazzi
+    version: Version 4 Revision 3 (May 10, 2018)
+    url: https://www.gavazziautomation.com/fileadmin/images/PIM/OTHERSTUFF/COMPRO/EM210_CP.pdf
+    accessed: 2026-11-09
+    sha256: b1edeb5732c21bf32abf938c3848f3a4b247fca45b0e4551f35f0dbc5cd51dbc
+registers:
+  - key: voltage_l1_n
+    name: "Phase 1 line to neutral voltage"
+    group: voltage
+    table: input
+    address: 0
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l2_n
+    name: "Phase 2 line to neutral voltage"
+    group: voltage
+    table: input
+    address: 2
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l3_n
+    name: "Phase 3 line to neutral voltage"
+    group: voltage
+    table: input
+    address: 4
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l1_l2
+    name: "Line 1 to line 2 voltage"
+    group: voltage
+    table: input
+    address: 6
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l2_l3
+    name: "Line 2 to line 3 voltage"
+    group: voltage
+    table: input
+    address: 8
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l3_l1
+    name: "Line 3 to line 1 voltage"
+    group: voltage
+    table: input
+    address: 10
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: current_l1
+    name: "Phase 1 current"
+    group: current
+    table: input
+    address: 12
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: current_l2
+    name: "Phase 2 current"
+    group: current
+    table: input
+    address: 14
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: current_l3
+    name: "Phase 3 current"
+    group: current
+    table: input
+    address: 16
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: active_power_l1
+    name: "Phase 1 active power"
+    group: power
+    table: input
+    address: 18
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: active_power_l2
+    name: "Phase 2 active power"
+    group: power
+    table: input
+    address: 20
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: active_power_l3
+    name: "Phase 3 active power"
+    group: power
+    table: input
+    address: 22
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: apparent_power_l1
+    name: "Phase 1 apparent power"
+    group: power
+    table: input
+    address: 24
+    type: int32
+    scale: 0.1
+    unit: "VA"
+    access: r
+
+  - key: apparent_power_l2
+    name: "Phase 2 apparent power"
+    group: power
+    table: input
+    address: 26
+    type: int32
+    scale: 0.1
+    unit: "VA"
+    access: r
+
+  - key: apparent_power_l3
+    name: "Phase 3 apparent power"
+    group: power
+    table: input
+    address: 28
+    type: int32
+    scale: 0.1
+    unit: "VA"
+    access: r
+
+  - key: reactive_power_l1
+    name: "Phase 1 reactive power"
+    group: power
+    table: input
+    address: 30
+    type: int32
+    scale: 0.1
+    unit: "var"
+    access: r
+
+  - key: reactive_power_l2
+    name: "Phase 2 reactive power"
+    group: power
+    table: input
+    address: 32
+    type: int32
+    scale: 0.1
+    unit: "var"
+    access: r
+
+  - key: reactive_power_l3
+    name: "Phase 3 reactive power"
+    group: power
+    table: input
+    address: 34
+    type: int32
+    scale: 0.1
+    unit: "var"
+    access: r
+
+  - key: voltage_l_n_sys
+    name: "System line to neutral voltage"
+    group: voltage
+    table: input
+    address: 36
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l_l_sys
+    name: "System line to line voltage"
+    group: voltage
+    table: input
+    address: 38
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: active_power_total
+    name: "System active power"
+    group: power
+    table: input
+    address: 40
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: apparent_power_total
+    name: "System apparent power"
+    group: power
+    table: input
+    address: 42
+    type: int32
+    scale: 0.1
+    unit: "VA"
+    access: r
+
+  - key: reactive_power_total
+    name: "System reactive power"
+    group: power
+    table: input
+    address: 44
+    type: int32
+    scale: 0.1
+    unit: "var"
+    access: r
+
+  - key: power_factor_l1
+    name: "Phase 1 power factor"
+    group: power
+    table: input
+    address: 46
+    type: int16
+    scale: 0.001
+    access: r
+    notes: "Negative values mean exported active power, positive imported; same for every power factor register."
+
+  - key: power_factor_l2
+    name: "Phase 2 power factor"
+    group: power
+    table: input
+    address: 47
+    type: int16
+    scale: 0.001
+    access: r
+
+  - key: power_factor_l3
+    name: "Phase 3 power factor"
+    group: power
+    table: input
+    address: 48
+    type: int16
+    scale: 0.001
+    access: r
+
+  - key: power_factor_total
+    name: "System power factor"
+    group: power
+    table: input
+    address: 49
+    type: int16
+    scale: 0.001
+    access: r
+
+  - key: phase_sequence
+    name: "Phase sequence"
+    group: status
+    table: input
+    address: 50
+    type: int16
+    access: r
+    values:
+      "-1": "L1-L3-L2"
+      "0": "L1-L2-L3"
+    notes: "Meaningful only in 3-phase systems."
+
+  - key: import_active_energy
+    name: "Total imported active energy"
+    group: energy
+    table: input
+    address: 52
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: import_reactive_energy
+    name: "Total imported reactive energy"
+    group: energy
+    table: input
+    address: 54
+    type: int32
+    scale: 0.1
+    unit: "kvarh"
+    access: r
+
+  - key: export_active_energy
+    name: "Total exported active energy"
+    group: energy
+    table: input
+    address: 78
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: run_hours
+    name: "Hour counter"
+    group: energy
+    table: input
+    address: 90
+    type: int32
+    scale: 0.01
+    unit: "h"
+    access: r
+
+  - key: run_hours_negative
+    name: "Hour counter, negative"
+    group: energy
+    table: input
+    address: 92
+    type: int32
+    scale: 0.01
+    unit: "h"
+    access: r
+
+  - key: thd_current_l1
+    name: "Phase 1 current THD"
+    group: harmonics
+    table: input
+    address: 130
+    type: int32
+    scale: 0.01
+    unit: "%"
+    access: r
+
+  - key: thd_current_l2
+    name: "Phase 2 current THD"
+    group: harmonics
+    table: input
+    address: 132
+    type: int32
+    scale: 0.01
+    unit: "%"
+    access: r
+
+  - key: thd_current_l3
+    name: "Phase 3 current THD"
+    group: harmonics
+    table: input
+    address: 134
+    type: int32
+    scale: 0.01
+    unit: "%"
+    access: r
+
+  - key: thd_voltage_l1_n
+    name: "Phase 1 line to neutral voltage THD"
+    group: harmonics
+    table: input
+    address: 138
+    type: int32
+    scale: 0.01
+    unit: "%"
+    access: r
+
+  - key: thd_voltage_l2_n
+    name: "Phase 2 line to neutral voltage THD"
+    group: harmonics
+    table: input
+    address: 140
+    type: int32
+    scale: 0.01
+    unit: "%"
+    access: r
+
+  - key: thd_voltage_l3_n
+    name: "Phase 3 line to neutral voltage THD"
+    group: harmonics
+    table: input
+    address: 142
+    type: int32
+    scale: 0.01
+    unit: "%"
+    access: r
+
+  - key: thd_voltage_l1_l2
+    name: "Line 1 to line 2 voltage THD"
+    group: harmonics
+    table: input
+    address: 146
+    type: int32
+    scale: 0.01
+    unit: "%"
+    access: r
+
+  - key: thd_voltage_l2_l3
+    name: "Line 2 to line 3 voltage THD"
+    group: harmonics
+    table: input
+    address: 148
+    type: int32
+    scale: 0.01
+    unit: "%"
+    access: r
+
+  - key: thd_voltage_l3_l1
+    name: "Line 3 to line 1 voltage THD"
+    group: harmonics
+    table: input
+    address: 150
+    type: int32
+    scale: 0.01
+    unit: "%"
+    access: r
+
+  - key: current_n
+    name: "Neutral current (calculated)"
+    group: current
+    table: input
+    address: 152
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: version_code
+    name: "Version code"
+    group: info
+    table: input
+    address: 770
+    type: uint16
+    access: r
+    notes: "0 = version A, 1 = version B, and so on."
+
+  - key: revision_code
+    name: "Revision code"
+    group: info
+    table: input
+    address: 771
+    type: uint16
+    access: r
+
+  - key: programming_lock
+    name: "Programming lock"
+    group: status
+    table: input
+    address: 772
+    type: uint16
+    access: r
+    values:
+      "0": "Unlocked"
+      "1": "Locked"
+    notes: "Trimmer on the rear of the display."
+
+  - key: password
+    name: "Password"
+    group: setup
+    table: holding
+    address: 4096
+    type: uint16
+    access: rw
+    notes: "0 to 999, default 0."
+
+  - key: measuring_system
+    name: "Measuring system"
+    group: setup
+    table: holding
+    address: 4098
+    type: uint16
+    access: rw
+    values:
+      "0": "3Pn"
+      "1": "3P"
+      "2": "2P"
+      "3": "1P"
+      "4": "3P1"
+    notes: "Default 3Pn."
+
+  - key: ct_ratio
+    name: "Current transformer ratio"
+    group: setup
+    table: holding
+    address: 4099
+    type: uint32
+    scale: 0.1
+    access: rw
+    notes: "Raw 10 to 9990 (CT ratio 1.0 to 999.0), default 10."
+
+  - key: vt_ratio
+    name: "Voltage transformer ratio"
+    group: setup
+    table: holding
+    address: 4101
+    type: uint32
+    scale: 0.1
+    access: rw
+    notes: "Raw 10 to 9990 (VT ratio 1.0 to 999.0), default 10."
+
+  - key: pulse_duration
+    name: "Pulse output duration"
+    group: setup
+    table: holding
+    address: 4114
+    type: uint16
+    access: rw
+    values:
+      "0": "30 ms"
+      "1": "100 ms"
+    notes: "Default 0."
+
+  - key: pulse_weight
+    name: "Energy per pulse"
+    group: setup
+    table: holding
+    address: 4128
+    type: uint16
+    scale: 0.01
+    unit: "kWh"
+    access: rw
+    notes: "Raw 1 to 999 (0.01 to 9.99 kWh), default 1."
+
+  - key: wrong_connection_enable
+    name: "Wrong connection detection"
+    group: setup
+    table: holding
+    address: 4356
+    type: uint16
+    access: rw
+    values:
+      "0": "On"
+      "1": "Off"
+    notes: "Any other value means on."
+
+  - key: wrong_connection_status
+    name: "Wrong connection status"
+    group: status
+    table: holding
+    address: 4357
+    type: bitfield16
+    access: r
+    notes: "Bit 0 wrong voltage sequence; bits 1-3 phase 1, 2, 3 inverted; bit 4 phases 1-2 exchanged; bit 5 phases 1-3; bit 6 phases 2-3; bit 7 phases 1, 2, 3 exchanged."
+
+  - key: thd_enable
+    name: "THD calculation"
+    group: setup
+    table: holding
+    address: 4358
+    type: uint16
+    access: rw
+    values:
+      "0": "Off"
+      "1": "On"
+    notes: "Default 1."
+
+  - key: hour_counter_start_current
+    name: "Start current for hour counting"
+    group: setup
+    table: holding
+    address: 4359
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: rw
+    notes: "Raw 10 to 6000, default 10."
+
+  - key: application
+    name: "Type of application"
+    group: setup
+    table: holding
+    address: 4864
+    type: uint16
+    access: rw
+    values:
+      "0": "A"
+      "1": "B"
+      "2": "C"
+      "3": "D"
+      "4": "E"
+      "5": "F"
+    notes: "Default C."
+
+  - key: modbus_address
+    name: "RS485 instrument address"
+    group: setup
+    table: holding
+    address: 8192
+    type: uint16
+    access: rw
+    notes: "1 to 247."
+
+  - key: baud_rate
+    name: "RS485 baud rate"
+    group: setup
+    table: holding
+    address: 8193
+    type: uint16
+    access: rw
+    values:
+      "0": "9600"
+      "1": "19200"
+      "2": "38400"
+      "3": "57600"
+      "4": "115200"
+    notes: "Default 0."
+
+  - key: parity
+    name: "RS485 parity"
+    group: setup
+    table: holding
+    address: 8194
+    type: uint16
+    access: rw
+    values:
+      "0": "None"
+      "1": "Even"
+
+  - key: stop_bits
+    name: "RS485 stop bits"
+    group: setup
+    table: holding
+    address: 8195
+    type: uint16
+    access: rw
+    values:
+      "0": "1"
+      "1": "2"
+
+  - key: reset_meters
+    name: "Reset energy meters and hour counters"
+    group: setup
+    table: holding
+    address: 16384
+    type: uint16
+    access: rw
+    values:
+      "0": "Command running"
+      "1": "Execute"
+
+  - key: serial_number
+    name: "Serial number"
+    group: info
+    table: input
+    address: 20480
+    type: string
+    length: 7
+    access: r
+    notes: "Two ASCII characters per register, high byte first."
+
+  - key: production_year
+    name: "Production year"
+    group: info
+    table: input
+    address: 20487
+    type: uint16
+    access: r
+
+  - key: secondary_address
+    name: "Instrument secondary address"
+    group: info
+    table: input
+    address: 20736
+    type: uint32
+    access: r

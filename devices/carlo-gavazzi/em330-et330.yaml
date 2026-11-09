@@ -1,0 +1,790 @@
+# Transcribed from Carlo Gavazzi's protocol document; not yet checked against a meter.
+schema_version: 1
+vendor: Carlo Gavazzi
+model: EM330/ET330
+aliases: [EM330, ET330, EM330-DIN, ET330-DIN]
+category: energy-meter
+summary: Three-phase EM330 and ET330 energy meters with RS485 Modbus RTU; scaled integers, low word first.
+connection:
+  interfaces: [rtu]
+  default_unit_id: 1
+  default_byte_order: CDAB
+  max_registers_per_read: 50
+  serial_defaults: 9600 baud, 8 data bits, no parity, 1 stop bit
+  notes:
+    - Function codes 03 and 04 return the same values; input registers here can also be read as holding registers.
+    - 32-bit values are sent low word first (LSW, MSW); bytes inside each word are high byte first.
+    - Up to 50 registers per read.
+    - Registers 00F6h to 01A9h repeat the same values grouped by phase and are not listed.
+    - The THD registers are marked not available and are left out.
+    - Reading a setup address not listed in the document returns an illegal data address exception.
+    - The 64-bit totalizers at 0500h (EM330 from October 2018) are left out; their LSW-first word order has no byte_order code here.
+    - Run hour meter and neutral current are available on the EM330 and the ET330.
+variants: [EM330, ET330]
+sources:
+  - title: EM300 Series and ET300 Series Communication Protocol
+    publisher: Carlo Gavazzi
+    version: Version 2 Revision 17 (July 5, 2021)
+    url: https://www.gavazziautomation.com/fileadmin/images/PIM/OTHERSTUFF/COMPRO/EM330_EM340_ET330_ET340_CP.pdf
+    accessed: 2026-11-09
+    sha256: df1a113bd360af4189cced7a369c59ebc3c59ee94991f91c2ff92945c2bc2b7d
+    notes: One document for EM330, EM340, ET330 and ET340.
+registers:
+  - key: voltage_l1_n
+    name: "Phase 1 line to neutral voltage"
+    group: voltage
+    table: input
+    address: 0
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l2_n
+    name: "Phase 2 line to neutral voltage"
+    group: voltage
+    table: input
+    address: 2
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l3_n
+    name: "Phase 3 line to neutral voltage"
+    group: voltage
+    table: input
+    address: 4
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l1_l2
+    name: "Line 1 to line 2 voltage"
+    group: voltage
+    table: input
+    address: 6
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l2_l3
+    name: "Line 2 to line 3 voltage"
+    group: voltage
+    table: input
+    address: 8
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l3_l1
+    name: "Line 3 to line 1 voltage"
+    group: voltage
+    table: input
+    address: 10
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: current_l1
+    name: "Phase 1 current"
+    group: current
+    table: input
+    address: 12
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: current_l2
+    name: "Phase 2 current"
+    group: current
+    table: input
+    address: 14
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: current_l3
+    name: "Phase 3 current"
+    group: current
+    table: input
+    address: 16
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: active_power_l1
+    name: "Phase 1 active power"
+    group: power
+    table: input
+    address: 18
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: active_power_l2
+    name: "Phase 2 active power"
+    group: power
+    table: input
+    address: 20
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: active_power_l3
+    name: "Phase 3 active power"
+    group: power
+    table: input
+    address: 22
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: apparent_power_l1
+    name: "Phase 1 apparent power"
+    group: power
+    table: input
+    address: 24
+    type: int32
+    scale: 0.1
+    unit: "VA"
+    access: r
+
+  - key: apparent_power_l2
+    name: "Phase 2 apparent power"
+    group: power
+    table: input
+    address: 26
+    type: int32
+    scale: 0.1
+    unit: "VA"
+    access: r
+
+  - key: apparent_power_l3
+    name: "Phase 3 apparent power"
+    group: power
+    table: input
+    address: 28
+    type: int32
+    scale: 0.1
+    unit: "VA"
+    access: r
+
+  - key: reactive_power_l1
+    name: "Phase 1 reactive power"
+    group: power
+    table: input
+    address: 30
+    type: int32
+    scale: 0.1
+    unit: "var"
+    access: r
+
+  - key: reactive_power_l2
+    name: "Phase 2 reactive power"
+    group: power
+    table: input
+    address: 32
+    type: int32
+    scale: 0.1
+    unit: "var"
+    access: r
+
+  - key: reactive_power_l3
+    name: "Phase 3 reactive power"
+    group: power
+    table: input
+    address: 34
+    type: int32
+    scale: 0.1
+    unit: "var"
+    access: r
+
+  - key: voltage_l_n_sys
+    name: "System line to neutral voltage"
+    group: voltage
+    table: input
+    address: 36
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: voltage_l_l_sys
+    name: "System line to line voltage"
+    group: voltage
+    table: input
+    address: 38
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: active_power_total
+    name: "System active power"
+    group: power
+    table: input
+    address: 40
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: apparent_power_total
+    name: "System apparent power"
+    group: power
+    table: input
+    address: 42
+    type: int32
+    scale: 0.1
+    unit: "VA"
+    access: r
+
+  - key: reactive_power_total
+    name: "System reactive power"
+    group: power
+    table: input
+    address: 44
+    type: int32
+    scale: 0.1
+    unit: "var"
+    access: r
+
+  - key: power_factor_l1
+    name: "Phase 1 power factor"
+    group: power
+    table: input
+    address: 46
+    type: int16
+    scale: 0.001
+    access: r
+    notes: "Negative values mean exported active power, positive imported; same for every power factor register."
+
+  - key: power_factor_l2
+    name: "Phase 2 power factor"
+    group: power
+    table: input
+    address: 47
+    type: int16
+    scale: 0.001
+    access: r
+
+  - key: power_factor_l3
+    name: "Phase 3 power factor"
+    group: power
+    table: input
+    address: 48
+    type: int16
+    scale: 0.001
+    access: r
+
+  - key: power_factor_total
+    name: "System power factor"
+    group: power
+    table: input
+    address: 49
+    type: int16
+    scale: 0.001
+    access: r
+
+  - key: phase_sequence
+    name: "Phase sequence"
+    group: status
+    table: input
+    address: 50
+    type: int16
+    access: r
+    values:
+      "0": "L1-L2-L3"
+    notes: "Meaningful only in 3-phase systems. The document gives 1 for the L1-L3-L2 sequence."
+
+  - key: frequency
+    name: "Frequency"
+    group: voltage
+    table: input
+    address: 51
+    type: int16
+    scale: 0.1
+    unit: "Hz"
+    access: r
+
+  - key: import_active_energy
+    name: "Total imported active energy"
+    group: energy
+    table: input
+    address: 52
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: import_reactive_energy
+    name: "Total imported reactive energy"
+    group: energy
+    table: input
+    address: 54
+    type: int32
+    scale: 0.1
+    unit: "kvarh"
+    access: r
+
+  - key: active_power_demand
+    name: "Active power demand"
+    group: demand
+    table: input
+    address: 56
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: active_power_demand_max
+    name: "Peak active power demand"
+    group: demand
+    table: input
+    address: 58
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: import_active_energy_partial
+    name: "Partial imported active energy"
+    group: energy
+    table: input
+    address: 60
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: import_reactive_energy_partial
+    name: "Partial imported reactive energy"
+    group: energy
+    table: input
+    address: 62
+    type: int32
+    scale: 0.1
+    unit: "kvarh"
+    access: r
+
+  - key: import_active_energy_l1
+    name: "Phase 1 imported active energy"
+    group: energy
+    table: input
+    address: 64
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: import_active_energy_l2
+    name: "Phase 2 imported active energy"
+    group: energy
+    table: input
+    address: 66
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: import_active_energy_l3
+    name: "Phase 3 imported active energy"
+    group: energy
+    table: input
+    address: 68
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: import_active_energy_t1
+    name: "Imported active energy, tariff 1"
+    group: tariff_energy
+    table: input
+    address: 70
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: import_active_energy_t2
+    name: "Imported active energy, tariff 2"
+    group: tariff_energy
+    table: input
+    address: 72
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: export_active_energy
+    name: "Total exported active energy"
+    group: energy
+    table: input
+    address: 78
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: export_reactive_energy
+    name: "Total exported reactive energy"
+    group: energy
+    table: input
+    address: 80
+    type: int32
+    scale: 0.1
+    unit: "kvarh"
+    access: r
+
+  - key: run_hours
+    name: "Run hour meter"
+    group: energy
+    table: input
+    address: 90
+    type: int32
+    scale: 0.01
+    unit: "h"
+    access: r
+
+  - key: export_active_energy_l1
+    name: "Phase 1 exported active energy"
+    group: energy
+    table: input
+    address: 96
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+    applies_to: [ET330]
+
+  - key: export_active_energy_l2
+    name: "Phase 2 exported active energy"
+    group: energy
+    table: input
+    address: 98
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+    applies_to: [ET330]
+
+  - key: export_active_energy_l3
+    name: "Phase 3 exported active energy"
+    group: energy
+    table: input
+    address: 100
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+    applies_to: [ET330]
+
+  - key: current_n
+    name: "Neutral current"
+    group: current
+    table: input
+    address: 152
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: version_code
+    name: "Version code"
+    group: info
+    table: input
+    address: 770
+    type: uint16
+    access: r
+    notes: "0 = version A, 1 = version B, and so on."
+
+  - key: revision_code
+    name: "Revision code"
+    group: info
+    table: input
+    address: 771
+    type: uint16
+    access: r
+
+  - key: password
+    name: "Password"
+    group: setup
+    table: holding
+    address: 4096
+    type: uint16
+    access: rw
+    notes: "0 to 9999 on EM models; always 0 on ET."
+
+  - key: measuring_system
+    name: "Measuring system"
+    group: setup
+    table: holding
+    address: 4098
+    type: uint16
+    access: rw
+    values:
+      "0": "3Pn"
+      "1": "3P"
+      "2": "2P"
+
+  - key: ct_ratio
+    name: "Current transformer ratio"
+    group: setup
+    table: holding
+    address: 4099
+    type: uint32
+    scale: 0.1
+    access: rw
+    notes: "Raw 10 to 10000 (CT ratio 1.0 to 1000.0)."
+
+  - key: vt_ratio
+    name: "Voltage transformer ratio"
+    group: setup
+    table: holding
+    address: 4101
+    type: uint32
+    scale: 0.1
+    access: rw
+    notes: "Raw 10 to 10000 (VT ratio 1.0 to 1000.0)."
+
+  - key: demand_interval
+    name: "Demand integration time"
+    group: setup
+    table: holding
+    address: 4112
+    type: uint32
+    unit: "min"
+    access: rw
+    notes: "1 to 30."
+
+  - key: pulse_duration
+    name: "Pulse output on time"
+    group: setup
+    table: holding
+    address: 4114
+    type: uint32
+    access: rw
+    values:
+      "0": "30 ms"
+      "1": "100 ms"
+
+  - key: display_mode
+    name: "Display mode"
+    group: setup
+    table: holding
+    address: 4352
+    type: uint16
+    access: rw
+    values:
+      "0": "Full"
+      "1": "Easy"
+    notes: "Default 0."
+
+  - key: tariff_enable
+    name: "Tariff management"
+    group: setup
+    table: holding
+    address: 4353
+    type: uint16
+    access: rw
+    values:
+      "0": "Off"
+      "1": "On"
+
+  - key: home_page
+    name: "Home page"
+    group: setup
+    table: holding
+    address: 4354
+    type: uint16
+    access: rw
+    applies_to: [EM330]
+    notes: "Page 0 to 19; cannot be changed on MID (PFA, PFB) models."
+
+  - key: measurement_mode
+    name: "Measurement mode"
+    group: setup
+    table: holding
+    address: 4355
+    type: uint16
+    access: rw
+    values:
+      "0": "A"
+      "1": "B"
+
+  - key: wrong_connection_enable
+    name: "Wrong connection detection"
+    group: setup
+    table: holding
+    address: 4356
+    type: uint16
+    access: rw
+    values:
+      "0": "On"
+      "1": "Off"
+    notes: "Any other value means on."
+
+  - key: wrong_connection_status
+    name: "Wrong connection status"
+    group: status
+    table: holding
+    address: 4357
+    type: bitfield16
+    access: r
+    notes: "Bit 0 wrong voltage sequence; bits 1-3 phase 1, 2, 3 inverted; bit 4 phases 1-2 exchanged; bit 5 phases 1-3; bit 6 phases 2-3; bit 7 phases 1, 2, 3 exchanged."
+
+  - key: thd_enable
+    name: "THD calculation"
+    group: setup
+    table: holding
+    address: 4358
+    type: uint16
+    access: rw
+    values:
+      "0": "Off"
+      "1": "On"
+    notes: "Default 1."
+
+  - key: hour_counter_start_current
+    name: "Run hour meter start current (secondary)"
+    group: setup
+    table: holding
+    address: 4359
+    type: uint32
+    scale: 0.001
+    unit: "A"
+    access: rw
+    notes: "Raw 10 to 6000, default 10; multiply by the CT ratio for the primary current."
+
+  - key: tariff_mode
+    name: "Tariff selection source"
+    group: setup
+    table: holding
+    address: 4608
+    type: uint16
+    access: rw
+    values:
+      "0": "Digital input"
+      "1": "Serial communication"
+
+  - key: tariff_select
+    name: "Active tariff (serial selection)"
+    group: setup
+    table: holding
+    address: 4609
+    type: uint16
+    access: rw
+    values:
+      "1": "Tariff 1"
+      "2": "Tariff 2"
+    notes: "Read-only while the tariff is selected by digital input."
+
+  - key: modbus_address
+    name: "RS485 instrument address"
+    group: setup
+    table: holding
+    address: 8192
+    type: uint16
+    access: rw
+    notes: "1 to 247, default 1."
+
+  - key: baud_rate
+    name: "RS485 baud rate"
+    group: setup
+    table: holding
+    address: 8193
+    type: uint16
+    access: rw
+    values:
+      "1": "9600"
+      "2": "19200"
+      "3": "38400"
+      "4": "57600"
+      "5": "115200"
+    notes: "Default 1."
+
+  - key: parity
+    name: "RS485 parity"
+    group: setup
+    table: holding
+    address: 8194
+    type: uint16
+    access: rw
+    values:
+      "1": "None"
+      "2": "Even"
+
+  - key: max_read_words
+    name: "Maximum words per read"
+    group: info
+    table: holding
+    address: 8196
+    type: uint16
+    access: r
+    notes: "Reads 50."
+
+  - key: reset_partial
+    name: "Reset partial and tariff meters and demand peak"
+    group: setup
+    table: holding
+    address: 16384
+    type: uint16
+    access: rw
+    values:
+      "0": "Done"
+      "1": "Execute"
+
+  - key: reset_totals
+    name: "Reset total energy meters"
+    group: setup
+    table: holding
+    address: 16385
+    type: uint16
+    access: rw
+    values:
+      "0": "Done"
+      "1": "Execute"
+    notes: "Non-MID (X) versions only."
+
+  - key: reset_hour_counter
+    name: "Reset run hour meter"
+    group: setup
+    table: holding
+    address: 16386
+    type: uint16
+    access: rw
+    values:
+      "0": "Done"
+      "1": "Execute"
+
+  - key: serial_number
+    name: "Serial number"
+    group: info
+    table: input
+    address: 20480
+    type: raw
+    length: 7
+    access: r
+    notes: "One ASCII character per register in the low byte; the high byte is not used."
+
+  - key: production_year
+    name: "Production year"
+    group: info
+    table: input
+    address: 20496
+    type: uint16
+    access: r
+    applies_to: [EM330]
+    notes: "Meters made from October 2018 on."

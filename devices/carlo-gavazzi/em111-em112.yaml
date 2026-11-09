@@ -1,0 +1,533 @@
+# Transcribed from Carlo Gavazzi's protocol document; not yet checked against a meter.
+schema_version: 1
+vendor: Carlo Gavazzi
+model: EM111/EM112
+aliases: [EM111, EM112, EM110, ET112, EM111-DIN, EM112-DIN, ET112-DIN, EM100 series, ET100 series]
+category: energy-meter
+summary: EM100 and ET100 series single-phase DIN-rail meters (EM110, EM111, EM112, ET112) with Modbus RTU; scaled integers, low word first.
+connection:
+  interfaces: [rtu]
+  default_unit_id: 1
+  default_byte_order: CDAB
+  max_registers_per_read: 50
+  serial_defaults: 9600 baud, 8 data bits, no parity, 1 stop bit
+  notes:
+    - Function codes 03 and 04 return the same values; input registers here can also be read as holding registers.
+    - 32-bit values are sent low word first (LSW, MSW); bytes inside each word are high byte first.
+    - Up to 50 registers per read.
+    - Registers 0100h to 0185h repeat the same values in another order and are not listed.
+    - The 1 Wh totalizers at 0400h need an EM111 or EM112 with firmware b.10, made from 2020 on.
+    - The 64-bit totalizers at 0500h are left out; their LSW-first word order has no byte_order code here.
+    - Reading a setup address not listed in the document returns an illegal data address exception.
+variants: [EM110, EM111, EM112, ET112]
+sources:
+  - title: EM100 Series and ET100 Series Communication Protocol
+    publisher: Carlo Gavazzi
+    version: Version 2 Revision 14
+    url: https://gavazziautomation.com/fileadmin/images/PIM/OTHERSTUFF/COMPRO/1-phase%20Modbus%20serial%20protocol%20EM%20and%20ET-rev.2.14.pdf
+    accessed: 2026-11-09
+    sha256: 118272b7b0880eb6ab309b871fa39a6698e25a77310ab1f8d97888955f9d54a4
+registers:
+  - key: voltage
+    name: "Voltage"
+    group: voltage
+    table: input
+    address: 0
+    type: int32
+    scale: 0.1
+    unit: "V"
+    access: r
+
+  - key: current
+    name: "Current"
+    group: current
+    table: input
+    address: 2
+    type: int32
+    scale: 0.001
+    unit: "A"
+    access: r
+
+  - key: active_power
+    name: "Active power"
+    group: power
+    table: input
+    address: 4
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: apparent_power
+    name: "Apparent power"
+    group: power
+    table: input
+    address: 6
+    type: int32
+    scale: 0.1
+    unit: "VA"
+    access: r
+
+  - key: reactive_power
+    name: "Reactive power"
+    group: power
+    table: input
+    address: 8
+    type: int32
+    scale: 0.1
+    unit: "var"
+    access: r
+
+  - key: active_power_demand
+    name: "Active power demand"
+    group: demand
+    table: input
+    address: 10
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: active_power_demand_max
+    name: "Peak active power demand"
+    group: demand
+    table: input
+    address: 12
+    type: int32
+    scale: 0.1
+    unit: "W"
+    access: r
+
+  - key: power_factor
+    name: "Power factor"
+    group: power
+    table: input
+    address: 14
+    type: int16
+    scale: 0.001
+    access: r
+
+  - key: frequency
+    name: "Frequency"
+    group: voltage
+    table: input
+    address: 15
+    type: int16
+    scale: 0.1
+    unit: "Hz"
+    access: r
+
+  - key: import_active_energy
+    name: "Total imported active energy"
+    group: energy
+    table: input
+    address: 16
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: import_reactive_energy
+    name: "Total imported reactive energy"
+    group: energy
+    table: input
+    address: 18
+    type: int32
+    scale: 0.1
+    unit: "kvarh"
+    access: r
+
+  - key: import_active_energy_partial
+    name: "Partial imported active energy"
+    group: energy
+    table: input
+    address: 20
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: import_reactive_energy_partial
+    name: "Partial imported reactive energy"
+    group: energy
+    table: input
+    address: 22
+    type: int32
+    scale: 0.1
+    unit: "kvarh"
+    access: r
+
+  - key: import_active_energy_t1
+    name: "Imported active energy, tariff 1"
+    group: tariff_energy
+    table: input
+    address: 24
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: import_active_energy_t2
+    name: "Imported active energy, tariff 2"
+    group: tariff_energy
+    table: input
+    address: 26
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: export_active_energy
+    name: "Total exported active energy"
+    group: energy
+    table: input
+    address: 32
+    type: int32
+    scale: 0.1
+    unit: "kWh"
+    access: r
+
+  - key: export_reactive_energy
+    name: "Total exported reactive energy"
+    group: energy
+    table: input
+    address: 34
+    type: int32
+    scale: 0.1
+    unit: "kvarh"
+    access: r
+
+  - key: run_hours
+    name: "Hour counter"
+    group: energy
+    table: input
+    address: 44
+    type: int32
+    scale: 0.01
+    unit: "h"
+    access: r
+    applies_to: [ET112]
+
+  - key: import_active_energy_int
+    name: "Total imported active energy, integer part"
+    group: energy_hr
+    table: input
+    address: 1024
+    type: int32
+    unit: "kWh"
+    access: r
+    applies_to: [EM111, EM112]
+    notes: "Add the decimal part at 0402h for 1 Wh resolution."
+
+  - key: import_active_energy_dec
+    name: "Total imported active energy, decimal part"
+    group: energy_hr
+    table: input
+    address: 1026
+    type: int32
+    scale: 0.001
+    unit: "kWh"
+    access: r
+    applies_to: [EM111, EM112]
+
+  - key: import_reactive_energy_int
+    name: "Total imported reactive energy, integer part"
+    group: energy_hr
+    table: input
+    address: 1028
+    type: int32
+    unit: "kvarh"
+    access: r
+    applies_to: [EM111, EM112]
+
+  - key: import_reactive_energy_dec
+    name: "Total imported reactive energy, decimal part"
+    group: energy_hr
+    table: input
+    address: 1030
+    type: int32
+    scale: 0.001
+    unit: "kvarh"
+    access: r
+    applies_to: [EM111, EM112]
+
+  - key: export_active_energy_int
+    name: "Total exported active energy, integer part"
+    group: energy_hr
+    table: input
+    address: 1032
+    type: int32
+    unit: "kWh"
+    access: r
+    applies_to: [EM111, EM112]
+
+  - key: export_active_energy_dec
+    name: "Total exported active energy, decimal part"
+    group: energy_hr
+    table: input
+    address: 1034
+    type: int32
+    scale: 0.001
+    unit: "kWh"
+    access: r
+    applies_to: [EM111, EM112]
+
+  - key: export_reactive_energy_int
+    name: "Total exported reactive energy, integer part"
+    group: energy_hr
+    table: input
+    address: 1036
+    type: int32
+    unit: "kvarh"
+    access: r
+    applies_to: [EM111, EM112]
+
+  - key: export_reactive_energy_dec
+    name: "Total exported reactive energy, decimal part"
+    group: energy_hr
+    table: input
+    address: 1038
+    type: int32
+    scale: 0.001
+    unit: "kvarh"
+    access: r
+    applies_to: [EM111, EM112]
+
+  - key: version_code
+    name: "Version code"
+    group: info
+    table: input
+    address: 770
+    type: uint16
+    access: r
+    notes: "0 = version A, 1 = version B, and so on."
+
+  - key: revision_code
+    name: "Revision code"
+    group: info
+    table: input
+    address: 771
+    type: uint16
+    access: r
+
+  - key: password
+    name: "Password"
+    group: setup
+    table: holding
+    address: 4096
+    type: uint16
+    access: rw
+    notes: "0 to 9999 on EM models; always 0 on ET."
+
+  - key: ct_ratio
+    name: "Current transformer ratio"
+    group: setup
+    table: holding
+    address: 4099
+    type: uint32
+    scale: 0.1
+    access: rw
+    notes: "Raw 10 to 600 (CT ratio 1.0 to 60.0)."
+
+  - key: demand_interval
+    name: "Demand integration time"
+    group: setup
+    table: holding
+    address: 4112
+    type: uint32
+    unit: "min"
+    access: rw
+    notes: "1 to 30."
+
+  - key: pulse_duration
+    name: "Pulse output on time"
+    group: setup
+    table: holding
+    address: 4114
+    type: uint32
+    access: rw
+    values:
+      "0": "30 ms"
+      "1": "100 ms"
+
+  - key: display_mode
+    name: "Display mode"
+    group: setup
+    table: holding
+    address: 4352
+    type: uint16
+    access: rw
+    applies_to: [EM112]
+    values:
+      "0": "Full"
+      "1": "Easy"
+    notes: "Default 0."
+
+  - key: tariff_enable
+    name: "Tariff management"
+    group: setup
+    table: holding
+    address: 4353
+    type: uint16
+    access: rw
+    values:
+      "0": "Off"
+      "1": "On"
+
+  - key: home_page
+    name: "Home page"
+    group: setup
+    table: holding
+    address: 4354
+    type: uint16
+    access: rw
+    applies_to: [EM112]
+    notes: "Page 0 to 17, default 0."
+
+  - key: measurement_mode
+    name: "Measurement mode"
+    group: setup
+    table: holding
+    address: 4355
+    type: uint16
+    access: rw
+    values:
+      "0": "A"
+      "1": "B"
+    notes: "Writable only on non-MID (X) versions; writing 1 again toggles the mode."
+
+  - key: tariff_mode
+    name: "Tariff selection source"
+    group: setup
+    table: holding
+    address: 4608
+    type: uint16
+    access: rw
+    applies_to: [EM110, ET112]
+    values:
+      "0": "Digital input"
+      "1": "Serial communication"
+
+  - key: tariff_select
+    name: "Active tariff (serial selection)"
+    group: setup
+    table: holding
+    address: 4609
+    type: uint16
+    access: rw
+    applies_to: [EM110, ET112]
+    values:
+      "1": "Tariff 1"
+      "2": "Tariff 2"
+    notes: "Read-only while the tariff is selected by digital input."
+
+  - key: modbus_address
+    name: "RS485 instrument address"
+    group: setup
+    table: holding
+    address: 8192
+    type: uint16
+    access: rw
+    notes: "1 to 247, default 1."
+
+  - key: baud_rate
+    name: "RS485 baud rate"
+    group: setup
+    table: holding
+    address: 8193
+    type: uint16
+    access: rw
+    values:
+      "1": "9600"
+      "2": "19200"
+      "3": "38400"
+      "4": "57600"
+      "5": "115200"
+    notes: "Default 1."
+
+  - key: parity
+    name: "RS485 parity"
+    group: setup
+    table: holding
+    address: 8194
+    type: uint16
+    access: rw
+    values:
+      "1": "None"
+      "2": "Even"
+
+  - key: stop_bits
+    name: "RS485 stop bits"
+    group: setup
+    table: holding
+    address: 8195
+    type: uint16
+    access: rw
+    values:
+      "1": "1"
+      "2": "2"
+    notes: "2 stop bits only without parity."
+
+  - key: max_read_words
+    name: "Maximum words per read"
+    group: info
+    table: holding
+    address: 8196
+    type: uint16
+    access: r
+    notes: "Reads 50."
+
+  - key: reset_partial
+    name: "Reset partial and tariff meters and demand peak"
+    group: setup
+    table: holding
+    address: 16384
+    type: uint16
+    access: rw
+    values:
+      "0": "Done"
+      "1": "Execute"
+
+  - key: reset_totals
+    name: "Reset total energy meters"
+    group: setup
+    table: holding
+    address: 16385
+    type: uint16
+    access: rw
+    values:
+      "0": "Done"
+      "1": "Execute"
+    notes: "Non-MID (X) versions only."
+
+  - key: reset_hour_counter
+    name: "Reset hour counter"
+    group: setup
+    table: holding
+    address: 16386
+    type: uint16
+    access: rw
+    applies_to: [ET112]
+    values:
+      "0": "Done"
+      "1": "Execute"
+
+  - key: serial_number
+    name: "Serial number"
+    group: info
+    table: input
+    address: 20480
+    type: raw
+    length: 7
+    access: r
+    notes: "One ASCII character per register in the low byte; the high byte is not used."
+
+  - key: production_year
+    name: "Production year"
+    group: info
+    table: input
+    address: 20496
+    type: uint16
+    access: r
+    applies_to: [EM111]
+    notes: "Meters made from October 2018 on."

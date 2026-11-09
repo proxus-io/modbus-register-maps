@@ -1,0 +1,265 @@
+# Transcribed from ABB's Modbus map workbook (revision F); not yet checked against a meter.
+schema_version: 1
+vendor: ABB
+model: M4M 20/M4M 30
+aliases: [ABB M4M 20, ABB M4M 30, M4M 20 Modbus, M4M 30 Modbus, M4M 20 Ethernet, M4M 30 Ethernet, M4M 20 I/O, M4M 30 I/O]
+category: power-analyzer
+summary: ABB M4M 20 and M4M 30 network analyzers with Modbus RTU or Modbus TCP; integers with fixed resolution, the same layout as ABB's EQ meters.
+variants: [M4M 20, M4M 30]
+connection:
+  interfaces: [rtu, tcp]
+  default_byte_order: ABCD
+  max_registers_per_read: 125
+  notes:
+    - Addresses are the hex register numbers from ABB's map, sent unchanged (the manual's example frame reads phase voltage L1 at 0x5B02).
+    - Every register here is a holding register (function code 3); writes use function code 6 or 16.
+    - Multi-register values put the most significant byte in the first register.
+    - Missing quantities read as invalid, FFFF for unsigned and 7FFF... for signed values.
+    - The readable range is 0x1000-0x8EFF. Modbus TCP uses port 502 by default.
+    - The M4M 32 and the Rogowski and -M versions are left out; check the workbook's product columns for them.
+sources:
+  - title: Modbus protocol map for M4M network analyzers
+    publisher: ABB
+    document_id: 9AKK107492A7627
+    version: Revision F (map v1.3O)
+    url: https://library.abb.com/d/9AKK107492A7627
+    accessed: 2026-11-09
+    sha256: 208b99f68a2f738fadf30f954a177aaf2f774d1944e1e54058100511ca7767d7
+    notes: Sheet "Mapping Table" (addresses, types, resolutions, product columns) and sheet "Details" (product type IDs, wiring codes).
+  - title: Communication protocol manual for Modbus versions of M4M network analyzers
+    publisher: ABB
+    document_id: 2CSG445050D0201
+    version: v.1.05
+    url: https://library.abb.com/d/2CSG445050D0201
+    accessed: 2026-11-09
+    sha256: 3331717bc796faaee9a292af6427d7fc7f991c4b48cbb24d7770775ab5896eaf
+    notes: Function codes, example request frame, multi-register byte order and invalid values.
+registers:
+  - {key: active_import_energy, name: "Active energy import", group: energy, table: holding, address: 20480, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_export_energy, name: "Active energy export", group: energy, table: holding, address: 20484, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_net_energy, name: "Active energy net", group: energy, table: holding, address: 20488, type: int64, scale: 0.01, unit: "kWh", access: r}
+  - {key: reactive_import_energy, name: "Reactive energy import", group: energy, table: holding, address: 20492, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_export_energy, name: "Reactive energy export", group: energy, table: holding, address: 20496, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_net_energy, name: "Reactive energy net", group: energy, table: holding, address: 20500, type: int64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: apparent_import_energy, name: "Apparent energy import", group: energy, table: holding, address: 20504, type: uint64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: apparent_export_energy, name: "Apparent energy export", group: energy, table: holding, address: 20508, type: uint64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: apparent_net_energy, name: "Apparent energy net", group: energy, table: holding, address: 20512, type: int64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: active_import_energy_t1, name: "Active import energy, tariff 1", group: tariff_energy, table: holding, address: 20848, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: active_import_energy_t2, name: "Active import energy, tariff 2", group: tariff_energy, table: holding, address: 20852, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: active_import_energy_t3, name: "Active import energy, tariff 3", group: tariff_energy, table: holding, address: 20856, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: active_import_energy_t4, name: "Active import energy, tariff 4", group: tariff_energy, table: holding, address: 20860, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: active_import_energy_t5, name: "Active import energy, tariff 5", group: tariff_energy, table: holding, address: 20864, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: active_import_energy_t6, name: "Active import energy, tariff 6", group: tariff_energy, table: holding, address: 20868, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: active_export_energy_t1, name: "Active export energy, tariff 1", group: tariff_energy, table: holding, address: 20880, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: active_export_energy_t2, name: "Active export energy, tariff 2", group: tariff_energy, table: holding, address: 20884, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: active_export_energy_t3, name: "Active export energy, tariff 3", group: tariff_energy, table: holding, address: 20888, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: active_export_energy_t4, name: "Active export energy, tariff 4", group: tariff_energy, table: holding, address: 20892, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: active_export_energy_t5, name: "Active export energy, tariff 5", group: tariff_energy, table: holding, address: 20896, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: active_export_energy_t6, name: "Active export energy, tariff 6", group: tariff_energy, table: holding, address: 20900, type: uint64, scale: 0.01, unit: "kWh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_import_energy_t1, name: "Reactive import energy, tariff 1", group: tariff_energy, table: holding, address: 20912, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_import_energy_t2, name: "Reactive import energy, tariff 2", group: tariff_energy, table: holding, address: 20916, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_import_energy_t3, name: "Reactive import energy, tariff 3", group: tariff_energy, table: holding, address: 20920, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_import_energy_t4, name: "Reactive import energy, tariff 4", group: tariff_energy, table: holding, address: 20924, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_import_energy_t5, name: "Reactive import energy, tariff 5", group: tariff_energy, table: holding, address: 20928, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_import_energy_t6, name: "Reactive import energy, tariff 6", group: tariff_energy, table: holding, address: 20932, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_export_energy_t1, name: "Reactive export energy, tariff 1", group: tariff_energy, table: holding, address: 20944, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_export_energy_t2, name: "Reactive export energy, tariff 2", group: tariff_energy, table: holding, address: 20948, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_export_energy_t3, name: "Reactive export energy, tariff 3", group: tariff_energy, table: holding, address: 20952, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_export_energy_t4, name: "Reactive export energy, tariff 4", group: tariff_energy, table: holding, address: 20956, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_export_energy_t5, name: "Reactive export energy, tariff 5", group: tariff_energy, table: holding, address: 20960, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: reactive_export_energy_t6, name: "Reactive export energy, tariff 6", group: tariff_energy, table: holding, address: 20964, type: uint64, scale: 0.01, unit: "kvarh", access: r, applies_to: [M4M 30]}
+  - {key: active_import_energy_l1, name: "Active energy import, L1", group: phase_energy, table: holding, address: 21600, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_import_energy_l2, name: "Active energy import, L2", group: phase_energy, table: holding, address: 21604, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_import_energy_l3, name: "Active energy import, L3", group: phase_energy, table: holding, address: 21608, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_export_energy_l1, name: "Active energy export, L1", group: phase_energy, table: holding, address: 21612, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_export_energy_l2, name: "Active energy export, L2", group: phase_energy, table: holding, address: 21616, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_export_energy_l3, name: "Active energy export, L3", group: phase_energy, table: holding, address: 21620, type: uint64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_net_energy_l1, name: "Active energy net, L1", group: phase_energy, table: holding, address: 21624, type: int64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_net_energy_l2, name: "Active energy net, L2", group: phase_energy, table: holding, address: 21628, type: int64, scale: 0.01, unit: "kWh", access: r}
+  - {key: active_net_energy_l3, name: "Active energy net, L3", group: phase_energy, table: holding, address: 21632, type: int64, scale: 0.01, unit: "kWh", access: r}
+  - {key: reactive_import_energy_l1, name: "Reactive energy import, L1", group: phase_energy, table: holding, address: 21636, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_import_energy_l2, name: "Reactive energy import, L2", group: phase_energy, table: holding, address: 21640, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_import_energy_l3, name: "Reactive energy import, L3", group: phase_energy, table: holding, address: 21644, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_export_energy_l1, name: "Reactive energy export, L1", group: phase_energy, table: holding, address: 21648, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_export_energy_l2, name: "Reactive energy export, L2", group: phase_energy, table: holding, address: 21652, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_export_energy_l3, name: "Reactive energy export, L3", group: phase_energy, table: holding, address: 21656, type: uint64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_net_energy_l1, name: "Reactive energy net, L1", group: phase_energy, table: holding, address: 21660, type: int64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_net_energy_l2, name: "Reactive energy net, L2", group: phase_energy, table: holding, address: 21664, type: int64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: reactive_net_energy_l3, name: "Reactive energy net, L3", group: phase_energy, table: holding, address: 21668, type: int64, scale: 0.01, unit: "kvarh", access: r}
+  - {key: apparent_import_energy_l1, name: "Apparent energy import, L1", group: phase_energy, table: holding, address: 21672, type: uint64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: apparent_import_energy_l2, name: "Apparent energy import, L2", group: phase_energy, table: holding, address: 21676, type: uint64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: apparent_import_energy_l3, name: "Apparent energy import, L3", group: phase_energy, table: holding, address: 21680, type: uint64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: apparent_export_energy_l1, name: "Apparent energy export, L1", group: phase_energy, table: holding, address: 21684, type: uint64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: apparent_export_energy_l2, name: "Apparent energy export, L2", group: phase_energy, table: holding, address: 21688, type: uint64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: apparent_export_energy_l3, name: "Apparent energy export, L3", group: phase_energy, table: holding, address: 21692, type: uint64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: apparent_net_energy_l1, name: "Apparent energy net, L1", group: phase_energy, table: holding, address: 21696, type: int64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: apparent_net_energy_l2, name: "Apparent energy net, L2", group: phase_energy, table: holding, address: 21700, type: int64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: apparent_net_energy_l3, name: "Apparent energy net, L3", group: phase_energy, table: holding, address: 21704, type: int64, scale: 0.01, unit: "kVAh", access: r, notes: "The source lists the unit as kVA; the quantity is apparent energy."}
+  - {key: voltage_system, name: "Three phase system voltage", group: voltage, table: holding, address: 23296, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: voltage_l1_n, name: "Phase voltage L1", group: voltage, table: holding, address: 23298, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: voltage_l2_n, name: "Phase voltage L2", group: voltage, table: holding, address: 23300, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: voltage_l3_n, name: "Phase voltage L3", group: voltage, table: holding, address: 23302, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: voltage_l1_l2, name: "Line voltage L1-L2", group: voltage, table: holding, address: 23304, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: voltage_l3_l2, name: "Line voltage L3-L2", group: voltage, table: holding, address: 23306, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: voltage_l1_l3, name: "Line voltage L1-L3", group: voltage, table: holding, address: 23308, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: current_system, name: "Three phase system current", group: current, table: holding, address: 23310, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: current_l1, name: "Current L1", group: current, table: holding, address: 23312, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: current_l2, name: "Current L2", group: current, table: holding, address: 23314, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: current_l3, name: "Current L3", group: current, table: holding, address: 23316, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: current_n, name: "Current N", group: current, table: holding, address: 23318, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: active_power_total, name: "Active power total", group: power, table: holding, address: 23322, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: active_power_l1, name: "Active power L1", group: power, table: holding, address: 23324, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: active_power_l2, name: "Active power L2", group: power, table: holding, address: 23326, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: active_power_l3, name: "Active power L3", group: power, table: holding, address: 23328, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: reactive_power_total, name: "Reactive power total", group: power, table: holding, address: 23330, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: reactive_power_l1, name: "Reactive power L1", group: power, table: holding, address: 23332, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: reactive_power_l2, name: "Reactive power L2", group: power, table: holding, address: 23334, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: reactive_power_l3, name: "Reactive power L3", group: power, table: holding, address: 23336, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: apparent_power_total, name: "Apparent power total", group: power, table: holding, address: 23338, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: apparent_power_l1, name: "Apparent power L1", group: power, table: holding, address: 23340, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: apparent_power_l2, name: "Apparent power L2", group: power, table: holding, address: 23342, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: apparent_power_l3, name: "Apparent power L3", group: power, table: holding, address: 23344, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: frequency, name: "Frequency", group: power, table: holding, address: 23346, type: uint16, scale: 0.01, unit: "Hz", access: r}
+  - {key: phase_angle_power_total, name: "Phase angle of power, total", group: power, table: holding, address: 23347, type: int16, scale: 0.1, unit: "deg", access: r}
+  - {key: phase_angle_power_l1, name: "Phase angle of power, L1", group: power, table: holding, address: 23348, type: int16, scale: 0.1, unit: "deg", access: r}
+  - {key: phase_angle_power_l2, name: "Phase angle of power, L2", group: power, table: holding, address: 23349, type: int16, scale: 0.1, unit: "deg", access: r}
+  - {key: phase_angle_power_l3, name: "Phase angle of power, L3", group: power, table: holding, address: 23350, type: int16, scale: 0.1, unit: "deg", access: r}
+  - {key: phase_angle_voltage_l1, name: "Phase angle of voltage, L1", group: power, table: holding, address: 23351, type: int16, scale: 0.1, unit: "deg", access: r}
+  - {key: phase_angle_voltage_l2, name: "Phase angle of voltage, L2", group: power, table: holding, address: 23352, type: int16, scale: 0.1, unit: "deg", access: r}
+  - {key: phase_angle_voltage_l3, name: "Phase angle of voltage, L3", group: power, table: holding, address: 23353, type: int16, scale: 0.1, unit: "deg", access: r}
+  - {key: phase_angle_current_l1, name: "Phase angle of current, L1", group: power, table: holding, address: 23357, type: int16, scale: 0.1, unit: "deg", access: r}
+  - {key: phase_angle_current_l2, name: "Phase angle of current, L2", group: power, table: holding, address: 23358, type: int16, scale: 0.1, unit: "deg", access: r}
+  - {key: phase_angle_current_l3, name: "Phase angle of current, L3", group: power, table: holding, address: 23359, type: int16, scale: 0.1, unit: "deg", access: r}
+  - {key: power_factor_total, name: "Power factor, total", group: power, table: holding, address: 23360, type: int16, scale: 0.001, access: r}
+  - {key: power_factor_l1, name: "Power factor, L1", group: power, table: holding, address: 23361, type: int16, scale: 0.001, access: r}
+  - {key: power_factor_l2, name: "Power factor, L2", group: power, table: holding, address: 23362, type: int16, scale: 0.001, access: r}
+  - {key: power_factor_l3, name: "Power factor, L3", group: power, table: holding, address: 23363, type: int16, scale: 0.001, access: r}
+  - {key: quadrant_total, name: "Current quadrant, total", group: power, table: holding, address: 23364, type: uint16, access: r}
+  - {key: quadrant_l1, name: "Current quadrant, L1", group: power, table: holding, address: 23365, type: uint16, access: r}
+  - {key: quadrant_l2, name: "Current quadrant, L2", group: power, table: holding, address: 23366, type: uint16, access: r}
+  - {key: quadrant_l3, name: "Current quadrant, L3", group: power, table: holding, address: 23367, type: uint16, access: r}
+  - {key: cos_phi_total, name: "Cos phi (displacement factor), total", group: power, table: holding, address: 23368, type: int16, scale: 0.001, access: r, notes: "The source lists the unit as degrees; the value is a factor with resolution 0.001."}
+  - {key: cos_phi_l1, name: "Cos phi (displacement factor), L1", group: power, table: holding, address: 23369, type: int16, scale: 0.001, access: r, notes: "The source lists the unit as degrees; the value is a factor with resolution 0.001."}
+  - {key: cos_phi_l2, name: "Cos phi (displacement factor), L2", group: power, table: holding, address: 23370, type: int16, scale: 0.001, access: r, notes: "The source lists the unit as degrees; the value is a factor with resolution 0.001."}
+  - {key: cos_phi_l3, name: "Cos phi (displacement factor), L3", group: power, table: holding, address: 23371, type: int16, scale: 0.001, access: r, notes: "The source lists the unit as degrees; the value is a factor with resolution 0.001."}
+  - {key: average_current_l1, name: "Average current L1", group: avg_min_max, table: holding, address: 23508, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: average_current_l2, name: "Average current L2", group: avg_min_max, table: holding, address: 23510, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: average_current_l3, name: "Average current L3", group: avg_min_max, table: holding, address: 23512, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: average_current_neutral, name: "Average current neutral", group: avg_min_max, table: holding, address: 23514, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: average_voltage_l1, name: "Average voltage L1", group: avg_min_max, table: holding, address: 23516, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: average_voltage_l2, name: "Average voltage L2", group: avg_min_max, table: holding, address: 23518, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: average_voltage_l3, name: "Average voltage L3", group: avg_min_max, table: holding, address: 23520, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: average_voltage_l1_l2, name: "Average voltage L1-L2", group: avg_min_max, table: holding, address: 23522, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: average_voltage_l2_l3, name: "Average voltage L2-L3", group: avg_min_max, table: holding, address: 23524, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: average_voltage_l1_l3, name: "Average voltage L1-L3", group: avg_min_max, table: holding, address: 23526, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: average_active_power_total, name: "Average active power total", group: avg_min_max, table: holding, address: 23528, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: average_active_power_l1, name: "Average active power L1", group: avg_min_max, table: holding, address: 23530, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: average_active_power_l2, name: "Average active power L2", group: avg_min_max, table: holding, address: 23532, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: average_active_power_l3, name: "Average active power L3", group: avg_min_max, table: holding, address: 23534, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: average_reactive_power_total, name: "Average reactive power total", group: avg_min_max, table: holding, address: 23536, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: average_reactive_power_l1, name: "Average reactive power L1", group: avg_min_max, table: holding, address: 23538, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: average_reactive_power_l2, name: "Average reactive power L2", group: avg_min_max, table: holding, address: 23540, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: average_reactive_power_l3, name: "Average reactive power L3", group: avg_min_max, table: holding, address: 23542, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: average_apparent_power_total, name: "Average apparent power total", group: avg_min_max, table: holding, address: 23544, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: average_apparent_power_l1, name: "Average apparent power L1", group: avg_min_max, table: holding, address: 23546, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: average_apparent_power_l2, name: "Average apparent power L2", group: avg_min_max, table: holding, address: 23548, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: average_apparent_power_l3, name: "Average apparent power L3", group: avg_min_max, table: holding, address: 23550, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: maximum_current_l1, name: "Maximum current L1", group: avg_min_max, table: holding, address: 23568, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: maximum_current_l2, name: "Maximum current L2", group: avg_min_max, table: holding, address: 23570, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: maximum_current_l3, name: "Maximum current L3", group: avg_min_max, table: holding, address: 23572, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: maximum_current_neutral, name: "Maximum current neutral", group: avg_min_max, table: holding, address: 23574, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: maximum_voltage_l1, name: "Maximum voltage L1", group: avg_min_max, table: holding, address: 23576, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: maximum_voltage_l2, name: "Maximum voltage L2", group: avg_min_max, table: holding, address: 23578, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: maximum_voltage_l3, name: "Maximum voltage L3", group: avg_min_max, table: holding, address: 23580, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: maximum_voltage_l1_l2, name: "Maximum voltage L1-L2", group: avg_min_max, table: holding, address: 23582, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: maximum_voltage_l2_l3, name: "Maximum voltage L2-L3", group: avg_min_max, table: holding, address: 23584, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: maximum_voltage_l1_l3, name: "Maximum voltage L1-L3", group: avg_min_max, table: holding, address: 23586, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: maximum_active_power_total, name: "Maximum active power total", group: avg_min_max, table: holding, address: 23588, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: maximum_active_power_l1, name: "Maximum active power L1", group: avg_min_max, table: holding, address: 23590, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: maximum_active_power_l2, name: "Maximum active power L2", group: avg_min_max, table: holding, address: 23592, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: maximum_active_power_l3, name: "Maximum active power L3", group: avg_min_max, table: holding, address: 23594, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: maximum_reactive_power_total, name: "Maximum reactive power total", group: avg_min_max, table: holding, address: 23596, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: maximum_reactive_power_l1, name: "Maximum reactive power L1", group: avg_min_max, table: holding, address: 23598, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: maximum_reactive_power_l2, name: "Maximum reactive power L2", group: avg_min_max, table: holding, address: 23600, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: maximum_reactive_power_l3, name: "Maximum reactive power L3", group: avg_min_max, table: holding, address: 23602, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: maximum_apparent_power_total, name: "Maximum apparent power total", group: avg_min_max, table: holding, address: 23604, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: maximum_apparent_power_l1, name: "Maximum apparent power L1", group: avg_min_max, table: holding, address: 23606, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: maximum_apparent_power_l2, name: "Maximum apparent power L2", group: avg_min_max, table: holding, address: 23608, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: maximum_apparent_power_l3, name: "Maximum apparent power L3", group: avg_min_max, table: holding, address: 23610, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: minimum_current_l1, name: "Minimum current L1", group: avg_min_max, table: holding, address: 23688, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: minimum_current_l2, name: "Minimum current L2", group: avg_min_max, table: holding, address: 23690, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: minimum_current_l3, name: "Minimum current L3", group: avg_min_max, table: holding, address: 23692, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: minimum_current_neutral, name: "Minimum current neutral", group: avg_min_max, table: holding, address: 23694, type: uint32, scale: 0.01, unit: "A", access: r}
+  - {key: minimum_voltage_l1, name: "Minimum voltage L1", group: avg_min_max, table: holding, address: 23696, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: minimum_voltage_l2, name: "Minimum voltage L2", group: avg_min_max, table: holding, address: 23698, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: minimum_voltage_l3, name: "Minimum voltage L3", group: avg_min_max, table: holding, address: 23700, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: minimum_voltage_l1_l2, name: "Minimum voltage L1-L2", group: avg_min_max, table: holding, address: 23702, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: minimum_voltage_l2_l3, name: "Minimum voltage L2-L3", group: avg_min_max, table: holding, address: 23704, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: minimum_voltage_l1_l3, name: "Minimum voltage L1-L3", group: avg_min_max, table: holding, address: 23706, type: uint32, scale: 0.1, unit: "V", access: r}
+  - {key: minimum_active_power_total, name: "Minimum active power total", group: avg_min_max, table: holding, address: 23708, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: minimum_active_power_l1, name: "Minimum active power L1", group: avg_min_max, table: holding, address: 23710, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: minimum_active_power_l2, name: "Minimum active power L2", group: avg_min_max, table: holding, address: 23712, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: minimum_active_power_l3, name: "Minimum active power L3", group: avg_min_max, table: holding, address: 23714, type: int32, scale: 0.01, unit: "W", access: r}
+  - {key: minimum_reactive_power_total, name: "Minimum reactive power total", group: avg_min_max, table: holding, address: 23716, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: minimum_reactive_power_l1, name: "Minimum reactive power L1", group: avg_min_max, table: holding, address: 23718, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: minimum_reactive_power_l2, name: "Minimum reactive power L2", group: avg_min_max, table: holding, address: 23720, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: minimum_reactive_power_l3, name: "Minimum reactive power L3", group: avg_min_max, table: holding, address: 23722, type: int32, scale: 0.01, unit: "var", access: r}
+  - {key: minimum_apparent_power_total, name: "Minimum apparent power total", group: avg_min_max, table: holding, address: 23724, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: minimum_apparent_power_l1, name: "Minimum apparent power L1", group: avg_min_max, table: holding, address: 23726, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: minimum_apparent_power_l2, name: "Minimum apparent power L2", group: avg_min_max, table: holding, address: 23728, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: minimum_apparent_power_l3, name: "Minimum apparent power L3", group: avg_min_max, table: holding, address: 23730, type: int32, scale: 0.01, unit: "VA", access: r}
+  - {key: thd_voltage_l1_n, name: "THD voltage L1-N", group: harmonics, table: holding, address: 23808, type: uint16, scale: 0.1, unit: "%", access: r, notes: "On M4M 30 the 2nd to 40th harmonics follow, one register each."}
+  - {key: thd_voltage_l2_n, name: "THD voltage L2-N", group: harmonics, table: holding, address: 23936, type: uint16, scale: 0.1, unit: "%", access: r, notes: "On M4M 30 the 2nd to 40th harmonics follow, one register each."}
+  - {key: thd_voltage_l3_n, name: "THD voltage L3-N", group: harmonics, table: holding, address: 24064, type: uint16, scale: 0.1, unit: "%", access: r, notes: "On M4M 30 the 2nd to 40th harmonics follow, one register each."}
+  - {key: thd_voltage_l1_l2, name: "THD voltage L1-L2", group: harmonics, table: holding, address: 24192, type: uint16, scale: 0.1, unit: "%", access: r, notes: "On M4M 30 the 2nd to 40th harmonics follow, one register each."}
+  - {key: thd_voltage_l3_l2, name: "THD voltage L3-L2", group: harmonics, table: holding, address: 24320, type: uint16, scale: 0.1, unit: "%", access: r, notes: "On M4M 30 the 2nd to 40th harmonics follow, one register each."}
+  - {key: thd_voltage_l1_l3, name: "THD voltage L1-L3", group: harmonics, table: holding, address: 24448, type: uint16, scale: 0.1, unit: "%", access: r, notes: "On M4M 30 the 2nd to 40th harmonics follow, one register each."}
+  - {key: thd_current_l1, name: "THD current L1", group: harmonics, table: holding, address: 24576, type: uint16, scale: 0.1, unit: "%", access: r, notes: "On M4M 30 the 2nd to 40th harmonics follow, one register each."}
+  - {key: thd_current_l2, name: "THD current L2", group: harmonics, table: holding, address: 24704, type: uint16, scale: 0.1, unit: "%", access: r, notes: "On M4M 30 the 2nd to 40th harmonics follow, one register each."}
+  - {key: thd_current_l3, name: "THD current L3", group: harmonics, table: holding, address: 24832, type: uint16, scale: 0.1, unit: "%", access: r, notes: "On M4M 30 the 2nd to 40th harmonics follow, one register each."}
+  - {key: thd_current_n, name: "THD current N", group: harmonics, table: holding, address: 24960, type: uint16, scale: 0.1, unit: "%", access: r, notes: "On M4M 30 the 2nd to 40th harmonics follow, one register each."}
+  - {key: unbalance_line_voltage, name: "Unbalance, line voltage", group: power_quality, table: holding, address: 25088, type: uint32, scale: 0.1, unit: "%", access: r, applies_to: [M4M 30]}
+  - {key: unbalance_phase_voltage, name: "Unbalance, phase voltage", group: power_quality, table: holding, address: 25090, type: uint32, scale: 0.1, unit: "%", access: r, applies_to: [M4M 30]}
+  - {key: unbalance_current, name: "Unbalance, current", group: power_quality, table: holding, address: 25092, type: uint32, scale: 0.1, unit: "%", access: r, applies_to: [M4M 30]}
+  - {key: output_1, name: "Output 1", group: io, table: holding, address: 25344, type: uint16, access: rw, values: {"0": "Off", "1": "On"}}
+  - {key: output_2, name: "Output 2", group: io, table: holding, address: 25345, type: uint16, access: rw, values: {"0": "Off", "1": "On"}}
+  - {key: output_3, name: "Output 3", group: io, table: holding, address: 25346, type: uint16, access: rw, values: {"0": "Off", "1": "On"}, applies_to: [M4M 30]}
+  - {key: output_4, name: "Output 4", group: io, table: holding, address: 25347, type: uint16, access: rw, values: {"0": "Off", "1": "On"}, applies_to: [M4M 30]}
+  - {key: output_5, name: "Output 5", group: io, table: holding, address: 25348, type: uint16, access: rw, values: {"0": "Off", "1": "On"}, notes: "Extended I/O versions only."}
+  - {key: output_6, name: "Output 6", group: io, table: holding, address: 25349, type: uint16, access: rw, values: {"0": "Off", "1": "On"}, notes: "Extended I/O versions only."}
+  - {key: input_1, name: "Input 1", group: io, table: holding, address: 25352, type: uint16, access: r, values: {"0": "Off", "1": "On"}, applies_to: [M4M 30]}
+  - {key: input_2, name: "Input 2", group: io, table: holding, address: 25353, type: uint16, access: r, values: {"0": "Off", "1": "On"}, applies_to: [M4M 30]}
+  - {key: input_3, name: "Input 3", group: io, table: holding, address: 25354, type: uint16, access: r, values: {"0": "Off", "1": "On"}, applies_to: [M4M 30]}
+  - {key: input_4, name: "Input 4", group: io, table: holding, address: 25355, type: uint16, access: r, values: {"0": "Off", "1": "On"}, applies_to: [M4M 30]}
+  - {key: input_5, name: "Input 5", group: io, table: holding, address: 25356, type: uint16, access: r, values: {"0": "Off", "1": "On"}, notes: "Extended I/O versions only."}
+  - {key: input_6, name: "Input 6", group: io, table: holding, address: 25357, type: uint16, access: r, values: {"0": "Off", "1": "On"}, notes: "Extended I/O versions only."}
+  - {key: input_1_counter, name: "Input 1 counter", group: io, table: holding, address: 25368, type: uint64, access: r, applies_to: [M4M 30]}
+  - {key: input_2_counter, name: "Input 2 counter", group: io, table: holding, address: 25372, type: uint64, access: r, applies_to: [M4M 30]}
+  - {key: input_3_counter, name: "Input 3 counter", group: io, table: holding, address: 25376, type: uint64, access: r, applies_to: [M4M 30]}
+  - {key: input_4_counter, name: "Input 4 counter", group: io, table: holding, address: 25380, type: uint64, access: r, applies_to: [M4M 30]}
+  - {key: input_5_counter, name: "Input 5 counter", group: io, table: holding, address: 25384, type: uint64, access: r, notes: "Extended I/O versions only."}
+  - {key: input_6_counter, name: "Input 6 counter", group: io, table: holding, address: 25388, type: uint64, access: r, notes: "Extended I/O versions only."}
+  - {key: serial_number, name: "Serial number", group: identification, table: holding, address: 35072, type: string, length: 5, access: r}
+  - {key: firmware_version, name: "Meter firmware version", group: identification, table: holding, address: 35080, type: string, length: 8, access: r}
+  - {key: product_type_id, name: "Product type number ID", group: identification, table: holding, address: 35088, type: uint16, access: r, notes: "0-6 M4M 20 versions, 7-12 M4M 30 versions; the workbook's Details sheet lists every ID."}
+  - {key: type_designation, name: "Type designation", group: identification, table: holding, address: 35168, type: string, length: 6, access: r}
+  - {key: product_name, name: "Product name", group: identification, table: holding, address: 35174, type: string, length: 8, access: r}
+  - {key: current_tariff, name: "Current tariff", group: status, table: holding, address: 35335, type: uint16, access: rw, applies_to: [M4M 30], notes: "Tariff 1 to 6."}
+  - {key: error_flags, name: "Error flags", group: status, table: holding, address: 35347, type: bitfield, length: 4, access: r}
+  - {key: information_flags, name: "Information flags", group: status, table: holding, address: 35353, type: bitfield, length: 4, access: r}
+  - {key: warning_flags, name: "Warning flags", group: status, table: holding, address: 35359, type: bitfield, length: 4, access: r}
+  - {key: alarm_flags, name: "Alarm flags (simple and complex)", group: status, table: holding, address: 35365, type: bitfield, length: 4, access: r}
+  - {key: ct_ratio_numerator, name: "CT ratio L1, L2, L3 (numerator)", group: settings, table: holding, address: 35840, type: uint32, access: rw, notes: "Not on Rogowski versions."}
+  - {key: ct_ratio_denominator, name: "CT ratio L1, L2, L3 (denominator)", group: settings, table: holding, address: 35842, type: uint32, access: rw, notes: "Not on Rogowski versions."}
+  - {key: vt_ratio_numerator, name: "VT ratio (numerator)", group: settings, table: holding, address: 35844, type: uint32, access: rw}
+  - {key: vt_ratio_denominator, name: "VT ratio (denominator)", group: settings, table: holding, address: 35846, type: uint32, access: rw}
+  - {key: ct_neutral_ratio_numerator, name: "CT neutral ratio (numerator)", group: settings, table: holding, address: 35848, type: uint32, access: rw, applies_to: [M4M 30], notes: "Not on Rogowski versions."}
+  - {key: ct_neutral_ratio_denominator, name: "CT neutral ratio (denominator)", group: settings, table: holding, address: 35850, type: uint32, access: rw, applies_to: [M4M 30], notes: "Not on Rogowski versions."}
+  - {key: led_source, name: "LED pulse source", group: settings, table: holding, address: 36068, type: uint16, access: rw, values: {"0": "Active energy", "1": "Reactive energy"}}
+  - {key: wires, name: "Wiring (wires)", group: settings, table: holding, address: 36069, type: uint16, access: rw, values: {"0": "3 phase, 4 wires, 4 CTs (M4M 30)", "1": "3 phase, 4 wires, 3 CTs", "2": "3 phase, 4 wires, 1 CT", "3": "3 phase, 3 wires, 3 CTs", "4": "3 phase, 3 wires, 2 CTs", "5": "3 phase, 3 wires, 1 CT", "6": "2 phase, 3 wires, 2 CTs", "7": "1 phase, 2 wires, 1 CT"}}
+  - {key: modbus_address, name: "Modbus RTU address", group: communication, table: holding, address: 36075, type: uint16, access: rw, notes: "1 to 247."}
+  - {key: modbus_parity, name: "Modbus RTU parity", group: communication, table: holding, address: 36078, type: uint16, access: rw, values: {"0": "Odd", "1": "Even", "2": "None"}}
+  - {key: tcp_port, name: "Modbus TCP port", group: communication, table: holding, address: 36086, type: uint16, access: rw, notes: "502 by default."}
+  - {key: reset_historical, name: "Reset historical functionality", group: operations, table: holding, address: 36696, type: uint16, access: w, values: {"1": "Reset"}, applies_to: [M4M 30]}
+  - {key: reset_energy, name: "Reset energy", group: operations, table: holding, address: 36698, type: uint16, access: w, values: {"1": "Reset"}}
+  - {key: reset_max_min_average, name: "Reset max / min / average", group: operations, table: holding, address: 36700, type: uint16, access: w, values: {"1": "Reset"}}

@@ -1,0 +1,68 @@
+# Transcribed from SolarEdge's SunSpec technical note; not yet checked against a meter.
+schema_version: 1
+vendor: SolarEdge
+model: Meter via Inverter
+aliases: [SolarEdge Energy Meter, SolarEdge meter 1]
+category: energy-meter
+summary: First energy meter connected to a SolarEdge inverter, served by the inverter as SunSpec meter model 201-204.
+connection:
+  interfaces: [tcp, rtu]
+  default_byte_order: ABCD
+  notes:
+    - Read from the inverter's unit ID with function 03. Registers are big-endian; 32-bit values are high word first.
+    - "Addresses are for meter 1 on a single inverter. Add 50 for 2-unit and 70 for 3-unit Synergy inverters; meter 2 starts 174 registers later (base 40295)."
+    - Only enabled meters are readable. Single phase meters serve only the total and phase A values.
+    - "Value = raw x 10^scale_factor."
+sources:
+  - title: "Technical Note: SolarEdge Inverters - SunSpec Logging"
+    publisher: SolarEdge Technologies
+    version: "3.3 (October 2026)"
+    url: https://knowledge-center.solaredge.com/sites/kc/files/sunspec-implementation-technical-note.pdf
+    accessed: 2026-11-09
+    sha256: 612ca08ec937687a4a9165ec51f19d983728439c7fb59bc6e12c66455b1425bd
+    notes: Register tables with base-0 addresses. The site sits behind a browser check, so a plain command-line download may get an HTML page instead.
+  - title: SunSpec information model 203 (json/model_203.json)
+    publisher: SunSpec Alliance
+    version: "github.com/sunspec/models master @ 90b4a331dcca1d6eac69c1bead952fddcc5852e0"
+    url: https://raw.githubusercontent.com/sunspec/models/master/json/model_203.json
+    accessed: 2026-11-09
+    sha256: 0038b9bf820a91e3629ca6d0cf12c4eddedd25127f1fbbb93aa458209e83012b
+    notes: Point types (scale factors are sunssf, int16) for the model the technical note references.
+registers:
+  - {key: meter_manufacturer, name: "Meter manufacturer", group: common, table: holding, address: 40123, type: string, length: 16, access: r}
+  - {key: meter_model, name: "Meter model", group: common, table: holding, address: 40139, type: string, length: 16, access: r}
+  - {key: meter_option, name: "Meter option", group: common, table: holding, address: 40155, type: string, length: 8, access: r, notes: "Export + Import, Production, Consumption."}
+  - {key: meter_version, name: "Meter version", group: common, table: holding, address: 40163, type: string, length: 8, access: r}
+  - {key: meter_serial_number, name: "Meter serial number", group: common, table: holding, address: 40171, type: string, length: 16, access: r}
+  - {key: meter_device_address, name: "Inverter Modbus ID", group: common, table: holding, address: 40187, type: uint16, access: r}
+  - {key: meter_model_id, name: "Meter model ID", group: meter, table: holding, address: 40188, type: uint16, access: r, values: {"201": "single phase (AN or AB)", "202": "split single phase (ABN)", "203": "wye three phase (ABCN)", "204": "delta three phase (ABC)"}}
+  - {key: ac_current, name: "AC current (sum of active phases)", group: current, table: holding, address: 40190, type: int16, scale_factor: ac_current_sf, unit: "A", access: r}
+  - {key: ac_current_a, name: "Phase A current", group: current, table: holding, address: 40191, type: int16, scale_factor: ac_current_sf, unit: "A", access: r}
+  - {key: ac_current_b, name: "Phase B current", group: current, table: holding, address: 40192, type: int16, scale_factor: ac_current_sf, unit: "A", access: r}
+  - {key: ac_current_c, name: "Phase C current", group: current, table: holding, address: 40193, type: int16, scale_factor: ac_current_sf, unit: "A", access: r}
+  - {key: ac_current_sf, name: "Current scale factor", group: current, table: holding, address: 40194, type: int16, access: r}
+  - {key: voltage_ln, name: "Line to neutral voltage (average)", group: voltage, table: holding, address: 40195, type: int16, scale_factor: voltage_sf, unit: "V", access: r}
+  - {key: voltage_an, name: "Phase A to neutral voltage", group: voltage, table: holding, address: 40196, type: int16, scale_factor: voltage_sf, unit: "V", access: r}
+  - {key: voltage_bn, name: "Phase B to neutral voltage", group: voltage, table: holding, address: 40197, type: int16, scale_factor: voltage_sf, unit: "V", access: r}
+  - {key: voltage_cn, name: "Phase C to neutral voltage", group: voltage, table: holding, address: 40198, type: int16, scale_factor: voltage_sf, unit: "V", access: r}
+  - {key: voltage_ll, name: "Line to line voltage (average)", group: voltage, table: holding, address: 40199, type: int16, scale_factor: voltage_sf, unit: "V", access: r}
+  - {key: voltage_ab, name: "Phase A to B voltage", group: voltage, table: holding, address: 40200, type: int16, scale_factor: voltage_sf, unit: "V", access: r}
+  - {key: voltage_bc, name: "Phase B to C voltage", group: voltage, table: holding, address: 40201, type: int16, scale_factor: voltage_sf, unit: "V", access: r}
+  - {key: voltage_ca, name: "Phase C to A voltage", group: voltage, table: holding, address: 40202, type: int16, scale_factor: voltage_sf, unit: "V", access: r}
+  - {key: voltage_sf, name: "Voltage scale factor", group: voltage, table: holding, address: 40203, type: int16, access: r}
+  - {key: frequency, name: "Frequency", group: frequency, table: holding, address: 40204, type: int16, scale_factor: frequency_sf, unit: "Hz", access: r}
+  - {key: frequency_sf, name: "Frequency scale factor", group: frequency, table: holding, address: 40205, type: int16, access: r}
+  - {key: active_power, name: "Total real power", group: power, table: holding, address: 40206, type: int16, scale_factor: active_power_sf, unit: "W", access: r}
+  - {key: active_power_a, name: "Phase A real power", group: power, table: holding, address: 40207, type: int16, scale_factor: active_power_sf, unit: "W", access: r}
+  - {key: active_power_b, name: "Phase B real power", group: power, table: holding, address: 40208, type: int16, scale_factor: active_power_sf, unit: "W", access: r}
+  - {key: active_power_c, name: "Phase C real power", group: power, table: holding, address: 40209, type: int16, scale_factor: active_power_sf, unit: "W", access: r}
+  - {key: active_power_sf, name: "Real power scale factor", group: power, table: holding, address: 40210, type: int16, access: r}
+  - {key: apparent_power, name: "Total apparent power", group: power, table: holding, address: 40211, type: int16, scale_factor: apparent_power_sf, unit: "VA", access: r}
+  - {key: apparent_power_sf, name: "Apparent power scale factor", group: power, table: holding, address: 40215, type: int16, access: r}
+  - {key: reactive_power, name: "Total reactive power", group: power, table: holding, address: 40216, type: int16, scale_factor: reactive_power_sf, unit: "var", access: r}
+  - {key: reactive_power_sf, name: "Reactive power scale factor", group: power, table: holding, address: 40220, type: int16, access: r}
+  - {key: power_factor, name: "Average power factor", group: power_factor, table: holding, address: 40221, type: int16, scale_factor: power_factor_sf, unit: "%", access: r}
+  - {key: power_factor_sf, name: "Power factor scale factor", group: power_factor, table: holding, address: 40225, type: int16, access: r}
+  - {key: exported_energy, name: "Total exported real energy", group: energy, table: holding, address: 40226, type: uint32, scale_factor: energy_sf, unit: "Wh", access: r}
+  - {key: imported_energy, name: "Total imported real energy", group: energy, table: holding, address: 40234, type: uint32, scale_factor: energy_sf, unit: "Wh", access: r}
+  - {key: energy_sf, name: "Real energy scale factor", group: energy, table: holding, address: 40242, type: int16, access: r}

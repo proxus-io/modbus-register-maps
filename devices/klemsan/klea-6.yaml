@@ -1,0 +1,74 @@
+# Transcribed from Klemsan's KLEA-6 series user manual (Turkish); not yet checked against a meter.
+schema_version: 1
+vendor: Klemsan
+model: KLEA 6
+aliases: [KLEA 606R, KLEA 606RE, KLEA 616RE, KLEA-6]
+category: power-analyzer
+summary: KLEA-6 series TFT energy analyzers with Modbus RTU (and Modbus TCP on RE models); floats and doubles in holding registers.
+connection:
+  interfaces: [rtu, tcp]
+  default_unit_id: 1
+  default_byte_order: ABCD
+  serial_defaults: 38400 baud, no parity, 1 stop bit
+  notes:
+    - Read with function 03. Floats span two registers, energy counters (double) span four.
+    - "Byte order follows the Endianness setting (register 10006: BE, LE, BE SWAP, LE SWAP); the factory default BE is assumed here."
+    - Modbus TCP is only on 606RE and 616RE; the manual gives port 502 as default.
+sources:
+  - title: KLEA-6 Serisi Kullanma Kılavuzu
+    publisher: Klemsan
+    version: "2026-10-27"
+    url: https://klemsan.com.tr/wp-content/uploads/2026/09/KLEA-6-Serisi_Kilavuz_TR-27102026.pdf
+    accessed: 2026-11-09
+    sha256: 6e782fd09c6aee4a7c26863d8806ab7b3bb749ed00cc92474bf81460cc6f1746
+    notes: Bölüm 4 Haberleşme tables; serial defaults from section 4.13.2. Linked from the KLEA 606R and 606RE product pages.
+registers:
+  - {key: voltage_avg_ln, name: "Average L-N voltage", group: voltage, table: holding, address: 0, type: float32, unit: "V", access: r}
+  - {key: current_total, name: "Total current", group: current, table: holding, address: 2, type: float32, unit: "A", access: r}
+  - {key: active_power_total, name: "Total active power", group: power, table: holding, address: 4, type: float32, unit: "W", access: r}
+  - {key: reactive_power_total, name: "Total reactive power", group: power, table: holding, address: 6, type: float32, unit: "var", access: r}
+  - {key: apparent_power_total, name: "Total apparent power", group: power, table: holding, address: 8, type: float32, unit: "VA", access: r}
+  - {key: power_factor_total, name: "System power factor", group: power_factor, table: holding, address: 10, type: float32, access: r}
+  - {key: frequency, name: "Frequency", group: frequency, table: holding, address: 12, type: float32, unit: "Hz", access: r}
+  - {key: current_neutral, name: "Neutral current", group: current, table: holding, address: 14, type: float32, unit: "A", access: r}
+  - {key: voltage_l1_l2, name: "L1-L2 voltage", group: voltage, table: holding, address: 16, type: float32, unit: "V", access: r}
+  - {key: voltage_l2_l3, name: "L2-L3 voltage", group: voltage, table: holding, address: 18, type: float32, unit: "V", access: r}
+  - {key: voltage_l3_l1, name: "L3-L1 voltage", group: voltage, table: holding, address: 20, type: float32, unit: "V", access: r}
+  - {key: voltage_avg_ll, name: "Average L-L voltage", group: voltage, table: holding, address: 22, type: float32, unit: "V", access: r}
+  - {key: voltage_l1_n, name: "L1 - N voltage", group: voltage, table: holding, address: 100, type: float32, unit: "V", access: r}
+  - {key: voltage_l2_n, name: "L2 - N voltage", group: voltage, table: holding, address: 102, type: float32, unit: "V", access: r}
+  - {key: voltage_l3_n, name: "L3 - N voltage", group: voltage, table: holding, address: 104, type: float32, unit: "V", access: r}
+  - {key: current_l1, name: "Phase 1 current", group: current, table: holding, address: 106, type: float32, unit: "A", access: r}
+  - {key: current_l2, name: "Phase 2 current", group: current, table: holding, address: 108, type: float32, unit: "A", access: r}
+  - {key: current_l3, name: "Phase 3 current", group: current, table: holding, address: 110, type: float32, unit: "A", access: r}
+  - {key: active_power_l1, name: "Phase 1 active power", group: power, table: holding, address: 112, type: float32, unit: "W", access: r}
+  - {key: active_power_l2, name: "Phase 2 active power", group: power, table: holding, address: 114, type: float32, unit: "W", access: r}
+  - {key: active_power_l3, name: "Phase 3 active power", group: power, table: holding, address: 116, type: float32, unit: "W", access: r}
+  - {key: reactive_power_l1, name: "Phase 1 reactive power", group: power, table: holding, address: 118, type: float32, unit: "var", access: r}
+  - {key: reactive_power_l2, name: "Phase 2 reactive power", group: power, table: holding, address: 120, type: float32, unit: "var", access: r}
+  - {key: reactive_power_l3, name: "Phase 3 reactive power", group: power, table: holding, address: 122, type: float32, unit: "var", access: r}
+  - {key: apparent_power_l1, name: "Phase 1 apparent power", group: power, table: holding, address: 124, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_l2, name: "Phase 2 apparent power", group: power, table: holding, address: 126, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_l3, name: "Phase 3 apparent power", group: power, table: holding, address: 128, type: float32, unit: "VA", access: r}
+  - {key: power_factor_l1, name: "Phase 1 power factor", group: power_factor, table: holding, address: 130, type: float32, access: r}
+  - {key: power_factor_l2, name: "Phase 2 power factor", group: power_factor, table: holding, address: 132, type: float32, access: r}
+  - {key: power_factor_l3, name: "Phase 3 power factor", group: power_factor, table: holding, address: 134, type: float32, access: r}
+  - {key: cos_phi_l1, name: "Phase 1 cos phi", group: power_factor, table: holding, address: 136, type: float32, access: r}
+  - {key: cos_phi_l2, name: "Phase 2 cos phi", group: power_factor, table: holding, address: 138, type: float32, access: r}
+  - {key: cos_phi_l3, name: "Phase 3 cos phi", group: power_factor, table: holding, address: 140, type: float32, access: r}
+  - {key: thd_voltage_l1, name: "L1-N THDV", group: quality, table: holding, address: 500, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l2, name: "L2-N THDV", group: quality, table: holding, address: 502, type: float32, unit: "%", access: r}
+  - {key: thd_voltage_l3, name: "L3-N THDV", group: quality, table: holding, address: 504, type: float32, unit: "%", access: r}
+  - {key: thd_current_l1, name: "Phase 1 THDI", group: quality, table: holding, address: 506, type: float32, unit: "%", access: r}
+  - {key: thd_current_l2, name: "Phase 2 THDI", group: quality, table: holding, address: 508, type: float32, unit: "%", access: r}
+  - {key: thd_current_l3, name: "Phase 3 THDI", group: quality, table: holding, address: 510, type: float32, unit: "%", access: r}
+  - {key: import_active_energy, name: "Total imported active energy", group: energy, table: holding, address: 1000, type: float64, unit: "Wh", access: r}
+  - {key: import_active_energy_l1, name: "Phase 1 imported active energy", group: energy, table: holding, address: 1004, type: float64, unit: "Wh", access: r}
+  - {key: import_active_energy_l2, name: "Phase 2 imported active energy", group: energy, table: holding, address: 1008, type: float64, unit: "Wh", access: r}
+  - {key: import_active_energy_l3, name: "Phase 3 imported active energy", group: energy, table: holding, address: 1012, type: float64, unit: "Wh", access: r}
+  - {key: export_active_energy, name: "Total exported active energy", group: energy, table: holding, address: 1016, type: float64, unit: "Wh", access: r}
+  - {key: export_active_energy_l1, name: "Phase 1 exported active energy", group: energy, table: holding, address: 1020, type: float64, unit: "Wh", access: r}
+  - {key: export_active_energy_l2, name: "Phase 2 exported active energy", group: energy, table: holding, address: 1024, type: float64, unit: "Wh", access: r}
+  - {key: export_active_energy_l3, name: "Phase 3 exported active energy", group: energy, table: holding, address: 1028, type: float64, unit: "Wh", access: r}
+  - {key: import_reactive_energy, name: "Total imported reactive energy", group: energy, table: holding, address: 1032, type: float64, unit: "varh", access: r}
+  - {key: export_reactive_energy, name: "Total exported reactive energy", group: energy, table: holding, address: 1048, type: float64, unit: "varh", access: r}

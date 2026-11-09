@@ -1,0 +1,834 @@
+# Transcribed by script from Schneider's ION7400 Modbus map workbook; not yet checked against a meter.
+schema_version: 1
+vendor: Schneider Electric
+model: ION7400
+aliases: [PowerLogic ION7400]
+category: power-analyzer
+summary: PowerLogic ION7400 power quality meter; measurements are 32-bit floats, energies also as 64-bit integers.
+connection:
+  interfaces: [rtu, tcp]
+  default_unit_id: 1
+  default_byte_order: ABCD
+  notes:
+    - Every register here is a holding register (function code 3).
+    - Addresses are Schneider's register numbers minus one; the workbook numbers registers like the PM5000 lists (Current A = 3000).
+    - Writing needs the meter's Modbus map access security setting enabled (Security Options module, Schneider FAQ FA380992).
+    - Time-of-use, EN50160, IEEE 519, per-harmonic and external-control registers are left out; see the workbook.
+    - Unavailable values read as the N/A pattern of their type, e.g. 0xFFC00000 for FLOAT32.
+sources:
+  - title: ION7400_Modbus_Map
+    publisher: Schneider Electric
+    document_id: FA244203
+    version: "001.002.14"
+    url: https://www.se.com/us/en/faqs/FA244203/
+    accessed: 2026-11-09
+    sha256: fcacc3fe74ab0adbc8ce25c10fc1afefa5039a9ea2dd666b253ffd236e52f80d
+    notes: XLSX attachment of the support article (https://se.my.site.com/ckmContent/sfc/servlet.shepherd/document/download/069Kj00000SLrRLIA1); version is the firmware the workbook states.
+registers:
+  - {key: meter_name, name: "Meter Name", group: configuration, table: holding, address: 29, type: string, length: 20, access: r}
+  - {key: meter_model, name: "Meter Model", group: configuration, table: holding, address: 49, type: string, length: 20, access: r}
+  - {key: current_version, name: "Current Version", group: configuration, table: holding, address: 1716, type: string, length: 6, access: r}
+  - {key: year, name: "Year", group: configuration, table: holding, address: 1836, type: uint16, unit: "year", access: r}
+  - {key: month, name: "Month", group: configuration, table: holding, address: 1837, type: uint16, unit: "month", access: r}
+  - {key: day, name: "Day", group: configuration, table: holding, address: 1838, type: uint16, unit: "days", access: r}
+  - {key: hour, name: "Hour", group: configuration, table: holding, address: 1839, type: uint16, unit: "hours", access: r}
+  - {key: minute, name: "Minute", group: configuration, table: holding, address: 1840, type: uint16, unit: "minutes", access: r}
+  - {key: second, name: "Second", group: configuration, table: holding, address: 1841, type: uint16, unit: "seconds", access: r}
+  - {key: day_of_week, name: "Day of Week", group: configuration, table: holding, address: 1843, type: uint16, access: r}
+  - {key: utc_time, name: "UTC Time", group: configuration, table: holding, address: 1844, type: raw, length: 4, access: r, notes: "Schneider DATETIME encoding (4 words, IEC 870-5-4)."}
+  - {key: digital_input_status_validity_base_unit, name: "Digital Input Status Validity - Base Unit", group: inputs_outputs, table: holding, address: 2399, type: bitfield, length: 2, access: r}
+  - {key: digital_output_status_validity_base_unit, name: "Digital Output Status Validity - Base Unit", group: inputs_outputs, table: holding, address: 2401, type: bitfield, length: 2, access: r}
+  - {key: setpoint_status_validity, name: "Setpoint Status Validity", group: inputs_outputs, table: holding, address: 2419, type: bitfield, length: 2, access: r}
+  - {key: digital_input_status_validity_option_slot_a, name: "Digital Input Status Validity – Option Slot A", group: inputs_outputs, table: holding, address: 2549, type: bitfield, length: 2, access: r}
+  - {key: digital_input_status_validity_option_slot_b, name: "Digital Input Status Validity – Option Slot B", group: inputs_outputs, table: holding, address: 2551, type: bitfield, length: 2, access: r}
+  - {key: digital_input_status_validity_option_slot_c, name: "Digital Input Status Validity – Option Slot C", group: inputs_outputs, table: holding, address: 2553, type: bitfield, length: 2, access: r}
+  - {key: digital_input_status_validity_option_slot_d, name: "Digital Input Status Validity – Option Slot D", group: inputs_outputs, table: holding, address: 2555, type: bitfield, length: 2, access: r}
+  - {key: digital_output_status_validity_option_slot_a, name: "Digital Output Status Validity – Option Slot A", group: inputs_outputs, table: holding, address: 2565, type: bitfield, length: 2, access: r}
+  - {key: digital_output_status_validity_option_slot_b, name: "Digital Output Status Validity – Option Slot B", group: inputs_outputs, table: holding, address: 2567, type: bitfield, length: 2, access: r}
+  - {key: digital_output_status_validity_option_slot_c, name: "Digital Output Status Validity – Option Slot C", group: inputs_outputs, table: holding, address: 2569, type: bitfield, length: 2, access: r}
+  - {key: digital_output_status_validity_option_slot_d, name: "Digital Output Status Validity – Option Slot D", group: inputs_outputs, table: holding, address: 2571, type: bitfield, length: 2, access: r}
+  - {key: active_energy_delivered_into_load, name: "Active Energy Delivered (Into Load)", group: energy, table: holding, address: 2699, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_received_out_of_load, name: "Active Energy Received (Out of Load)", group: energy, table: holding, address: 2701, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_delivered_plus_received, name: "Active Energy Delivered + Received", group: energy, table: holding, address: 2703, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_delivered_received, name: "Active Energy Delivered- Received", group: energy, table: holding, address: 2705, type: float32, unit: "kWh", access: r}
+  - {key: reactive_energy_delivered, name: "Reactive Energy Delivered", group: energy, table: holding, address: 2707, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_received, name: "Reactive Energy Received", group: energy, table: holding, address: 2709, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_delivered_plus_received, name: "Reactive Energy Delivered + Received", group: energy, table: holding, address: 2711, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_delivered_received, name: "Reactive Energy Delivered - Received", group: energy, table: holding, address: 2713, type: float32, unit: "kVARh", access: r}
+  - {key: apparent_energy_delivered, name: "Apparent Energy Delivered", group: energy, table: holding, address: 2715, type: float32, unit: "kVAh", access: r}
+  - {key: apparent_energy_received, name: "Apparent Energy Received", group: energy, table: holding, address: 2717, type: float32, unit: "kVAh", access: r}
+  - {key: apparent_energy_delivered_plus_received, name: "Apparent Energy Delivered + Received", group: energy, table: holding, address: 2719, type: float32, unit: "kVAh", access: r}
+  - {key: apparent_energy_delivered_received, name: "Apparent Energy Delivered - Received", group: energy, table: holding, address: 2721, type: float32, unit: "kVAh", access: r}
+  - {key: active_energy_in_quadrant_i, name: "Active Energy in Quadrant I", group: energy, table: holding, address: 2723, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_in_quadrant_ii, name: "Active Energy in Quadrant II", group: energy, table: holding, address: 2725, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_in_quadrant_iii, name: "Active Energy in Quadrant III", group: energy, table: holding, address: 2727, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_in_quadrant_iv, name: "Active Energy in Quadrant IV", group: energy, table: holding, address: 2729, type: float32, unit: "kWh", access: r}
+  - {key: reactive_energy_in_quadrant_i, name: "Reactive Energy in Quadrant I", group: energy, table: holding, address: 2731, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_in_quadrant_ii, name: "Reactive Energy in Quadrant II", group: energy, table: holding, address: 2733, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_in_quadrant_iii, name: "Reactive Energy in Quadrant III", group: energy, table: holding, address: 2735, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_in_quadrant_iv, name: "Reactive Energy in Quadrant IV", group: energy, table: holding, address: 2737, type: float32, unit: "kVARh", access: r}
+  - {key: apparent_energy_in_quadrant_i, name: "Apparent Energy in Quadrant I", group: energy, table: holding, address: 2739, type: float32, unit: "kVAh", access: r}
+  - {key: apparent_energy_in_quadrant_ii, name: "Apparent Energy in Quadrant II", group: energy, table: holding, address: 2741, type: float32, unit: "kVAh", access: r}
+  - {key: apparent_energy_in_quadrant_iii, name: "Apparent Energy in Quadrant III", group: energy, table: holding, address: 2743, type: float32, unit: "kVAh", access: r}
+  - {key: apparent_energy_in_quadrant_iv, name: "Apparent Energy in Quadrant IV", group: energy, table: holding, address: 2745, type: float32, unit: "kVAh", access: r}
+  - {key: conditional_active_energy_delivered_into_load, name: "Conditional Active Energy Delivered (Into Load)", group: energy, table: holding, address: 2747, type: float32, unit: "kWh", access: r}
+  - {key: conditional_active_energy_received_out_of_load, name: "Conditional Active Energy Received (Out of Load)", group: energy, table: holding, address: 2749, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_delivered_received_conditional, name: "Active Energy Delivered - Received, Conditional", group: energy, table: holding, address: 2753, type: float32, unit: "kWh", access: r}
+  - {key: conditional_reactive_energy_in_delivered, name: "Conditional Reactive Energy In (Delivered)", group: energy, table: holding, address: 2755, type: float32, unit: "kVARh", access: r}
+  - {key: conditional_reactive_energy_out_received, name: "Conditional Reactive Energy Out (Received)", group: energy, table: holding, address: 2757, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_delivered_received_conditional, name: "Reactive Energy Delivered - Received, Conditional", group: energy, table: holding, address: 2761, type: float32, unit: "kVARh", access: r}
+  - {key: apparent_energy_delivered_plus_received_conditional, name: "Apparent Energy Delivered + Received, Conditional", group: energy, table: holding, address: 2767, type: float32, unit: "kVAh", access: r}
+  - {key: active_energy_delivered_last_complete_interval, name: "Active Energy Delivered , Last Complete Interval", group: energy, table: holding, address: 2771, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_received_last_complete_interval, name: "Active Energy Received , Last Complete Interval", group: energy, table: holding, address: 2773, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_delivered_received_last_complete_interval, name: "Active Energy Delivered - Received , Last Complete Interval", group: energy, table: holding, address: 2775, type: float32, unit: "kWh", access: r}
+  - {key: reactive_energy_delivered_last_complete_interval, name: "Reactive Energy Delivered , Last Complete Interval", group: energy, table: holding, address: 2777, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_received_last_complete_interval, name: "Reactive Energy Received , Last Complete Interval", group: energy, table: holding, address: 2779, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_delivered_received_last_complete_interval, name: "Reactive Energy Delivered - Received , Last Complete Interval", group: energy, table: holding, address: 2781, type: float32, unit: "kVARh", access: r}
+  - {key: apparent_energy_delivered_plus_received_last_complete_interval, name: "Apparent Energy Delivered + Received , Last Complete Interval", group: energy, table: holding, address: 2783, type: float32, unit: "kVAh", access: r}
+  - {key: active_energy_delivered_present_interval, name: "Active Energy Delivered , Present Interval", group: energy, table: holding, address: 2785, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_received_present_interval, name: "Active Energy Received , Present Interval", group: energy, table: holding, address: 2787, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_delivered_received_present_interval, name: "Active Energy Delivered - Received , Present Interval", group: energy, table: holding, address: 2789, type: float32, unit: "kWh", access: r}
+  - {key: reactive_energy_delivered_present_interval, name: "Reactive Energy Delivered , Present Interval", group: energy, table: holding, address: 2791, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_received_present_interval, name: "Reactive Energy Received , Present Interval", group: energy, table: holding, address: 2793, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_delivered_received_present_interval, name: "Reactive Energy Delivered - Received , Present Interval", group: energy, table: holding, address: 2795, type: float32, unit: "kVARh", access: r}
+  - {key: apparent_energy_delivered_plus_received_present_interval, name: "Apparent Energy Delivered + Received , Present Interval", group: energy, table: holding, address: 2797, type: float32, unit: "kVAh", access: r}
+  - {key: active_energy_delivered_interval, name: "Active Energy Delivered Interval", group: energy, table: holding, address: 2799, type: float32, unit: "kWh", access: r}
+  - {key: active_energy_received_interval, name: "Active Energy Received Interval", group: energy, table: holding, address: 2801, type: float32, unit: "kWh", access: r}
+  - {key: reactive_energy_delivered_interval, name: "Reactive Energy Delivered Interval", group: energy, table: holding, address: 2803, type: float32, unit: "kVARh", access: r}
+  - {key: reactive_energy_received_interval, name: "Reactive Energy Received Interval", group: energy, table: holding, address: 2805, type: float32, unit: "kVARh", access: r}
+  - {key: apparent_energy_delivered_interval, name: "Apparent Energy Delivered Interval", group: energy, table: holding, address: 2807, type: float32, unit: "kVAh", access: r}
+  - {key: apparent_energy_received_interval, name: "Apparent Energy Received Interval", group: energy, table: holding, address: 2809, type: float32, unit: "kVAh", access: r}
+  - {key: input_metering_accumulation_channel_01, name: "Input Metering Accumulation Channel 01", group: input_metering_and_setpoints, table: holding, address: 2829, type: float32, access: r}
+  - {key: input_metering_accumulation_channel_02, name: "Input Metering Accumulation Channel 02", group: input_metering_and_setpoints, table: holding, address: 2831, type: float32, access: r}
+  - {key: input_metering_accumulation_channel_03, name: "Input Metering Accumulation Channel 03", group: input_metering_and_setpoints, table: holding, address: 2833, type: float32, access: r}
+  - {key: input_metering_accumulation_channel_04, name: "Input Metering Accumulation Channel 04", group: input_metering_and_setpoints, table: holding, address: 2835, type: float32, access: r}
+  - {key: input_metering_accumulation_channel_05, name: "Input Metering Accumulation Channel 05", group: input_metering_and_setpoints, table: holding, address: 2837, type: float32, access: r}
+  - {key: current_a, name: "Current A", group: measurements, table: holding, address: 2999, type: float32, unit: "A", access: r}
+  - {key: current_b, name: "Current B", group: measurements, table: holding, address: 3001, type: float32, unit: "A", access: r}
+  - {key: current_c, name: "Current C", group: measurements, table: holding, address: 3003, type: float32, unit: "A", access: r}
+  - {key: current_n, name: "Current N", group: measurements, table: holding, address: 3005, type: float32, unit: "A", access: r}
+  - {key: current_g, name: "Current G", group: measurements, table: holding, address: 3007, type: float32, unit: "A", access: r}
+  - {key: current_avg, name: "Current Avg", group: measurements, table: holding, address: 3009, type: float32, unit: "A", access: r}
+  - {key: current_unbalance_worst, name: "Current Unbalance Worst", group: measurements, table: holding, address: 3017, type: float32, access: r}
+  - {key: voltage_a_b, name: "Voltage A-B", group: measurements, table: holding, address: 3019, type: float32, unit: "V", access: r}
+  - {key: voltage_b_c, name: "Voltage B-C", group: measurements, table: holding, address: 3021, type: float32, unit: "V", access: r}
+  - {key: voltage_c_a, name: "Voltage C-A", group: measurements, table: holding, address: 3023, type: float32, unit: "V", access: r}
+  - {key: voltage_l_l_avg, name: "Voltage L-L Avg", group: measurements, table: holding, address: 3025, type: float32, unit: "V", access: r}
+  - {key: voltage_a_n, name: "Voltage A-N", group: measurements, table: holding, address: 3027, type: float32, unit: "V", access: r}
+  - {key: voltage_b_n, name: "Voltage B-N", group: measurements, table: holding, address: 3029, type: float32, unit: "V", access: r}
+  - {key: voltage_c_n, name: "Voltage C-N", group: measurements, table: holding, address: 3031, type: float32, unit: "V", access: r}
+  - {key: voltage_l_n_avg, name: "Voltage L-N Avg", group: measurements, table: holding, address: 3035, type: float32, unit: "V", access: r}
+  - {key: voltage_unbalance_l_n_worst, name: "Voltage Unbalance L-N Worst", group: measurements, table: holding, address: 3051, type: float32, access: r}
+  - {key: active_power_a, name: "Active Power A", group: measurements, table: holding, address: 3053, type: float32, unit: "W", access: r}
+  - {key: active_power_b, name: "Active Power B", group: measurements, table: holding, address: 3055, type: float32, unit: "W", access: r}
+  - {key: active_power_c, name: "Active Power C", group: measurements, table: holding, address: 3057, type: float32, unit: "W", access: r}
+  - {key: active_power_total, name: "Active Power Total", group: measurements, table: holding, address: 3059, type: float32, unit: "W", access: r}
+  - {key: reactive_power_a, name: "Reactive Power A", group: measurements, table: holding, address: 3061, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_b, name: "Reactive Power B", group: measurements, table: holding, address: 3063, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_c, name: "Reactive Power C", group: measurements, table: holding, address: 3065, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_total, name: "Reactive Power Total", group: measurements, table: holding, address: 3067, type: float32, unit: "VAR", access: r}
+  - {key: apparent_power_a, name: "Apparent Power A", group: measurements, table: holding, address: 3069, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_b, name: "Apparent Power B", group: measurements, table: holding, address: 3071, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_c, name: "Apparent Power C", group: measurements, table: holding, address: 3073, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_total, name: "Apparent Power Total", group: measurements, table: holding, address: 3075, type: float32, unit: "VA", access: r}
+  - {key: frequency, name: "Frequency", group: measurements, table: holding, address: 3109, type: float32, unit: "Hz", access: r}
+  - {key: input_metering_rate_channel_01, name: "Input Metering Rate Channel 01", group: input_metering_and_setpoints, table: holding, address: 3111, type: float32, access: r}
+  - {key: input_metering_rate_channel_02, name: "Input Metering Rate Channel 02", group: input_metering_and_setpoints, table: holding, address: 3113, type: float32, access: r}
+  - {key: input_metering_rate_channel_03, name: "Input Metering Rate Channel 03", group: input_metering_and_setpoints, table: holding, address: 3115, type: float32, access: r}
+  - {key: input_metering_rate_channel_04, name: "Input Metering Rate Channel 04", group: input_metering_and_setpoints, table: holding, address: 3117, type: float32, access: r}
+  - {key: input_metering_rate_channel_05, name: "Input Metering Rate Channel 05", group: input_metering_and_setpoints, table: holding, address: 3119, type: float32, access: r}
+  - {key: current_capacity_a, name: "Current Capacity A", group: measurements, table: holding, address: 3135, type: float32, access: r}
+  - {key: current_capacity_b, name: "Current Capacity B", group: measurements, table: holding, address: 3137, type: float32, access: r}
+  - {key: current_capacity_c, name: "Current Capacity C", group: measurements, table: holding, address: 3139, type: float32, access: r}
+  - {key: current_capacity_avg, name: "Current Capacity avg", group: measurements, table: holding, address: 3141, type: float32, access: r}
+  - {key: power_factor_a, name: "Power Factor A", group: measurements, table: holding, address: 3143, type: float32, access: r}
+  - {key: power_factor_b, name: "Power Factor B", group: measurements, table: holding, address: 3145, type: float32, access: r}
+  - {key: power_factor_c, name: "Power Factor C", group: measurements, table: holding, address: 3147, type: float32, access: r}
+  - {key: power_factor_total, name: "Power Factor Total", group: measurements, table: holding, address: 3149, type: float32, access: r}
+  - {key: displacement_power_factor_a, name: "Displacement Power Factor A", group: measurements, table: holding, address: 3151, type: float32, access: r}
+  - {key: displacement_power_factor_b, name: "Displacement Power Factor B", group: measurements, table: holding, address: 3153, type: float32, access: r}
+  - {key: displacement_power_factor_c, name: "Displacement Power Factor C", group: measurements, table: holding, address: 3155, type: float32, access: r}
+  - {key: displacement_power_factor_total, name: "Displacement Power Factor Total", group: measurements, table: holding, address: 3157, type: float32, access: r}
+  - {key: power_factor_a_lagging, name: "Power Factor A Lagging", group: measurements, table: holding, address: 3159, type: float32, access: r}
+  - {key: power_factor_a_leading, name: "Power Factor A Leading", group: measurements, table: holding, address: 3161, type: float32, access: r}
+  - {key: power_factor_b_lagging, name: "Power Factor B Lagging", group: measurements, table: holding, address: 3163, type: float32, access: r}
+  - {key: power_factor_b_leading, name: "Power Factor B Leading", group: measurements, table: holding, address: 3165, type: float32, access: r}
+  - {key: power_factor_c_lagging, name: "Power Factor C Lagging", group: measurements, table: holding, address: 3167, type: float32, access: r}
+  - {key: power_factor_c_leading, name: "Power Factor C Leading", group: measurements, table: holding, address: 3169, type: float32, access: r}
+  - {key: power_factor_lagging, name: "Power Factor Lagging", group: measurements, table: holding, address: 3171, type: float32, access: r}
+  - {key: power_factor_leading, name: "Power Factor Leading", group: measurements, table: holding, address: 3173, type: float32, access: r}
+  - {key: active_energy_delivered_into_load_3203, name: "Active Energy Delivered (Into Load)", group: energy, table: holding, address: 3203, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_received_out_of_load_3207, name: "Active Energy Received (Out of Load)", group: energy, table: holding, address: 3207, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_delivered_plus_received_3211, name: "Active Energy Delivered + Received", group: energy, table: holding, address: 3211, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_delivered_received_3215, name: "Active Energy Delivered- Received", group: energy, table: holding, address: 3215, type: int64, unit: "Wh", access: r}
+  - {key: reactive_energy_delivered_3219, name: "Reactive Energy Delivered", group: energy, table: holding, address: 3219, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_received_3223, name: "Reactive Energy Received", group: energy, table: holding, address: 3223, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_delivered_plus_received_3227, name: "Reactive Energy Delivered + Received", group: energy, table: holding, address: 3227, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_delivered_received_3231, name: "Reactive Energy Delivered - Received", group: energy, table: holding, address: 3231, type: int64, unit: "VARh", access: r}
+  - {key: apparent_energy_delivered_3235, name: "Apparent Energy Delivered", group: energy, table: holding, address: 3235, type: int64, unit: "VAh", access: r}
+  - {key: apparent_energy_received_3239, name: "Apparent Energy Received", group: energy, table: holding, address: 3239, type: int64, unit: "VAh", access: r}
+  - {key: apparent_energy_delivered_plus_received_3243, name: "Apparent Energy Delivered + Received", group: energy, table: holding, address: 3243, type: int64, unit: "VAh", access: r}
+  - {key: apparent_energy_delivered_received_3247, name: "Apparent Energy Delivered - Received", group: energy, table: holding, address: 3247, type: int64, unit: "VAh", access: r}
+  - {key: active_energy_in_quadrant_i_3255, name: "Active Energy in Quadrant I", group: energy, table: holding, address: 3255, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_in_quadrant_ii_3259, name: "Active Energy in Quadrant II", group: energy, table: holding, address: 3259, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_in_quadrant_iii_3263, name: "Active Energy in Quadrant III", group: energy, table: holding, address: 3263, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_in_quadrant_iv_3267, name: "Active Energy in Quadrant IV", group: energy, table: holding, address: 3267, type: int64, unit: "Wh", access: r}
+  - {key: reactive_energy_in_quadrant_i_3271, name: "Reactive Energy in Quadrant I", group: energy, table: holding, address: 3271, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_in_quadrant_ii_3275, name: "Reactive Energy in Quadrant II", group: energy, table: holding, address: 3275, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_in_quadrant_iii_3279, name: "Reactive Energy in Quadrant III", group: energy, table: holding, address: 3279, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_in_quadrant_iv_3283, name: "Reactive Energy in Quadrant IV", group: energy, table: holding, address: 3283, type: int64, unit: "VARh", access: r}
+  - {key: apparent_energy_in_quadrant_i_3287, name: "Apparent Energy in Quadrant I", group: energy, table: holding, address: 3287, type: int64, unit: "VAh", access: r}
+  - {key: apparent_energy_in_quadrant_ii_3291, name: "Apparent Energy in Quadrant II", group: energy, table: holding, address: 3291, type: int64, unit: "VAh", access: r}
+  - {key: apparent_energy_in_quadrant_iii_3295, name: "Apparent Energy in Quadrant III", group: energy, table: holding, address: 3295, type: int64, unit: "VAh", access: r}
+  - {key: apparent_energy_in_quadrant_iv_3299, name: "Apparent Energy in Quadrant IV", group: energy, table: holding, address: 3299, type: int64, unit: "VAh", access: r}
+  - {key: conditional_active_energy_delivered_into_load_3357, name: "Conditional Active Energy Delivered (Into Load)", group: energy, table: holding, address: 3357, type: int64, unit: "Wh", access: r}
+  - {key: conditional_active_energy_received_out_of_load_3361, name: "Conditional Active Energy Received (Out of Load)", group: energy, table: holding, address: 3361, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_delivered_received_conditional_3369, name: "Active Energy Delivered - Received, Conditional", group: energy, table: holding, address: 3369, type: int64, unit: "Wh", access: r}
+  - {key: conditional_reactive_energy_in_delivered_3373, name: "Conditional Reactive Energy In (Delivered)", group: energy, table: holding, address: 3373, type: int64, unit: "VARh", access: r}
+  - {key: conditional_reactive_energy_out_received_3377, name: "Conditional Reactive Energy Out (Received)", group: energy, table: holding, address: 3377, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_delivered_received_conditional_3385, name: "Reactive Energy Delivered - Received, Conditional", group: energy, table: holding, address: 3385, type: int64, unit: "VARh", access: r}
+  - {key: apparent_energy_delivered_plus_received_conditional_3397, name: "Apparent Energy Delivered + Received, Conditional", group: energy, table: holding, address: 3397, type: int64, unit: "VAh", access: r}
+  - {key: active_energy_delivered_last_complete_interval_3413, name: "Active Energy Delivered , Last Complete Interval", group: energy, table: holding, address: 3413, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_received_last_complete_interval_3417, name: "Active Energy Received , Last Complete Interval", group: energy, table: holding, address: 3417, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_delivered_received_last_complete_interval_3421, name: "Active Energy Delivered - Received , Last Complete Interval", group: energy, table: holding, address: 3421, type: int64, unit: "Wh", access: r}
+  - {key: reactive_energy_delivered_last_complete_interval_3425, name: "Reactive Energy Delivered , Last Complete Interval", group: energy, table: holding, address: 3425, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_received_last_complete_interval_3429, name: "Reactive Energy Received , Last Complete Interval", group: energy, table: holding, address: 3429, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_delivered_received_last_complete_interval_3433, name: "Reactive Energy Delivered - Received , Last Complete Interval", group: energy, table: holding, address: 3433, type: int64, unit: "VARh", access: r}
+  - {key: apparent_energy_delivered_plus_received_last_complete_inter_3437, name: "Apparent Energy Delivered + Received , Last Complete Interval", group: energy, table: holding, address: 3437, type: int64, unit: "VAh", access: r}
+  - {key: active_energy_delivered_present_interval_3441, name: "Active Energy Delivered , Present Interval", group: energy, table: holding, address: 3441, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_received_present_interval_3445, name: "Active Energy Received , Present Interval", group: energy, table: holding, address: 3445, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_delivered_received_present_interval_3449, name: "Active Energy Delivered - Received , Present Interval", group: energy, table: holding, address: 3449, type: int64, unit: "Wh", access: r}
+  - {key: reactive_energy_delivered_present_interval_3453, name: "Reactive Energy Delivered , Present Interval", group: energy, table: holding, address: 3453, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_received_present_interval_3457, name: "Reactive Energy Received , Present Interval", group: energy, table: holding, address: 3457, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_delivered_received_present_interval_3461, name: "Reactive Energy Delivered - Received , Present Interval", group: energy, table: holding, address: 3461, type: int64, unit: "VARh", access: r}
+  - {key: apparent_energy_delivered_plus_received_present_interval_3465, name: "Apparent Energy Delivered + Received , Present Interval", group: energy, table: holding, address: 3465, type: int64, unit: "VAh", access: r}
+  - {key: active_energy_delivered_interval_3469, name: "Active Energy Delivered Interval", group: energy, table: holding, address: 3469, type: int64, unit: "Wh", access: r}
+  - {key: active_energy_received_interval_3473, name: "Active Energy Received Interval", group: energy, table: holding, address: 3473, type: int64, unit: "Wh", access: r}
+  - {key: reactive_energy_delivered_interval_3477, name: "Reactive Energy Delivered Interval", group: energy, table: holding, address: 3477, type: int64, unit: "VARh", access: r}
+  - {key: reactive_energy_received_interval_3481, name: "Reactive Energy Received Interval", group: energy, table: holding, address: 3481, type: int64, unit: "VARh", access: r}
+  - {key: apparent_energy_delivered_interval_3485, name: "Apparent Energy Delivered Interval", group: energy, table: holding, address: 3485, type: int64, unit: "VAh", access: r}
+  - {key: apparent_energy_received_interval_3489, name: "Apparent Energy Received Interval", group: energy, table: holding, address: 3489, type: int64, unit: "VAh", access: r}
+  - {key: input_metering_accumulation_channel_01_3569, name: "Input Metering Accumulation Channel 01", group: input_metering_and_setpoints, table: holding, address: 3569, type: int64, access: r}
+  - {key: input_metering_accumulation_channel_02_3573, name: "Input Metering Accumulation Channel 02", group: input_metering_and_setpoints, table: holding, address: 3573, type: int64, access: r}
+  - {key: input_metering_accumulation_channel_03_3577, name: "Input Metering Accumulation Channel 03", group: input_metering_and_setpoints, table: holding, address: 3577, type: int64, access: r}
+  - {key: input_metering_accumulation_channel_04_3581, name: "Input Metering Accumulation Channel 04", group: input_metering_and_setpoints, table: holding, address: 3581, type: int64, access: r}
+  - {key: input_metering_accumulation_channel_05_3601, name: "Input Metering Accumulation Channel 05", group: input_metering_and_setpoints, table: holding, address: 3601, type: int64, access: r}
+  - {key: current_a_squared_hours, name: "Current A Squared Hours", group: energy, table: holding, address: 3649, type: float32, unit: "A^2h", access: r}
+  - {key: current_b_square_hours, name: "Current B Square Hours", group: energy, table: holding, address: 3651, type: float32, unit: "A^2h", access: r}
+  - {key: current_c_square_hours, name: "Current C Square Hours", group: energy, table: holding, address: 3653, type: float32, unit: "A^2h", access: r}
+  - {key: voltage_a_b_square_hours, name: "Voltage A-B Square Hours", group: energy, table: holding, address: 3655, type: float32, unit: "V^2h", access: r}
+  - {key: voltage_b_c_square_hours, name: "Voltage B-C Square Hours", group: energy, table: holding, address: 3657, type: float32, unit: "V^2h", access: r}
+  - {key: voltage_c_a_square_hours, name: "Voltage C-A Square Hours", group: energy, table: holding, address: 3659, type: float32, unit: "V^2h", access: r}
+  - {key: current_a_squared_hours_3667, name: "Current A Squared Hours", group: energy, table: holding, address: 3667, type: float32, unit: "A^2h", access: r}
+  - {key: current_b_square_hours_3669, name: "Current B Square Hours", group: energy, table: holding, address: 3669, type: float32, unit: "A^2h", access: r}
+  - {key: current_c_square_hours_3671, name: "Current C Square Hours", group: energy, table: holding, address: 3671, type: float32, unit: "A^2h", access: r}
+  - {key: voltage_a_b_square_hours_3673, name: "Voltage A-B Square Hours", group: energy, table: holding, address: 3673, type: float32, unit: "V^2h", access: r}
+  - {key: voltage_b_c_square_hours_3675, name: "Voltage B-C Square Hours", group: energy, table: holding, address: 3675, type: float32, unit: "V^2h", access: r}
+  - {key: voltage_c_a_square_hours_3677, name: "Voltage C-A Square Hours", group: energy, table: holding, address: 3677, type: float32, unit: "V^2h", access: r}
+  - {key: voltage_a_n_square_hours, name: "Voltage A-N Square Hours", group: energy, table: holding, address: 3679, type: float32, unit: "V^2h", access: r}
+  - {key: voltage_b_n_square_hours, name: "Voltage B-N Square Hours", group: energy, table: holding, address: 3681, type: float32, unit: "V^2h", access: r}
+  - {key: voltage_c_n_square_hours, name: "Voltage C-N Square Hours", group: energy, table: holding, address: 3683, type: float32, unit: "V^2h", access: r}
+  - {key: digital_input_s1_count, name: "Digital Input S1 Count", group: inputs_outputs, table: holding, address: 8914, type: uint32, access: r}
+  - {key: digital_input_s2_count, name: "Digital Input S2 Count", group: inputs_outputs, table: holding, address: 8918, type: uint32, access: r}
+  - {key: digital_input_s3_count, name: "Digital Input S3 Count", group: inputs_outputs, table: holding, address: 8922, type: uint32, access: r}
+  - {key: digital_input_a_s1_count, name: "Digital Input A S1 Count", group: inputs_outputs, table: holding, address: 9026, type: uint32, access: r}
+  - {key: digital_input_a_s2_count, name: "Digital Input A S2 Count", group: inputs_outputs, table: holding, address: 9028, type: uint32, access: r}
+  - {key: digital_input_a_s3_count, name: "Digital Input A S3 Count", group: inputs_outputs, table: holding, address: 9030, type: uint32, access: r}
+  - {key: digital_input_a_s4_count, name: "Digital Input A S4 Count", group: inputs_outputs, table: holding, address: 9032, type: uint32, access: r}
+  - {key: digital_input_a_s5_count, name: "Digital Input A S5 Count", group: inputs_outputs, table: holding, address: 9034, type: uint32, access: r}
+  - {key: digital_input_a_s6_count, name: "Digital Input A S6 Count", group: inputs_outputs, table: holding, address: 9036, type: uint32, access: r}
+  - {key: digital_input_b_s1_count, name: "Digital Input B S1 Count", group: inputs_outputs, table: holding, address: 9038, type: uint32, access: r}
+  - {key: digital_input_b_s2_count, name: "Digital Input B S2 Count", group: inputs_outputs, table: holding, address: 9040, type: uint32, access: r}
+  - {key: digital_input_b_s3_count, name: "Digital Input B S3 Count", group: inputs_outputs, table: holding, address: 9042, type: uint32, access: r}
+  - {key: digital_input_b_s4_count, name: "Digital Input B S4 Count", group: inputs_outputs, table: holding, address: 9044, type: uint32, access: r}
+  - {key: digital_input_b_s5_count, name: "Digital Input B S5 Count", group: inputs_outputs, table: holding, address: 9046, type: uint32, access: r}
+  - {key: digital_input_b_s6_count, name: "Digital Input B S6 Count", group: inputs_outputs, table: holding, address: 9048, type: uint32, access: r}
+  - {key: digital_input_c_s1_count, name: "Digital Input C S1 Count", group: inputs_outputs, table: holding, address: 9050, type: uint32, access: r}
+  - {key: digital_input_c_s2_count, name: "Digital Input C S2 Count", group: inputs_outputs, table: holding, address: 9052, type: uint32, access: r}
+  - {key: digital_input_c_s3_count, name: "Digital Input C S3 Count", group: inputs_outputs, table: holding, address: 9054, type: uint32, access: r}
+  - {key: digital_input_c_s4_count, name: "Digital Input C S4 Count", group: inputs_outputs, table: holding, address: 9056, type: uint32, access: r}
+  - {key: digital_input_c_s5_count, name: "Digital Input C S5 Count", group: inputs_outputs, table: holding, address: 9058, type: uint32, access: r}
+  - {key: digital_input_c_s6_count, name: "Digital Input C S6 Count", group: inputs_outputs, table: holding, address: 9060, type: uint32, access: r}
+  - {key: digital_input_d_s1_count, name: "Digital Input D S1 Count", group: inputs_outputs, table: holding, address: 9062, type: uint32, access: r}
+  - {key: digital_input_d_s2_count, name: "Digital Input D S2 Count", group: inputs_outputs, table: holding, address: 9064, type: uint32, access: r}
+  - {key: digital_input_d_s3_count, name: "Digital Input D S3 Count", group: inputs_outputs, table: holding, address: 9066, type: uint32, access: r}
+  - {key: digital_input_d_s4_count, name: "Digital Input D S4 Count", group: inputs_outputs, table: holding, address: 9068, type: uint32, access: r}
+  - {key: digital_input_d_s5_count, name: "Digital Input D S5 Count", group: inputs_outputs, table: holding, address: 9070, type: uint32, access: r}
+  - {key: digital_input_d_s6_count, name: "Digital Input D S6 Count", group: inputs_outputs, table: holding, address: 9072, type: uint32, access: r}
+  - {key: analog_input_1_scaled_value, name: "Analog input 1 Scaled Value", group: inputs_outputs, table: holding, address: 10015, type: float32, access: r}
+  - {key: analog_input_2_scaled_value, name: "Analog input 2 Scaled Value", group: inputs_outputs, table: holding, address: 10017, type: float32, access: r}
+  - {key: analog_input_3_scaled_value, name: "Analog input 3 Scaled Value", group: inputs_outputs, table: holding, address: 10019, type: float32, access: r}
+  - {key: analog_input_4_scaled_value, name: "Analog input 4 Scaled Value", group: inputs_outputs, table: holding, address: 10021, type: float32, access: r}
+  - {key: analog_input_1_scaled_value_10031, name: "Analog input 1 Scaled Value", group: inputs_outputs, table: holding, address: 10031, type: float32, access: r}
+  - {key: analog_input_2_scaled_value_10033, name: "Analog input 2 Scaled Value", group: inputs_outputs, table: holding, address: 10033, type: float32, access: r}
+  - {key: analog_input_3_scaled_value_10035, name: "Analog input 3 Scaled Value", group: inputs_outputs, table: holding, address: 10035, type: float32, access: r}
+  - {key: analog_input_4_scaled_value_10037, name: "Analog input 4 Scaled Value", group: inputs_outputs, table: holding, address: 10037, type: float32, access: r}
+  - {key: analog_input_1_scaled_value_10047, name: "Analog input 1 Scaled Value", group: inputs_outputs, table: holding, address: 10047, type: float32, access: r}
+  - {key: analog_input_2_scaled_value_10049, name: "Analog input 2 Scaled Value", group: inputs_outputs, table: holding, address: 10049, type: float32, access: r}
+  - {key: analog_input_3_scaled_value_10051, name: "Analog input 3 Scaled Value", group: inputs_outputs, table: holding, address: 10051, type: float32, access: r}
+  - {key: analog_input_4_scaled_value_10053, name: "Analog input 4 Scaled Value", group: inputs_outputs, table: holding, address: 10053, type: float32, access: r}
+  - {key: analog_input_1_scaled_value_10063, name: "Analog input 1 Scaled Value", group: inputs_outputs, table: holding, address: 10063, type: float32, access: r}
+  - {key: analog_input_2_scaled_value_10065, name: "Analog input 2 Scaled Value", group: inputs_outputs, table: holding, address: 10065, type: float32, access: r}
+  - {key: analog_input_3_scaled_value_10067, name: "Analog input 3 Scaled Value", group: inputs_outputs, table: holding, address: 10067, type: float32, access: r}
+  - {key: analog_input_4_scaled_value_10069, name: "Analog input 4 Scaled Value", group: inputs_outputs, table: holding, address: 10069, type: float32, access: r}
+  - {key: analog_output_1_normalized_value, name: "Analog output 1 Normalized Value", group: inputs_outputs, table: holding, address: 10215, type: float32, access: r}
+  - {key: analog_output_2_normalized_value, name: "Analog output 2 Normalized Value", group: inputs_outputs, table: holding, address: 10217, type: float32, access: r}
+  - {key: analog_output_1_normalized_value_10231, name: "Analog output 1 Normalized Value", group: inputs_outputs, table: holding, address: 10231, type: float32, access: r}
+  - {key: analog_output_2_normalized_value_10233, name: "Analog output 2 Normalized Value", group: inputs_outputs, table: holding, address: 10233, type: float32, access: r}
+  - {key: analog_output_1_normalized_value_10247, name: "Analog output 1 Normalized Value", group: inputs_outputs, table: holding, address: 10247, type: float32, access: r}
+  - {key: analog_output_2_normalized_value_10249, name: "Analog output 2 Normalized Value", group: inputs_outputs, table: holding, address: 10249, type: float32, access: r}
+  - {key: analog_output_1_normalized_value_10263, name: "Analog output 1 Normalized Value", group: inputs_outputs, table: holding, address: 10263, type: float32, access: r}
+  - {key: analog_output_2_normalized_value_10265, name: "Analog output 2 Normalized Value", group: inputs_outputs, table: holding, address: 10265, type: float32, access: r}
+  - {key: current_disturbance, name: "Current Disturbance", group: power_quality, table: holding, address: 13597, type: uint32, access: r}
+  - {key: voltage_disturbance, name: "Voltage Disturbance", group: power_quality, table: holding, address: 13599, type: uint32, access: r}
+  - {key: over_current_i4, name: "Over Current I4", group: input_metering_and_setpoints, table: holding, address: 14039, type: uint32, access: r}
+  - {key: pickup_setpoint, name: "Pickup Setpoint", group: input_metering_and_setpoints, table: holding, address: 14044, type: float32, unit: "A", access: r}
+  - {key: pickup_time_delay, name: "Pickup Time Delay", group: input_metering_and_setpoints, table: holding, address: 14046, type: uint32, unit: "seconds", access: r}
+  - {key: dropout_setpoint, name: "Dropout Setpoint", group: input_metering_and_setpoints, table: holding, address: 14048, type: float32, unit: "A", access: r}
+  - {key: dropout_time_delay, name: "Dropout Time Delay", group: input_metering_and_setpoints, table: holding, address: 14050, type: uint32, unit: "seconds", access: r}
+  - {key: over_demand_active_power_last, name: "Over Demand, Active Power, Last", group: input_metering_and_setpoints, table: holding, address: 14319, type: uint32, access: r}
+  - {key: pickup_setpoint_14324, name: "Pickup Setpoint", group: input_metering_and_setpoints, table: holding, address: 14324, type: float32, unit: "W", access: r}
+  - {key: pickup_time_delay_14326, name: "Pickup Time Delay", group: input_metering_and_setpoints, table: holding, address: 14326, type: uint32, unit: "seconds", access: r}
+  - {key: dropout_setpoint_14328, name: "Dropout Setpoint", group: input_metering_and_setpoints, table: holding, address: 14328, type: float32, unit: "W", access: r}
+  - {key: dropout_time_delay_14330, name: "Dropout Time Delay", group: input_metering_and_setpoints, table: holding, address: 14330, type: uint32, unit: "seconds", access: r}
+  - {key: over_voltage_unbalance, name: "Over Voltage Unbalance", group: input_metering_and_setpoints, table: holding, address: 14519, type: uint32, access: r}
+  - {key: pickup_setpoint_14524, name: "Pickup Setpoint", group: input_metering_and_setpoints, table: holding, address: 14524, type: float32, access: r}
+  - {key: pickup_time_delay_14526, name: "Pickup Time Delay", group: input_metering_and_setpoints, table: holding, address: 14526, type: uint32, unit: "seconds", access: r}
+  - {key: dropout_setpoint_14528, name: "Dropout Setpoint", group: input_metering_and_setpoints, table: holding, address: 14528, type: float32, access: r}
+  - {key: dropout_time_delay_14530, name: "Dropout Time Delay", group: input_metering_and_setpoints, table: holding, address: 14530, type: uint32, unit: "seconds", access: r}
+  - {key: over_current_a, name: "Over Current A", group: input_metering_and_setpoints, table: holding, address: 14579, type: uint32, access: r}
+  - {key: pickup_setpoint_14584, name: "Pickup Setpoint", group: input_metering_and_setpoints, table: holding, address: 14584, type: float32, unit: "A", access: r}
+  - {key: pickup_time_delay_14586, name: "Pickup Time Delay", group: input_metering_and_setpoints, table: holding, address: 14586, type: uint32, unit: "seconds", access: r}
+  - {key: dropout_setpoint_14588, name: "Dropout Setpoint", group: input_metering_and_setpoints, table: holding, address: 14588, type: float32, unit: "A", access: r}
+  - {key: dropout_time_delay_14590, name: "Dropout Time Delay", group: input_metering_and_setpoints, table: holding, address: 14590, type: uint32, unit: "seconds", access: r}
+  - {key: over_current_b, name: "Over Current B", group: input_metering_and_setpoints, table: holding, address: 14599, type: uint32, access: r}
+  - {key: pickup_setpoint_14604, name: "Pickup Setpoint", group: input_metering_and_setpoints, table: holding, address: 14604, type: float32, unit: "A", access: r}
+  - {key: pickup_time_delay_14606, name: "Pickup Time Delay", group: input_metering_and_setpoints, table: holding, address: 14606, type: uint32, unit: "seconds", access: r}
+  - {key: dropout_setpoint_14608, name: "Dropout Setpoint", group: input_metering_and_setpoints, table: holding, address: 14608, type: float32, unit: "A", access: r}
+  - {key: dropout_time_delay_14610, name: "Dropout Time Delay", group: input_metering_and_setpoints, table: holding, address: 14610, type: uint32, unit: "seconds", access: r}
+  - {key: over_current_c, name: "Over Current C", group: input_metering_and_setpoints, table: holding, address: 14619, type: uint32, access: r}
+  - {key: pickup_setpoint_14624, name: "Pickup Setpoint", group: input_metering_and_setpoints, table: holding, address: 14624, type: float32, unit: "A", access: r}
+  - {key: pickup_time_delay_14626, name: "Pickup Time Delay", group: input_metering_and_setpoints, table: holding, address: 14626, type: uint32, unit: "seconds", access: r}
+  - {key: dropout_setpoint_14628, name: "Dropout Setpoint", group: input_metering_and_setpoints, table: holding, address: 14628, type: float32, unit: "A", access: r}
+  - {key: dropout_time_delay_14630, name: "Dropout Time Delay", group: input_metering_and_setpoints, table: holding, address: 14630, type: uint32, unit: "seconds", access: r}
+  - {key: hs_current_a, name: "HS Current A", group: measurements, table: holding, address: 20999, type: float32, unit: "A", access: r}
+  - {key: hs_current_b, name: "HS Current B", group: measurements, table: holding, address: 21001, type: float32, unit: "A", access: r}
+  - {key: hs_current_c, name: "HS Current C", group: measurements, table: holding, address: 21003, type: float32, unit: "A", access: r}
+  - {key: hs_current_n, name: "HS Current N", group: measurements, table: holding, address: 21005, type: float32, unit: "A", access: r}
+  - {key: hs_current_g, name: "HS Current G", group: measurements, table: holding, address: 21007, type: float32, unit: "A", access: r}
+  - {key: hs_current_avg, name: "HS Current Avg", group: measurements, table: holding, address: 21009, type: float32, unit: "A", access: r}
+  - {key: hs_frequency, name: "HS Frequency", group: measurements, table: holding, address: 21015, type: float32, unit: "Hz", access: r}
+  - {key: hs_voltage_a_b, name: "HS Voltage, A-B", group: measurements, table: holding, address: 21017, type: float32, unit: "V", access: r}
+  - {key: hs_voltage_b_c, name: "HS Voltage, B-C", group: measurements, table: holding, address: 21019, type: float32, unit: "V", access: r}
+  - {key: hs_voltage_c_a, name: "HS Voltage, C-A", group: measurements, table: holding, address: 21021, type: float32, unit: "V", access: r}
+  - {key: hs_voltage_l_l_average, name: "HS Voltage, L-L Average", group: measurements, table: holding, address: 21023, type: float32, unit: "V", access: r}
+  - {key: hs_voltage_a_n, name: "HS Voltage, A-N", group: measurements, table: holding, address: 21025, type: float32, unit: "V", access: r}
+  - {key: hs_voltage_b_n, name: "HS Voltage, B-N", group: measurements, table: holding, address: 21027, type: float32, unit: "V", access: r}
+  - {key: hs_voltage_c_n, name: "HS Voltage, C-N", group: measurements, table: holding, address: 21029, type: float32, unit: "V", access: r}
+  - {key: hs_voltage_l_n_average, name: "HS Voltage, L-N Average", group: measurements, table: holding, address: 21033, type: float32, unit: "V", access: r}
+  - {key: current_unbalance_worst_21035, name: "Current Unbalance Worst", group: measurements, table: holding, address: 21035, type: float32, access: r}
+  - {key: voltage_unbalance_worst, name: "Voltage Unbalance Worst", group: measurements, table: holding, address: 21037, type: float32, access: r}
+  - {key: hs_active_power_a, name: "HS Active Power A", group: measurements, table: holding, address: 21039, type: float32, unit: "W", access: r}
+  - {key: hs_active_power_b, name: "HS Active Power B", group: measurements, table: holding, address: 21041, type: float32, unit: "W", access: r}
+  - {key: hs_active_power_c, name: "HS Active Power C", group: measurements, table: holding, address: 21043, type: float32, unit: "W", access: r}
+  - {key: hs_active_power_total, name: "HS Active Power Total", group: measurements, table: holding, address: 21045, type: float32, unit: "W", access: r}
+  - {key: hs_reactive_power_a, name: "HS Reactive Power A", group: measurements, table: holding, address: 21047, type: float32, unit: "VAR", access: r}
+  - {key: hs_reactive_power_b, name: "HS Reactive Power B", group: measurements, table: holding, address: 21049, type: float32, unit: "VAR", access: r}
+  - {key: hs_reactive_power_c, name: "HS Reactive Power C", group: measurements, table: holding, address: 21051, type: float32, unit: "VAR", access: r}
+  - {key: hs_reactive_power_total, name: "HS Reactive Power Total", group: measurements, table: holding, address: 21053, type: float32, unit: "VAR", access: r}
+  - {key: hs_apparent_power_a, name: "HS Apparent Power A", group: measurements, table: holding, address: 21055, type: float32, unit: "VA", access: r}
+  - {key: hs_apparent_power_b, name: "HS Apparent Power B", group: measurements, table: holding, address: 21057, type: float32, unit: "VA", access: r}
+  - {key: hs_apparent_power_c, name: "HS Apparent Power C", group: measurements, table: holding, address: 21059, type: float32, unit: "VA", access: r}
+  - {key: hs_apparent_power_total, name: "HS Apparent Power Total", group: measurements, table: holding, address: 21061, type: float32, unit: "VA", access: r}
+  - {key: hs_power_factor_a, name: "HS Power Factor A", group: measurements, table: holding, address: 21063, type: float32, access: r}
+  - {key: hs_power_factor_b, name: "HS Power Factor B", group: measurements, table: holding, address: 21065, type: float32, access: r}
+  - {key: hs_power_factor_c, name: "HS Power Factor C", group: measurements, table: holding, address: 21067, type: float32, access: r}
+  - {key: hs_power_factor_total, name: "HS Power Factor Total", group: measurements, table: holding, address: 21069, type: float32, access: r}
+  - {key: hs_power_factor_a_lagging, name: "HS Power Factor A Lagging", group: measurements, table: holding, address: 21071, type: float32, access: r}
+  - {key: hs_power_factor_a_leading, name: "HS Power Factor A Leading", group: measurements, table: holding, address: 21073, type: float32, access: r}
+  - {key: hs_power_factor_b_lagging, name: "HS Power Factor B Lagging", group: measurements, table: holding, address: 21075, type: float32, access: r}
+  - {key: hs_power_factor_b_leading, name: "HS Power Factor B Leading", group: measurements, table: holding, address: 21077, type: float32, access: r}
+  - {key: hs_power_factor_c_lagging, name: "HS Power Factor C Lagging", group: measurements, table: holding, address: 21079, type: float32, access: r}
+  - {key: hs_power_factor_c_leading, name: "HS Power Factor C Leading", group: measurements, table: holding, address: 21081, type: float32, access: r}
+  - {key: hs_power_factor_lagging, name: "HS Power Factor Lagging", group: measurements, table: holding, address: 21083, type: float32, access: r}
+  - {key: hs_power_factor_leading, name: "HS Power Factor Leading", group: measurements, table: holding, address: 21085, type: float32, access: r}
+  - {key: thd_current_a, name: "THD Current A", group: power_quality, table: holding, address: 21299, type: float32, access: r}
+  - {key: thd_current_b, name: "THD Current B", group: power_quality, table: holding, address: 21301, type: float32, access: r}
+  - {key: thd_current_c, name: "THD Current C", group: power_quality, table: holding, address: 21303, type: float32, access: r}
+  - {key: thd_current_n, name: "THD Current N", group: power_quality, table: holding, address: 21305, type: float32, access: r}
+  - {key: thd_voltage_a_n, name: "THD Voltage A-N", group: power_quality, table: holding, address: 21329, type: float32, access: r}
+  - {key: thd_voltage_b_n, name: "THD Voltage B-N", group: power_quality, table: holding, address: 21331, type: float32, access: r}
+  - {key: thd_voltage_c_n, name: "THD Voltage C-N", group: power_quality, table: holding, address: 21333, type: float32, access: r}
+  - {key: k_factor_a, name: "K-Factor A", group: power_quality, table: holding, address: 21357, type: float32, access: r}
+  - {key: k_factor_b, name: "K-Factor B", group: power_quality, table: holding, address: 21359, type: float32, access: r}
+  - {key: k_factor_c, name: "K-Factor C", group: power_quality, table: holding, address: 21361, type: float32, access: r}
+  - {key: crest_factor_a, name: "Crest Factor A", group: power_quality, table: holding, address: 21363, type: float32, access: r}
+  - {key: crest_factor_b, name: "Crest Factor B", group: power_quality, table: holding, address: 21365, type: float32, access: r}
+  - {key: crest_factor_c, name: "Crest Factor C", group: power_quality, table: holding, address: 21367, type: float32, access: r}
+  - {key: crest_factor_n, name: "Crest Factor N", group: power_quality, table: holding, address: 21369, type: float32, access: r}
+  - {key: total_cap_hd_current_a, name: "Total Cap HD Current A", group: power_quality, table: holding, address: 21431, type: float32, access: r}
+  - {key: total_ind_hd_current_a, name: "Total Ind HD Current A", group: power_quality, table: holding, address: 21433, type: float32, access: r}
+  - {key: total_cap_hd_current_b, name: "Total Cap HD Current B", group: power_quality, table: holding, address: 21435, type: float32, access: r}
+  - {key: total_ind_hd_current_b, name: "Total Ind HD Current B", group: power_quality, table: holding, address: 21437, type: float32, access: r}
+  - {key: total_cap_hd_current_c, name: "Total Cap HD Current C", group: power_quality, table: holding, address: 21439, type: float32, access: r}
+  - {key: total_ind_hd_current_c, name: "Total Ind HD Current C", group: power_quality, table: holding, address: 21441, type: float32, access: r}
+  - {key: total_cap_hd_current_n, name: "Total Cap HD Current N", group: power_quality, table: holding, address: 21443, type: float32, access: r}
+  - {key: total_ind_hd_current_n, name: "Total Ind HD Current N", group: power_quality, table: holding, address: 21445, type: float32, access: r}
+  - {key: total_cap_hd_voltage_a, name: "Total Cap HD Voltage A", group: power_quality, table: holding, address: 21451, type: float32, access: r}
+  - {key: total_ind_hd_voltage_a, name: "Total Ind HD Voltage A", group: power_quality, table: holding, address: 21453, type: float32, access: r}
+  - {key: total_cap_hd_voltage_b, name: "Total Cap HD Voltage B", group: power_quality, table: holding, address: 21455, type: float32, access: r}
+  - {key: total_ind_hd_voltage_b, name: "Total Ind HD Voltage B", group: power_quality, table: holding, address: 21457, type: float32, access: r}
+  - {key: total_cap_hd_voltage_c, name: "Total Cap HD Voltage C", group: power_quality, table: holding, address: 21459, type: float32, access: r}
+  - {key: total_ind_hd_voltage_c, name: "Total Ind HD Voltage C", group: power_quality, table: holding, address: 21461, type: float32, access: r}
+  - {key: total_even_hd_current_a, name: "Total Even HD Current A", group: power_quality, table: holding, address: 21463, type: float32, access: r}
+  - {key: total_odd_hd_current_a, name: "Total Odd HD Current A", group: power_quality, table: holding, address: 21465, type: float32, access: r}
+  - {key: total_even_hd_current_b, name: "Total Even HD Current B", group: power_quality, table: holding, address: 21467, type: float32, access: r}
+  - {key: total_odd_hd_current_b, name: "Total Odd HD Current B", group: power_quality, table: holding, address: 21469, type: float32, access: r}
+  - {key: total_even_hd_current_c, name: "Total Even HD Current C", group: power_quality, table: holding, address: 21471, type: float32, access: r}
+  - {key: total_odd_hd_current_c, name: "Total Odd HD Current C", group: power_quality, table: holding, address: 21473, type: float32, access: r}
+  - {key: total_even_hd_current_n, name: "Total Even HD Current N", group: power_quality, table: holding, address: 21475, type: float32, access: r}
+  - {key: total_odd_hd_current_n, name: "Total Odd HD Current N", group: power_quality, table: holding, address: 21477, type: float32, access: r}
+  - {key: total_even_hd_voltage_a, name: "Total Even HD Voltage A", group: power_quality, table: holding, address: 21483, type: float32, access: r}
+  - {key: total_odd_hd_voltage_a, name: "Total Odd HD Voltage A", group: power_quality, table: holding, address: 21485, type: float32, access: r}
+  - {key: total_even_hd_voltage_b, name: "Total Even HD Voltage B", group: power_quality, table: holding, address: 21487, type: float32, access: r}
+  - {key: total_odd_hd_voltage_b, name: "Total Odd HD Voltage B", group: power_quality, table: holding, address: 21489, type: float32, access: r}
+  - {key: total_even_hd_voltage_c, name: "Total Even HD Voltage C", group: power_quality, table: holding, address: 21491, type: float32, access: r}
+  - {key: total_odd_hd_voltage_c, name: "Total Odd HD Voltage C", group: power_quality, table: holding, address: 21493, type: float32, access: r}
+  - {key: fundamental_active_power_a, name: "Fundamental Active Power A", group: measurements, table: holding, address: 21495, type: float32, unit: "W", access: r}
+  - {key: fundamental_active_power_b, name: "Fundamental Active Power B", group: measurements, table: holding, address: 21497, type: float32, unit: "W", access: r}
+  - {key: fundamental_active_power_c, name: "Fundamental Active Power C", group: measurements, table: holding, address: 21499, type: float32, unit: "W", access: r}
+  - {key: fundamental_active_power_total, name: "Fundamental Active Power Total", group: measurements, table: holding, address: 21501, type: float32, unit: "W", access: r}
+  - {key: fundamental_reactive_power_a, name: "Fundamental Reactive Power A", group: measurements, table: holding, address: 21503, type: float32, unit: "VAR", access: r}
+  - {key: fundamental_reactive_power_b, name: "Fundamental Reactive Power B", group: measurements, table: holding, address: 21505, type: float32, unit: "VAR", access: r}
+  - {key: fundamental_reactive_power_c, name: "Fundamental Reactive Power C", group: measurements, table: holding, address: 21507, type: float32, unit: "VAR", access: r}
+  - {key: fundamental_reactive_power_total, name: "Fundamental Reactive Power Total", group: measurements, table: holding, address: 21509, type: float32, unit: "VAR", access: r}
+  - {key: fundamental_apparent_power_a, name: "Fundamental Apparent Power A", group: measurements, table: holding, address: 21511, type: float32, unit: "VA", access: r}
+  - {key: fundamental_apparent_power_b, name: "Fundamental Apparent Power B", group: measurements, table: holding, address: 21513, type: float32, unit: "VA", access: r}
+  - {key: fundamental_apparent_power_c, name: "Fundamental Apparent Power C", group: measurements, table: holding, address: 21515, type: float32, unit: "VA", access: r}
+  - {key: fundamental_apparent_power_total, name: "Fundamental Apparent Power Total", group: measurements, table: holding, address: 21517, type: float32, unit: "VA", access: r}
+  - {key: current_positive_sequence_magnitude, name: "Current, Positive Sequence, Magnitude", group: power_quality, table: holding, address: 21597, type: float32, unit: "A", access: r}
+  - {key: current_positive_sequence_angle, name: "Current, Positive Sequence, Angle", group: power_quality, table: holding, address: 21599, type: float32, unit: "°", access: r}
+  - {key: current_negative_sequence_magnitude, name: "Current, Negative Sequence, Magnitude", group: power_quality, table: holding, address: 21601, type: float32, unit: "A", access: r}
+  - {key: current_negative_sequence_angle, name: "Current, Negative Sequence, Angle", group: power_quality, table: holding, address: 21603, type: float32, unit: "°", access: r}
+  - {key: current_zero_sequence_magnitude, name: "Current, Zero Sequence, Magnitude", group: power_quality, table: holding, address: 21605, type: float32, unit: "A", access: r}
+  - {key: current_zero_sequence_angle, name: "Current, Zero Sequence, Angle", group: power_quality, table: holding, address: 21607, type: float32, unit: "°", access: r}
+  - {key: voltage_positive_sequence_magnitude, name: "Voltage, Positive Sequence, Magnitude", group: power_quality, table: holding, address: 21609, type: float32, unit: "V", access: r}
+  - {key: voltage_positive_sequence_angle, name: "Voltage, Positive Sequence, Angle", group: power_quality, table: holding, address: 21611, type: float32, unit: "°", access: r}
+  - {key: voltage_negative_sequence_magnitude, name: "Voltage, Negative Sequence, Magnitude", group: power_quality, table: holding, address: 21613, type: float32, unit: "V", access: r}
+  - {key: voltage_negative_sequence_angle, name: "Voltage, Negative Sequence, Angle", group: power_quality, table: holding, address: 21615, type: float32, unit: "°", access: r}
+  - {key: voltage_zero_sequence_magnitude, name: "Voltage, Zero Sequence, Magnitude", group: power_quality, table: holding, address: 21617, type: float32, unit: "V", access: r}
+  - {key: voltage_zero_sequence_angle, name: "Voltage, Zero Sequence, Angle", group: power_quality, table: holding, address: 21619, type: float32, unit: "°", access: r}
+  - {key: k_factor_n, name: "K-Factor N", group: power_quality, table: holding, address: 21677, type: float32, access: r}
+  - {key: min_current_a, name: "Min Current A", group: min_max, table: holding, address: 27217, type: float32, unit: "A", access: r}
+  - {key: min_current_b, name: "Min Current B", group: min_max, table: holding, address: 27219, type: float32, unit: "A", access: r}
+  - {key: min_current_c, name: "Min Current C", group: min_max, table: holding, address: 27221, type: float32, unit: "A", access: r}
+  - {key: min_current_n, name: "Min Current N", group: min_max, table: holding, address: 27223, type: float32, unit: "A", access: r}
+  - {key: min_current_g, name: "Min Current G", group: min_max, table: holding, address: 27225, type: float32, unit: "A", access: r}
+  - {key: min_current_avg, name: "Min Current Avg", group: min_max, table: holding, address: 27227, type: float32, unit: "A", access: r}
+  - {key: min_voltage_a_b, name: "Min Voltage A-B", group: min_max, table: holding, address: 27237, type: float32, unit: "V", access: r}
+  - {key: min_voltage_b_c, name: "Min Voltage B-C", group: min_max, table: holding, address: 27239, type: float32, unit: "V", access: r}
+  - {key: min_voltage_c_a, name: "Min Voltage C-A", group: min_max, table: holding, address: 27241, type: float32, unit: "V", access: r}
+  - {key: min_voltage_l_l_avg, name: "Min Voltage L-L Avg", group: min_max, table: holding, address: 27243, type: float32, unit: "V", access: r}
+  - {key: min_voltage_a_n, name: "Min Voltage A-N", group: min_max, table: holding, address: 27245, type: float32, unit: "V", access: r}
+  - {key: min_voltage_b_n, name: "Min Voltage B-N", group: min_max, table: holding, address: 27247, type: float32, unit: "V", access: r}
+  - {key: min_voltage_c_n, name: "Min Voltage C-N", group: min_max, table: holding, address: 27249, type: float32, unit: "V", access: r}
+  - {key: min_voltage_l_n_avg, name: "Min Voltage L-N Avg", group: min_max, table: holding, address: 27253, type: float32, unit: "V", access: r}
+  - {key: min_voltage_unbalance_l_n_worst, name: "Min Voltage Unbalance L-N Worst", group: min_max, table: holding, address: 27269, type: float32, access: r}
+  - {key: min_active_power_total, name: "Min Active Power Total", group: min_max, table: holding, address: 27277, type: float32, unit: "W", access: r}
+  - {key: min_reactive_power_total, name: "Min Reactive Power Total", group: min_max, table: holding, address: 27285, type: float32, unit: "VAR", access: r}
+  - {key: min_apparent_power_total, name: "Min Apparent Power Total", group: min_max, table: holding, address: 27293, type: float32, unit: "VA", access: r}
+  - {key: min_power_factor_lagging, name: "Min Power Factor Lagging", group: min_max, table: holding, address: 27321, type: float32, access: r}
+  - {key: min_power_factor_leading, name: "Min Power Factor Leading", group: min_max, table: holding, address: 27323, type: float32, access: r}
+  - {key: min_thd_current_a, name: "Min THD Current A", group: min_max, table: holding, address: 27337, type: float32, access: r}
+  - {key: min_thd_current_b, name: "Min THD Current B", group: min_max, table: holding, address: 27339, type: float32, access: r}
+  - {key: min_thd_current_c, name: "Min THD Current C", group: min_max, table: holding, address: 27341, type: float32, access: r}
+  - {key: min_thd_current_n, name: "Min THD Current N", group: min_max, table: holding, address: 27343, type: float32, access: r}
+  - {key: min_thd_voltage_a_b, name: "Min THD Voltage A-B", group: min_max, table: holding, address: 27367, type: float32, access: r}
+  - {key: min_thd_voltage_b_c, name: "Min THD Voltage B-C", group: min_max, table: holding, address: 27369, type: float32, access: r}
+  - {key: min_thd_voltage_c_a, name: "Min THD Voltage C-A", group: min_max, table: holding, address: 27371, type: float32, access: r}
+  - {key: min_frequency, name: "Min Frequency", group: min_max, table: holding, address: 27615, type: float32, unit: "Hz", access: r}
+  - {key: current_a_low, name: "Current A Low", group: min_max, table: holding, address: 27643, type: float32, unit: "A", access: r}
+  - {key: current_b_low, name: "Current B Low", group: min_max, table: holding, address: 27645, type: float32, unit: "A", access: r}
+  - {key: current_c_low, name: "Current C Low", group: min_max, table: holding, address: 27647, type: float32, unit: "A", access: r}
+  - {key: current_n_low, name: "Current N Low", group: min_max, table: holding, address: 27649, type: float32, unit: "A", access: r}
+  - {key: current_avg_low, name: "Current Avg Low", group: min_max, table: holding, address: 27651, type: float32, unit: "A", access: r}
+  - {key: voltage_a_b_low, name: "Voltage A-B Low", group: min_max, table: holding, address: 27653, type: float32, unit: "V", access: r}
+  - {key: voltage_b_c_low, name: "Voltage B-C Low", group: min_max, table: holding, address: 27655, type: float32, unit: "V", access: r}
+  - {key: voltage_c_a_low, name: "Voltage C-A Low", group: min_max, table: holding, address: 27657, type: float32, unit: "V", access: r}
+  - {key: voltage_l_l_avg_low, name: "Voltage L-L Avg Low", group: min_max, table: holding, address: 27659, type: float32, unit: "V", access: r}
+  - {key: voltage_unbalance_low, name: "Voltage Unbalance Low", group: min_max, table: holding, address: 27669, type: float32, access: r}
+  - {key: active_power_low, name: "Active Power Low", group: min_max, table: holding, address: 27671, type: float32, unit: "W", access: r}
+  - {key: reactive_power_low, name: "Reactive Power Low", group: min_max, table: holding, address: 27673, type: float32, unit: "VAR", access: r}
+  - {key: apparent_power_low, name: "Apparent Power Low", group: min_max, table: holding, address: 27675, type: float32, unit: "VA", access: r}
+  - {key: power_factor_lagging_low, name: "Power Factor Lagging Low", group: min_max, table: holding, address: 27677, type: float32, access: r}
+  - {key: power_factor_leading_low, name: "Power Factor Leading Low", group: min_max, table: holding, address: 27679, type: float32, access: r}
+  - {key: frequency_low, name: "Frequency Low", group: min_max, table: holding, address: 27681, type: float32, unit: "Hz", access: r}
+  - {key: max_current_a, name: "Max Current A", group: min_max, table: holding, address: 27693, type: float32, unit: "A", access: r}
+  - {key: max_current_b, name: "Max Current B", group: min_max, table: holding, address: 27695, type: float32, unit: "A", access: r}
+  - {key: max_current_c, name: "Max Current C", group: min_max, table: holding, address: 27697, type: float32, unit: "A", access: r}
+  - {key: max_current_n, name: "Max Current N", group: min_max, table: holding, address: 27699, type: float32, unit: "A", access: r}
+  - {key: max_current_g, name: "Max Current G", group: min_max, table: holding, address: 27701, type: float32, unit: "A", access: r}
+  - {key: max_current_avg, name: "Max Current Avg", group: min_max, table: holding, address: 27703, type: float32, unit: "A", access: r}
+  - {key: max_voltage_a_b, name: "Max Voltage A-B", group: min_max, table: holding, address: 27713, type: float32, unit: "V", access: r}
+  - {key: max_voltage_b_c, name: "Max Voltage B-C", group: min_max, table: holding, address: 27715, type: float32, unit: "V", access: r}
+  - {key: max_voltage_c_a, name: "Max Voltage C-A", group: min_max, table: holding, address: 27717, type: float32, unit: "V", access: r}
+  - {key: max_voltage_l_l_avg, name: "Max Voltage L-L Avg", group: min_max, table: holding, address: 27719, type: float32, unit: "V", access: r}
+  - {key: max_voltage_a_n, name: "Max Voltage A-N", group: min_max, table: holding, address: 27721, type: float32, unit: "V", access: r}
+  - {key: max_voltage_b_n, name: "Max Voltage B-N", group: min_max, table: holding, address: 27723, type: float32, unit: "V", access: r}
+  - {key: max_voltage_c_n, name: "Max Voltage C-N", group: min_max, table: holding, address: 27725, type: float32, unit: "V", access: r}
+  - {key: max_voltage_l_n_avg, name: "Max Voltage L-N Avg", group: min_max, table: holding, address: 27729, type: float32, unit: "V", access: r}
+  - {key: max_voltage_unbalance_l_n_worst, name: "Max Voltage Unbalance L-N Worst", group: min_max, table: holding, address: 27745, type: float32, access: r}
+  - {key: max_active_power_total, name: "Max Active Power Total", group: min_max, table: holding, address: 27753, type: float32, unit: "W", access: r}
+  - {key: max_reactive_power_total, name: "Max Reactive Power Total", group: min_max, table: holding, address: 27761, type: float32, unit: "VAR", access: r}
+  - {key: max_apparent_power_total, name: "Max Apparent Power Total", group: min_max, table: holding, address: 27769, type: float32, unit: "VA", access: r}
+  - {key: max_power_factor_lagging, name: "Max Power Factor Lagging", group: min_max, table: holding, address: 27797, type: float32, access: r}
+  - {key: max_power_factor_leading, name: "Max Power Factor Leading", group: min_max, table: holding, address: 27799, type: float32, access: r}
+  - {key: max_thd_current_a, name: "Max THD Current A", group: min_max, table: holding, address: 27813, type: float32, access: r}
+  - {key: max_thd_current_b, name: "Max THD Current B", group: min_max, table: holding, address: 27815, type: float32, access: r}
+  - {key: max_thd_current_c, name: "Max THD Current C", group: min_max, table: holding, address: 27817, type: float32, access: r}
+  - {key: max_thd_current_n, name: "Max THD Current N", group: min_max, table: holding, address: 27819, type: float32, access: r}
+  - {key: max_thd_voltage_a_n, name: "Max THD Voltage A-N", group: min_max, table: holding, address: 27843, type: float32, access: r}
+  - {key: max_thd_voltage_b_n, name: "Max THD Voltage B-N", group: min_max, table: holding, address: 27845, type: float32, access: r}
+  - {key: max_thd_voltage_c_n, name: "Max THD Voltage C-N", group: min_max, table: holding, address: 27847, type: float32, access: r}
+  - {key: max_frequency, name: "Max Frequency", group: min_max, table: holding, address: 28091, type: float32, unit: "Hz", access: r}
+  - {key: current_a_high, name: "Current A High", group: min_max, table: holding, address: 28119, type: float32, unit: "A", access: r}
+  - {key: current_b_high, name: "Current B High", group: min_max, table: holding, address: 28121, type: float32, unit: "A", access: r}
+  - {key: current_c_high, name: "Current C High", group: min_max, table: holding, address: 28123, type: float32, unit: "A", access: r}
+  - {key: current_n_high, name: "Current N High", group: min_max, table: holding, address: 28125, type: float32, unit: "A", access: r}
+  - {key: current_avg_high, name: "Current Avg High", group: min_max, table: holding, address: 28127, type: float32, unit: "A", access: r}
+  - {key: voltage_a_b_high, name: "Voltage A-B High", group: min_max, table: holding, address: 28129, type: float32, unit: "V", access: r}
+  - {key: voltage_b_c_high, name: "Voltage B-C High", group: min_max, table: holding, address: 28131, type: float32, unit: "V", access: r}
+  - {key: voltage_c_a_high, name: "Voltage C-A High", group: min_max, table: holding, address: 28133, type: float32, unit: "V", access: r}
+  - {key: voltage_l_l_avg_high, name: "Voltage L-L Avg High", group: min_max, table: holding, address: 28135, type: float32, unit: "V", access: r}
+  - {key: voltage_unbalance_high, name: "Voltage Unbalance High", group: min_max, table: holding, address: 28145, type: float32, access: r}
+  - {key: thd_current_a_high, name: "THD Current A High", group: min_max, table: holding, address: 28147, type: float32, access: r}
+  - {key: thd_current_b_high, name: "THD Current B High", group: min_max, table: holding, address: 28149, type: float32, access: r}
+  - {key: thd_current_c_high, name: "THD Current C High", group: min_max, table: holding, address: 28151, type: float32, access: r}
+  - {key: thd_current_n_high, name: "THD Current N High", group: min_max, table: holding, address: 28153, type: float32, access: r}
+  - {key: thd_voltage_v1_high, name: "THD Voltage V1 High", group: min_max, table: holding, address: 28155, type: float32, access: r}
+  - {key: thd_voltage_v2_high, name: "THD Voltage V2 High", group: min_max, table: holding, address: 28157, type: float32, access: r}
+  - {key: thd_voltage_v3_high, name: "THD Voltage V3 High", group: min_max, table: holding, address: 28159, type: float32, access: r}
+  - {key: active_power_high, name: "Active Power High", group: min_max, table: holding, address: 28161, type: float32, unit: "W", access: r}
+  - {key: reactive_power_high, name: "Reactive Power High", group: min_max, table: holding, address: 28163, type: float32, unit: "VAR", access: r}
+  - {key: apparent_power_high, name: "Apparent Power High", group: min_max, table: holding, address: 28165, type: float32, unit: "VA", access: r}
+  - {key: power_factor_lagging_high, name: "Power Factor Lagging High", group: min_max, table: holding, address: 28167, type: float32, access: r}
+  - {key: power_factor_leading_high, name: "Power Factor Leading High", group: min_max, table: holding, address: 28169, type: float32, access: r}
+  - {key: frequency_high, name: "Frequency High", group: min_max, table: holding, address: 28171, type: float32, unit: "Hz", access: r}
+  - {key: current_a_k_factor_high, name: "Current A K Factor High", group: min_max, table: holding, address: 28173, type: float32, access: r}
+  - {key: current_b_k_factor_high, name: "Current B K Factor High", group: min_max, table: holding, address: 28175, type: float32, access: r}
+  - {key: current_c_k_factor_high, name: "Current C K Factor High", group: min_max, table: holding, address: 28177, type: float32, access: r}
+  - {key: current_a_mean, name: "Current A Mean", group: min_max, table: holding, address: 28179, type: float32, unit: "A", access: r}
+  - {key: current_b_mean, name: "Current B Mean", group: min_max, table: holding, address: 28181, type: float32, unit: "A", access: r}
+  - {key: current_c_mean, name: "Current C Mean", group: min_max, table: holding, address: 28183, type: float32, unit: "A", access: r}
+  - {key: current_n_mean, name: "Current N Mean", group: min_max, table: holding, address: 28185, type: float32, unit: "A", access: r}
+  - {key: current_avg_mean, name: "Current Avg Mean", group: min_max, table: holding, address: 28187, type: float32, unit: "A", access: r}
+  - {key: voltage_a_b_mean, name: "Voltage A-B Mean", group: min_max, table: holding, address: 28189, type: float32, unit: "V", access: r}
+  - {key: voltage_b_c_mean, name: "Voltage B-C Mean", group: min_max, table: holding, address: 28191, type: float32, unit: "V", access: r}
+  - {key: voltage_c_a_mean, name: "Voltage C-A Mean", group: min_max, table: holding, address: 28193, type: float32, unit: "V", access: r}
+  - {key: voltage_l_l_avg_mean, name: "Voltage L-L Avg Mean", group: min_max, table: holding, address: 28195, type: float32, unit: "V", access: r}
+  - {key: voltage_unbalance_mean, name: "Voltage Unbalance Mean", group: min_max, table: holding, address: 28205, type: float32, access: r}
+  - {key: active_power_mean, name: "Active Power Mean", group: min_max, table: holding, address: 28207, type: float32, unit: "W", access: r}
+  - {key: reactive_power_mean, name: "Reactive Power Mean", group: min_max, table: holding, address: 28209, type: float32, unit: "VAR", access: r}
+  - {key: apparent_power_mean, name: "Apparent Power Mean", group: min_max, table: holding, address: 28211, type: float32, unit: "VA", access: r}
+  - {key: power_factor_lagging_mean, name: "Power Factor Lagging Mean", group: min_max, table: holding, address: 28213, type: float32, access: r}
+  - {key: power_factor_leading_mean, name: "Power Factor Leading Mean", group: min_max, table: holding, address: 28215, type: float32, access: r}
+  - {key: frequency_mean, name: "Frequency Mean", group: min_max, table: holding, address: 28217, type: float32, unit: "Hz", access: r}
+  - {key: block_demand_current_a_subinterval_duration, name: "Block Demand Current A Subinterval Duration", group: demand, table: holding, address: 29879, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_current_a_subintervals, name: "Block Demand Current A # Subintervals", group: demand, table: holding, address: 29880, type: uint16, access: r}
+  - {key: block_demand_current_a_pred_resp, name: "Block Demand Current A Pred Resp", group: demand, table: holding, address: 29881, type: uint16, access: r}
+  - {key: block_demand_current_a_update_rate, name: "Block Demand Current A Update Rate", group: demand, table: holding, address: 29882, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: current_a_last_demand, name: "Current A Last Demand", group: demand, table: holding, address: 29883, type: float32, unit: "A", access: r}
+  - {key: current_a_predicted_demand, name: "Current A Predicted Demand", group: demand, table: holding, address: 29885, type: float32, unit: "A", access: r}
+  - {key: current_a_peak_demand, name: "Current A Peak Demand", group: demand, table: holding, address: 29887, type: raw, length: 6, unit: "A", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_current_b_subinterval_duration, name: "Block Demand Current B Subinterval Duration", group: demand, table: holding, address: 29893, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_current_b_subintervals, name: "Block Demand Current B # Subintervals", group: demand, table: holding, address: 29894, type: uint16, access: r}
+  - {key: block_demand_current_b_pred_resp, name: "Block Demand Current B Pred Resp", group: demand, table: holding, address: 29895, type: uint16, access: r}
+  - {key: block_demand_current_b_update_rate, name: "Block Demand Current B Update Rate", group: demand, table: holding, address: 29896, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: current_b_last_demand, name: "Current B Last Demand", group: demand, table: holding, address: 29897, type: float32, unit: "A", access: r}
+  - {key: current_b_predicted_demand, name: "Current B Predicted Demand", group: demand, table: holding, address: 29899, type: float32, unit: "A", access: r}
+  - {key: current_b_peak_demand, name: "Current B Peak Demand", group: demand, table: holding, address: 29901, type: raw, length: 6, unit: "A", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_current_c_subinterval_duration, name: "Block Demand Current C Subinterval Duration", group: demand, table: holding, address: 29907, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_current_c_subintervals, name: "Block Demand Current C # Subintervals", group: demand, table: holding, address: 29908, type: uint16, access: r}
+  - {key: block_demand_current_c_pred_resp, name: "Block Demand Current C Pred Resp", group: demand, table: holding, address: 29909, type: uint16, access: r}
+  - {key: block_demand_current_c_update_rate, name: "Block Demand Current C Update Rate", group: demand, table: holding, address: 29910, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: current_c_last_demand, name: "Current C Last Demand", group: demand, table: holding, address: 29911, type: float32, unit: "A", access: r}
+  - {key: current_c_predicted_demand, name: "Current C Predicted Demand", group: demand, table: holding, address: 29913, type: float32, unit: "A", access: r}
+  - {key: current_c_peak_demand, name: "Current C Peak Demand", group: demand, table: holding, address: 29915, type: raw, length: 6, unit: "A", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_current_4_subinterval_duration, name: "Block Demand Current 4 Subinterval Duration", group: demand, table: holding, address: 29921, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_current_4_subintervals, name: "Block Demand Current 4 # Subintervals", group: demand, table: holding, address: 29922, type: uint16, access: r}
+  - {key: block_demand_current_4_pred_resp, name: "Block Demand Current 4 Pred Resp", group: demand, table: holding, address: 29923, type: uint16, access: r}
+  - {key: block_demand_current_4_update_rate, name: "Block Demand Current 4 Update Rate", group: demand, table: holding, address: 29924, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: current_4_last_demand, name: "Current 4 Last Demand", group: demand, table: holding, address: 29925, type: float32, unit: "A", access: r}
+  - {key: current_4_predicted_demand, name: "Current 4 Predicted Demand", group: demand, table: holding, address: 29927, type: float32, unit: "A", access: r}
+  - {key: current_4_peak_demand, name: "Current 4 Peak Demand", group: demand, table: holding, address: 29929, type: raw, length: 6, unit: "A", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_current_avg_subinterval_duration, name: "Block Demand Current Avg Subinterval Duration", group: demand, table: holding, address: 29935, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_current_avg_subintervals, name: "Block Demand Current Avg # Subintervals", group: demand, table: holding, address: 29936, type: uint16, access: r}
+  - {key: block_demand_current_avg_pred_resp, name: "Block Demand Current Avg Pred Resp", group: demand, table: holding, address: 29937, type: uint16, access: r}
+  - {key: block_demand_current_avg_update_rate, name: "Block Demand Current Avg Update Rate", group: demand, table: holding, address: 29938, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: current_avg_last_demand, name: "Current Avg Last Demand", group: demand, table: holding, address: 29939, type: float32, unit: "A", access: r}
+  - {key: current_avg_predicted_demand, name: "Current Avg Predicted Demand", group: demand, table: holding, address: 29941, type: float32, unit: "A", access: r}
+  - {key: current_avg_peak_demand, name: "Current Avg Peak Demand", group: demand, table: holding, address: 29943, type: raw, length: 6, unit: "A", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_active_power_subinterval_duration, name: "Block Demand Active Power Subinterval Duration", group: demand, table: holding, address: 29949, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_active_power_subintervals, name: "Block Demand Active Power # Subintervals", group: demand, table: holding, address: 29950, type: uint16, access: r}
+  - {key: block_demand_active_power_pred_resp, name: "Block Demand Active Power Pred Resp", group: demand, table: holding, address: 29951, type: uint16, access: r}
+  - {key: block_demand_active_power_update_rate, name: "Block Demand Active Power Update Rate", group: demand, table: holding, address: 29952, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: active_power_last_demand, name: "Active Power Last Demand", group: demand, table: holding, address: 29953, type: float32, unit: "W", access: r}
+  - {key: active_power_predicted_demand, name: "Active Power Predicted Demand", group: demand, table: holding, address: 29955, type: float32, unit: "W", access: r}
+  - {key: active_power_peak_demand, name: "Active Power Peak Demand", group: demand, table: holding, address: 29957, type: raw, length: 6, unit: "W", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_active_power_del_subinterval_duration, name: "Block Demand Active Power Del Subinterval Duration", group: demand, table: holding, address: 29963, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_active_power_del_subintervals, name: "Block Demand Active Power Del # Subintervals", group: demand, table: holding, address: 29964, type: uint16, access: r}
+  - {key: block_demand_active_power_del_pred_resp, name: "Block Demand Active Power Del Pred Resp", group: demand, table: holding, address: 29965, type: uint16, access: r}
+  - {key: block_demand_active_power_del_update_rate, name: "Block Demand Active Power Del Update Rate", group: demand, table: holding, address: 29966, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: active_power_del_last_demand, name: "Active Power Del Last Demand", group: demand, table: holding, address: 29967, type: float32, unit: "W", access: r}
+  - {key: active_power_del_predicted_demand, name: "Active Power Del Predicted Demand", group: demand, table: holding, address: 29969, type: float32, unit: "W", access: r}
+  - {key: active_power_del_peak_demand, name: "Active Power Del Peak Demand", group: demand, table: holding, address: 29971, type: raw, length: 6, unit: "W", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_active_power_rec_subinterval_duration, name: "Block Demand Active Power Rec Subinterval Duration", group: demand, table: holding, address: 29977, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_active_power_rec_subintervals, name: "Block Demand Active Power Rec # Subintervals", group: demand, table: holding, address: 29978, type: uint16, access: r}
+  - {key: block_demand_active_power_rec_pred_resp, name: "Block Demand Active Power Rec Pred Resp", group: demand, table: holding, address: 29979, type: uint16, access: r}
+  - {key: block_demand_active_power_rec_update_rate, name: "Block Demand Active Power Rec Update Rate", group: demand, table: holding, address: 29980, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: active_power_rec_last_demand, name: "Active Power Rec Last Demand", group: demand, table: holding, address: 29981, type: float32, unit: "W", access: r}
+  - {key: active_power_rec_predicted_demand, name: "Active Power Rec Predicted Demand", group: demand, table: holding, address: 29983, type: float32, unit: "W", access: r}
+  - {key: active_power_rec_peak_demand, name: "Active Power Rec Peak Demand", group: demand, table: holding, address: 29985, type: raw, length: 6, unit: "W", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_active_power_total_subinterval_duration, name: "Block Demand Active Power Total Subinterval Duration", group: demand, table: holding, address: 29991, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_active_power_total_subintervals, name: "Block Demand Active Power Total # Subintervals", group: demand, table: holding, address: 29992, type: uint16, access: r}
+  - {key: block_demand_active_power_total_pred_resp, name: "Block Demand Active Power Total Pred Resp", group: demand, table: holding, address: 29993, type: uint16, access: r}
+  - {key: block_demand_active_power_total_update_rate, name: "Block Demand Active Power Total Update Rate", group: demand, table: holding, address: 29994, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: active_power_total_last_demand, name: "Active Power Total Last Demand", group: demand, table: holding, address: 29995, type: float32, unit: "W", access: r}
+  - {key: active_power_total_predicted_demand, name: "Active Power Total Predicted Demand", group: demand, table: holding, address: 29997, type: float32, unit: "W", access: r}
+  - {key: active_power_total_peak_demand, name: "Active Power Total Peak Demand", group: demand, table: holding, address: 29999, type: raw, length: 6, unit: "W", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_reactive_power_subinterval_duration, name: "Block Demand Reactive Power Subinterval Duration", group: demand, table: holding, address: 30005, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_reactive_power_subintervals, name: "Block Demand Reactive Power # Subintervals", group: demand, table: holding, address: 30006, type: uint16, access: r}
+  - {key: block_demand_reactive_power_pred_resp, name: "Block Demand Reactive Power Pred Resp", group: demand, table: holding, address: 30007, type: uint16, access: r}
+  - {key: block_demand_reactive_power_update_rate, name: "Block Demand Reactive Power Update Rate", group: demand, table: holding, address: 30008, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: reactive_power_last_demand, name: "Reactive Power Last Demand", group: demand, table: holding, address: 30009, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_predicted_demand, name: "Reactive Power Predicted Demand", group: demand, table: holding, address: 30011, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_peak_demand, name: "Reactive Power Peak Demand", group: demand, table: holding, address: 30013, type: raw, length: 6, unit: "VAR", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_reactive_power_del_subinterval_duration, name: "Block Demand Reactive Power Del Subinterval Duration", group: demand, table: holding, address: 30019, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_reactive_power_del_subintervals, name: "Block Demand Reactive Power Del # Subintervals", group: demand, table: holding, address: 30020, type: uint16, access: r}
+  - {key: block_demand_reactive_power_del_pred_resp, name: "Block Demand Reactive Power Del Pred Resp", group: demand, table: holding, address: 30021, type: uint16, access: r}
+  - {key: block_demand_reactive_power_del_update_rate, name: "Block Demand Reactive Power Del Update Rate", group: demand, table: holding, address: 30022, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: reactive_power_del_last_demand, name: "Reactive Power Del Last Demand", group: demand, table: holding, address: 30023, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_del_predicted_demand, name: "Reactive Power Del Predicted Demand", group: demand, table: holding, address: 30025, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_del_peak_demand, name: "Reactive Power Del Peak Demand", group: demand, table: holding, address: 30027, type: raw, length: 6, unit: "VAR", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_reactive_power_rec_subinterval_duration, name: "Block Demand Reactive Power Rec Subinterval Duration", group: demand, table: holding, address: 30033, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_reactive_power_rec_subintervals, name: "Block Demand Reactive Power Rec # Subintervals", group: demand, table: holding, address: 30034, type: uint16, access: r}
+  - {key: block_demand_reactive_power_rec_pred_resp, name: "Block Demand Reactive Power Rec Pred Resp", group: demand, table: holding, address: 30035, type: uint16, access: r}
+  - {key: block_demand_reactive_power_rec_update_rate, name: "Block Demand Reactive Power Rec Update Rate", group: demand, table: holding, address: 30036, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: reactive_power_rec_last_demand, name: "Reactive Power Rec Last Demand", group: demand, table: holding, address: 30037, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_rec_predicted_demand, name: "Reactive Power Rec Predicted Demand", group: demand, table: holding, address: 30039, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_rec_peak_demand, name: "Reactive Power Rec Peak Demand", group: demand, table: holding, address: 30041, type: raw, length: 6, unit: "VAR", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_reactive_power_total_subinterval_duration, name: "Block Demand Reactive Power Total Subinterval Duration", group: demand, table: holding, address: 30047, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_reactive_power_total_subintervals, name: "Block Demand Reactive Power Total # Subintervals", group: demand, table: holding, address: 30048, type: uint16, access: r}
+  - {key: block_demand_reactive_power_total_pred_resp, name: "Block Demand Reactive Power Total Pred Resp", group: demand, table: holding, address: 30049, type: uint16, access: r}
+  - {key: block_demand_reactive_power_total_update_rate, name: "Block Demand Reactive Power Total Update Rate", group: demand, table: holding, address: 30050, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: reactive_power_total_last_demand, name: "Reactive Power Total Last Demand", group: demand, table: holding, address: 30051, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_total_predicted_demand, name: "Reactive Power Total Predicted Demand", group: demand, table: holding, address: 30053, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_total_peak_demand, name: "Reactive Power Total Peak Demand", group: demand, table: holding, address: 30055, type: raw, length: 6, unit: "VAR", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_apparent_power_subinterval_duration, name: "Block Demand Apparent Power Subinterval Duration", group: demand, table: holding, address: 30061, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_apparent_power_subintervals, name: "Block Demand Apparent Power # Subintervals", group: demand, table: holding, address: 30062, type: uint16, access: r}
+  - {key: block_demand_apparent_power_pred_resp, name: "Block Demand Apparent Power Pred Resp", group: demand, table: holding, address: 30063, type: uint16, access: r}
+  - {key: block_demand_apparent_power_update_rate, name: "Block Demand Apparent Power Update Rate", group: demand, table: holding, address: 30064, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: apparent_power_last_demand, name: "Apparent Power Last Demand", group: demand, table: holding, address: 30065, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_predicted_demand, name: "Apparent Power Predicted Demand", group: demand, table: holding, address: 30067, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_peak_demand, name: "Apparent Power Peak Demand", group: demand, table: holding, address: 30069, type: raw, length: 6, unit: "VA", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_apparent_power_del_subinterval_duration, name: "Block Demand Apparent Power Del Subinterval Duration", group: demand, table: holding, address: 30075, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_apparent_power_del_subintervals, name: "Block Demand Apparent Power Del # Subintervals", group: demand, table: holding, address: 30076, type: uint16, access: r}
+  - {key: block_demand_apparent_power_del_pred_resp, name: "Block Demand Apparent Power Del Pred Resp", group: demand, table: holding, address: 30077, type: uint16, access: r}
+  - {key: block_demand_apparent_power_del_update_rate, name: "Block Demand Apparent Power Del Update Rate", group: demand, table: holding, address: 30078, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: apparent_power_del_last_demand, name: "Apparent Power Del Last Demand", group: demand, table: holding, address: 30079, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_del_predicted_demand, name: "Apparent Power Del Predicted Demand", group: demand, table: holding, address: 30081, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_del_peak_demand, name: "Apparent Power Del Peak Demand", group: demand, table: holding, address: 30083, type: raw, length: 6, unit: "VA", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_apparent_power_rec_subinterval_duration, name: "Block Demand Apparent Power Rec Subinterval Duration", group: demand, table: holding, address: 30089, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_apparent_power_rec_subintervals, name: "Block Demand Apparent Power Rec # Subintervals", group: demand, table: holding, address: 30090, type: uint16, access: r}
+  - {key: block_demand_apparent_power_rec_pred_resp, name: "Block Demand Apparent Power Rec Pred Resp", group: demand, table: holding, address: 30091, type: uint16, access: r}
+  - {key: block_demand_apparent_power_rec_update_rate, name: "Block Demand Apparent Power Rec Update Rate", group: demand, table: holding, address: 30092, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: apparent_power_rec_last_demand, name: "Apparent Power Rec Last Demand", group: demand, table: holding, address: 30093, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_rec_predicted_demand, name: "Apparent Power Rec Predicted Demand", group: demand, table: holding, address: 30095, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_rec_peak_demand, name: "Apparent Power Rec Peak Demand", group: demand, table: holding, address: 30097, type: raw, length: 6, unit: "VA", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_apparent_power_total_subinterval_duration, name: "Block Demand Apparent Power Total Subinterval Duration", group: demand, table: holding, address: 30103, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_apparent_power_total_subintervals, name: "Block Demand Apparent Power Total # Subintervals", group: demand, table: holding, address: 30104, type: uint16, access: r}
+  - {key: block_demand_apparent_power_total_pred_resp, name: "Block Demand Apparent Power Total Pred Resp", group: demand, table: holding, address: 30105, type: uint16, access: r}
+  - {key: block_demand_apparent_power_total_update_rate, name: "Block Demand Apparent Power Total Update Rate", group: demand, table: holding, address: 30106, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: apparent_power_total_last_demand, name: "Apparent Power Total Last Demand", group: demand, table: holding, address: 30107, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_total_predicted_demand, name: "Apparent Power Total Predicted Demand", group: demand, table: holding, address: 30109, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_total_peak_demand, name: "Apparent Power Total Peak Demand", group: demand, table: holding, address: 30111, type: raw, length: 6, unit: "VA", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: active_power_del_a_predicted_demand, name: "Active Power Del A Predicted Demand", group: demand, table: holding, address: 30223, type: float32, unit: "W", access: r}
+  - {key: active_power_del_b_predicted_demand, name: "Active Power Del B Predicted Demand", group: demand, table: holding, address: 30237, type: float32, unit: "W", access: r}
+  - {key: active_power_del_c_predicted_demand, name: "Active Power Del C Predicted Demand", group: demand, table: holding, address: 30251, type: float32, unit: "W", access: r}
+  - {key: active_power_del_d_predicted_demand, name: "Active Power Del D Predicted Demand", group: demand, table: holding, address: 30265, type: float32, unit: "W", access: r}
+  - {key: active_power_rec_a_predicted_demand, name: "Active Power Rec A Predicted Demand", group: demand, table: holding, address: 30279, type: float32, unit: "W", access: r}
+  - {key: active_power_rec_b_predicted_demand, name: "Active Power Rec B Predicted Demand", group: demand, table: holding, address: 30293, type: float32, unit: "W", access: r}
+  - {key: active_power_rec_c_predicted_demand, name: "Active Power Rec C Predicted Demand", group: demand, table: holding, address: 30307, type: float32, unit: "W", access: r}
+  - {key: active_power_rec_d_predicted_demand, name: "Active Power Rec D Predicted Demand", group: demand, table: holding, address: 30321, type: float32, unit: "W", access: r}
+  - {key: reactive_power_del_a_predicted_demand, name: "Reactive Power Del A Predicted Demand", group: demand, table: holding, address: 30335, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_del_b_predicted_demand, name: "Reactive Power Del B Predicted Demand", group: demand, table: holding, address: 30349, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_del_c_predicted_demand, name: "Reactive Power Del C Predicted Demand", group: demand, table: holding, address: 30363, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_del_d_predicted_demand, name: "Reactive Power Del D Predicted Demand", group: demand, table: holding, address: 30377, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_rec_a_predicted_demand, name: "Reactive Power Rec A Predicted Demand", group: demand, table: holding, address: 30391, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_rec_b_predicted_demand, name: "Reactive Power Rec B Predicted Demand", group: demand, table: holding, address: 30405, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_rec_c_predicted_demand, name: "Reactive Power Rec C Predicted Demand", group: demand, table: holding, address: 30419, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_rec_d_predicted_demand, name: "Reactive Power Rec D Predicted Demand", group: demand, table: holding, address: 30433, type: float32, unit: "VAR", access: r}
+  - {key: apparent_power_del_a_predicted_demand, name: "Apparent Power Del A Predicted Demand", group: demand, table: holding, address: 30447, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_del_b_predicted_demand, name: "Apparent Power Del B Predicted Demand", group: demand, table: holding, address: 30461, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_del_c_predicted_demand, name: "Apparent Power Del C Predicted Demand", group: demand, table: holding, address: 30475, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_del_d_predicted_demand, name: "Apparent Power Del D Predicted Demand", group: demand, table: holding, address: 30489, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_rec_a_predicted_demand, name: "Apparent Power Rec A Predicted Demand", group: demand, table: holding, address: 30503, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_rec_b_predicted_demand, name: "Apparent Power Rec B Predicted Demand", group: demand, table: holding, address: 30517, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_rec_c_predicted_demand, name: "Apparent Power Rec C Predicted Demand", group: demand, table: holding, address: 30531, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_rec_d_predicted_demand, name: "Apparent Power Rec D Predicted Demand", group: demand, table: holding, address: 30545, type: float32, unit: "VA", access: r}
+  - {key: block_demand_active_power_q1_subinterval_duration, name: "Block Demand Active Power Q1 Subinterval Duration", group: demand, table: holding, address: 30553, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_active_power_q1_subintervals, name: "Block Demand Active Power Q1 # Subintervals", group: demand, table: holding, address: 30554, type: uint16, access: r}
+  - {key: block_demand_active_power_q1_pred_resp, name: "Block Demand Active Power Q1 Pred Resp", group: demand, table: holding, address: 30555, type: uint16, access: r}
+  - {key: block_demand_active_power_q1_update_rate, name: "Block Demand Active Power Q1 Update Rate", group: demand, table: holding, address: 30556, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: active_power_q1_last_demand, name: "Active Power Q1 Last Demand", group: demand, table: holding, address: 30557, type: float32, unit: "W", access: r}
+  - {key: active_power_q1_predicted_demand, name: "Active Power Q1 Predicted Demand", group: demand, table: holding, address: 30559, type: float32, unit: "W", access: r}
+  - {key: active_power_q1_peak_demand, name: "Active Power Q1 Peak Demand", group: demand, table: holding, address: 30561, type: raw, length: 6, unit: "W", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_active_power_q2_subinterval_duration, name: "Block Demand Active Power Q2 Subinterval Duration", group: demand, table: holding, address: 30567, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_active_power_q2_subintervals, name: "Block Demand Active Power Q2 # Subintervals", group: demand, table: holding, address: 30568, type: uint16, access: r}
+  - {key: block_demand_active_power_q2_pred_resp, name: "Block Demand Active Power Q2 Pred Resp", group: demand, table: holding, address: 30569, type: uint16, access: r}
+  - {key: block_demand_active_power_q2_update_rate, name: "Block Demand Active Power Q2 Update Rate", group: demand, table: holding, address: 30570, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: active_power_q2_last_demand, name: "Active Power Q2 Last Demand", group: demand, table: holding, address: 30571, type: float32, unit: "W", access: r}
+  - {key: active_power_q2_predicted_demand, name: "Active Power Q2 Predicted Demand", group: demand, table: holding, address: 30573, type: float32, unit: "W", access: r}
+  - {key: active_power_q2_peak_demand, name: "Active Power Q2 Peak Demand", group: demand, table: holding, address: 30575, type: raw, length: 6, unit: "W", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_active_power_q3_subinterval_duration, name: "Block Demand Active Power Q3 Subinterval Duration", group: demand, table: holding, address: 30581, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_active_power_q3_subintervals, name: "Block Demand Active Power Q3 # Subintervals", group: demand, table: holding, address: 30582, type: uint16, access: r}
+  - {key: block_demand_active_power_q3_pred_resp, name: "Block Demand Active Power Q3 Pred Resp", group: demand, table: holding, address: 30583, type: uint16, access: r}
+  - {key: block_demand_active_power_q3_update_rate, name: "Block Demand Active Power Q3 Update Rate", group: demand, table: holding, address: 30584, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: active_power_q3_last_demand, name: "Active Power Q3 Last Demand", group: demand, table: holding, address: 30585, type: float32, unit: "W", access: r}
+  - {key: active_power_q3_predicted_demand, name: "Active Power Q3 Predicted Demand", group: demand, table: holding, address: 30587, type: float32, unit: "W", access: r}
+  - {key: active_power_q3_peak_demand, name: "Active Power Q3 Peak Demand", group: demand, table: holding, address: 30589, type: raw, length: 6, unit: "W", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_active_power_q4_subinterval_duration, name: "Block Demand Active Power Q4 Subinterval Duration", group: demand, table: holding, address: 30595, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_active_power_q4_subintervals, name: "Block Demand Active Power Q4 # Subintervals", group: demand, table: holding, address: 30596, type: uint16, access: r}
+  - {key: block_demand_active_power_q4_pred_resp, name: "Block Demand Active Power Q4 Pred Resp", group: demand, table: holding, address: 30597, type: uint16, access: r}
+  - {key: block_demand_active_power_q4_update_rate, name: "Block Demand Active Power Q4 Update Rate", group: demand, table: holding, address: 30598, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: active_power_q4_last_demand, name: "Active Power Q4 Last Demand", group: demand, table: holding, address: 30599, type: float32, unit: "W", access: r}
+  - {key: active_power_q4_predicted_demand, name: "Active Power Q4 Predicted Demand", group: demand, table: holding, address: 30601, type: float32, unit: "W", access: r}
+  - {key: active_power_q4_peak_demand, name: "Active Power Q4 Peak Demand", group: demand, table: holding, address: 30603, type: raw, length: 6, unit: "W", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_reactive_power_q1_subinterval_duration, name: "Block Demand Reactive Power Q1 Subinterval Duration", group: demand, table: holding, address: 30609, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_reactive_power_q1_subintervals, name: "Block Demand Reactive Power Q1 # Subintervals", group: demand, table: holding, address: 30610, type: uint16, access: r}
+  - {key: block_demand_reactive_power_q1_pred_resp, name: "Block Demand Reactive Power Q1 Pred Resp", group: demand, table: holding, address: 30611, type: uint16, access: r}
+  - {key: block_demand_reactive_power_q1_update_rate, name: "Block Demand Reactive Power Q1 Update Rate", group: demand, table: holding, address: 30612, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: reactive_power_q1_last_demand, name: "Reactive Power Q1 Last Demand", group: demand, table: holding, address: 30613, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_q1_predicted_demand, name: "Reactive Power Q1 Predicted Demand", group: demand, table: holding, address: 30615, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_q1_peak_demand, name: "Reactive Power Q1 Peak Demand", group: demand, table: holding, address: 30617, type: raw, length: 6, unit: "VAR", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_reactive_power_q2_subinterval_duration, name: "Block Demand Reactive Power Q2 Subinterval Duration", group: demand, table: holding, address: 30623, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_reactive_power_q2_subintervals, name: "Block Demand Reactive Power Q2 # Subintervals", group: demand, table: holding, address: 30624, type: uint16, access: r}
+  - {key: block_demand_reactive_power_q2_pred_resp, name: "Block Demand Reactive Power Q2 Pred Resp", group: demand, table: holding, address: 30625, type: uint16, access: r}
+  - {key: block_demand_reactive_power_q2_update_rate, name: "Block Demand Reactive Power Q2 Update Rate", group: demand, table: holding, address: 30626, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: reactive_power_q2_last_demand, name: "Reactive Power Q2 Last Demand", group: demand, table: holding, address: 30627, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_q2_predicted_demand, name: "Reactive Power Q2 Predicted Demand", group: demand, table: holding, address: 30629, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_q2_peak_demand, name: "Reactive Power Q2 Peak Demand", group: demand, table: holding, address: 30631, type: raw, length: 6, unit: "VAR", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_reactive_power_q3_subinterval_duration, name: "Block Demand Reactive Power Q3 Subinterval Duration", group: demand, table: holding, address: 30637, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_reactive_power_q3_subintervals, name: "Block Demand Reactive Power Q3 # Subintervals", group: demand, table: holding, address: 30638, type: uint16, access: r}
+  - {key: block_demand_reactive_power_q3_pred_resp, name: "Block Demand Reactive Power Q3 Pred Resp", group: demand, table: holding, address: 30639, type: uint16, access: r}
+  - {key: block_demand_reactive_power_q3_update_rate, name: "Block Demand Reactive Power Q3 Update Rate", group: demand, table: holding, address: 30640, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: reactive_power_q3_last_demand, name: "Reactive Power Q3 Last Demand", group: demand, table: holding, address: 30641, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_q3_predicted_demand, name: "Reactive Power Q3 Predicted Demand", group: demand, table: holding, address: 30643, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_q3_peak_demand, name: "Reactive Power Q3 Peak Demand", group: demand, table: holding, address: 30645, type: raw, length: 6, unit: "VAR", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_reactive_power_q4_subinterval_duration, name: "Block Demand Reactive Power Q4 Subinterval Duration", group: demand, table: holding, address: 30651, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_reactive_power_q4_subintervals, name: "Block Demand Reactive Power Q4 # Subintervals", group: demand, table: holding, address: 30652, type: uint16, access: r}
+  - {key: block_demand_reactive_power_q4_pred_resp, name: "Block Demand Reactive Power Q4 Pred Resp", group: demand, table: holding, address: 30653, type: uint16, access: r}
+  - {key: block_demand_reactive_power_q4_update_rate, name: "Block Demand Reactive Power Q4 Update Rate", group: demand, table: holding, address: 30654, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: reactive_power_q4_last_demand, name: "Reactive Power Q4 Last Demand", group: demand, table: holding, address: 30655, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_q4_predicted_demand, name: "Reactive Power Q4 Predicted Demand", group: demand, table: holding, address: 30657, type: float32, unit: "VAR", access: r}
+  - {key: reactive_power_q4_peak_demand, name: "Reactive Power Q4 Peak Demand", group: demand, table: holding, address: 30659, type: raw, length: 6, unit: "VAR", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_apparent_power_q1_subinterval_duration, name: "Block Demand Apparent Power Q1 Subinterval Duration", group: demand, table: holding, address: 30665, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_apparent_power_q1_subintervals, name: "Block Demand Apparent Power Q1 # Subintervals", group: demand, table: holding, address: 30666, type: uint16, access: r}
+  - {key: block_demand_apparent_power_q1_pred_resp, name: "Block Demand Apparent Power Q1 Pred Resp", group: demand, table: holding, address: 30667, type: uint16, access: r}
+  - {key: block_demand_apparent_power_q1_update_rate, name: "Block Demand Apparent Power Q1 Update Rate", group: demand, table: holding, address: 30668, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: apparent_power_q1_last_demand, name: "Apparent Power Q1 Last Demand", group: demand, table: holding, address: 30669, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_q1_predicted_demand, name: "Apparent Power Q1 Predicted Demand", group: demand, table: holding, address: 30671, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_q1_peak_demand, name: "Apparent Power Q1 Peak Demand", group: demand, table: holding, address: 30673, type: raw, length: 6, unit: "VA", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_apparent_power_q2_subinterval_duration, name: "Block Demand Apparent Power Q2 Subinterval Duration", group: demand, table: holding, address: 30679, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_apparent_power_q2_subintervals, name: "Block Demand Apparent Power Q2 # Subintervals", group: demand, table: holding, address: 30680, type: uint16, access: r}
+  - {key: block_demand_apparent_power_q2_pred_resp, name: "Block Demand Apparent Power Q2 Pred Resp", group: demand, table: holding, address: 30681, type: uint16, access: r}
+  - {key: block_demand_apparent_power_q2_update_rate, name: "Block Demand Apparent Power Q2 Update Rate", group: demand, table: holding, address: 30682, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: apparent_power_q2_last_demand, name: "Apparent Power Q2 Last Demand", group: demand, table: holding, address: 30683, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_q2_predicted_demand, name: "Apparent Power Q2 Predicted Demand", group: demand, table: holding, address: 30685, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_q2_peak_demand, name: "Apparent Power Q2 Peak Demand", group: demand, table: holding, address: 30687, type: raw, length: 6, unit: "VA", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_apparent_power_q3_subinterval_duration, name: "Block Demand Apparent Power Q3 Subinterval Duration", group: demand, table: holding, address: 30693, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_apparent_power_q3_subintervals, name: "Block Demand Apparent Power Q3 # Subintervals", group: demand, table: holding, address: 30694, type: uint16, access: r}
+  - {key: block_demand_apparent_power_q3_pred_resp, name: "Block Demand Apparent Power Q3 Pred Resp", group: demand, table: holding, address: 30695, type: uint16, access: r}
+  - {key: block_demand_apparent_power_q3_update_rate, name: "Block Demand Apparent Power Q3 Update Rate", group: demand, table: holding, address: 30696, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: apparent_power_q3_last_demand, name: "Apparent Power Q3 Last Demand", group: demand, table: holding, address: 30697, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_q3_predicted_demand, name: "Apparent Power Q3 Predicted Demand", group: demand, table: holding, address: 30699, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_q3_peak_demand, name: "Apparent Power Q3 Peak Demand", group: demand, table: holding, address: 30701, type: raw, length: 6, unit: "VA", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_apparent_power_q4_subinterval_duration, name: "Block Demand Apparent Power Q4 Subinterval Duration", group: demand, table: holding, address: 30707, type: uint16, unit: "seconds", access: r}
+  - {key: block_demand_apparent_power_q4_subintervals, name: "Block Demand Apparent Power Q4 # Subintervals", group: demand, table: holding, address: 30708, type: uint16, access: r}
+  - {key: block_demand_apparent_power_q4_pred_resp, name: "Block Demand Apparent Power Q4 Pred Resp", group: demand, table: holding, address: 30709, type: uint16, access: r}
+  - {key: block_demand_apparent_power_q4_update_rate, name: "Block Demand Apparent Power Q4 Update Rate", group: demand, table: holding, address: 30710, type: uint16, access: r, values: {"0": "End of Sub-Interval", "1": "Every Second"}}
+  - {key: apparent_power_q4_last_demand, name: "Apparent Power Q4 Last Demand", group: demand, table: holding, address: 30711, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_q4_predicted_demand, name: "Apparent Power Q4 Predicted Demand", group: demand, table: holding, address: 30713, type: float32, unit: "VA", access: r}
+  - {key: apparent_power_q4_peak_demand, name: "Apparent Power Q4 Peak Demand", group: demand, table: holding, address: 30715, type: raw, length: 6, unit: "VA", access: r, notes: "FLOAT32_TS: words 1-2 a FLOAT32 value, words 3-6 its DATETIME timestamp."}
+  - {key: block_demand_active_power, name: "Block Demand Active Power", group: demand, table: holding, address: 30821, type: float32, unit: "W", access: r}
+  - {key: block_demand_active_power_into_the_load, name: "Block Demand Active Power Into the Load", group: demand, table: holding, address: 30823, type: float32, unit: "W", access: r}
+  - {key: block_demand_active_power_out_of_the_load, name: "Block Demand Active Power Out of the Load", group: demand, table: holding, address: 30825, type: float32, unit: "W", access: r}
+  - {key: block_demand_active_power_total, name: "Block Demand Active Power Total", group: demand, table: holding, address: 30827, type: float32, unit: "W", access: r}
+  - {key: block_demand_reactive_power, name: "Block Demand Reactive Power", group: demand, table: holding, address: 30829, type: float32, unit: "VAR", access: r}
+  - {key: block_demand_reactive_power_into_the_load, name: "Block Demand Reactive Power Into the Load", group: demand, table: holding, address: 30831, type: float32, unit: "VAR", access: r}
+  - {key: block_demand_reactive_power_out_of_the_load, name: "Block Demand Reactive Power Out of the Load", group: demand, table: holding, address: 30833, type: float32, unit: "VAR", access: r}
+  - {key: block_demand_reactive_power_total, name: "Block Demand Reactive Power Total", group: demand, table: holding, address: 30835, type: float32, unit: "VAR", access: r}
+  - {key: block_demand_active_power_30837, name: "Block Demand Active Power", group: demand, table: holding, address: 30837, type: float32, unit: "W", access: r}
+  - {key: block_demand_active_power_into_the_load_30839, name: "Block Demand Active Power Into the Load", group: demand, table: holding, address: 30839, type: float32, unit: "W", access: r}
+  - {key: block_demand_active_power_out_of_the_load_30841, name: "Block Demand Active Power Out of the Load", group: demand, table: holding, address: 30841, type: float32, unit: "W", access: r}
+  - {key: block_demand_active_power_total_30843, name: "Block Demand Active Power Total", group: demand, table: holding, address: 30843, type: float32, unit: "W", access: r}
+  - {key: block_demand_apparent_power, name: "Block Demand Apparent Power", group: demand, table: holding, address: 30845, type: float32, unit: "VA", access: r}
+  - {key: block_demand_apparent_power_into_the_load, name: "Block Demand Apparent Power Into the Load", group: demand, table: holding, address: 30847, type: float32, unit: "VA", access: r}
+  - {key: block_demand_apparent_power_out_of_the_load, name: "Block Demand Apparent Power Out of the Load", group: demand, table: holding, address: 30849, type: float32, unit: "VA", access: r}
+  - {key: block_demand_apparent_power_total, name: "Block Demand Apparent Power Total", group: demand, table: holding, address: 30851, type: float32, unit: "VA", access: r}
+  - {key: block_demand_reactive_power_30853, name: "Block Demand Reactive Power", group: demand, table: holding, address: 30853, type: float32, unit: "VAR", access: r}
+  - {key: block_demand_reactive_power_into_the_load_30855, name: "Block Demand Reactive Power Into the Load", group: demand, table: holding, address: 30855, type: float32, unit: "VAR", access: r}
+  - {key: block_demand_reactive_power_out_of_the_load_30857, name: "Block Demand Reactive Power Out of the Load", group: demand, table: holding, address: 30857, type: float32, unit: "VAR", access: r}
+  - {key: block_demand_reactive_power_total_30859, name: "Block Demand Reactive Power Total", group: demand, table: holding, address: 30859, type: float32, unit: "VAR", access: r}
+  - {key: block_demand_apparent_power_30861, name: "Block Demand Apparent Power", group: demand, table: holding, address: 30861, type: float32, unit: "VA", access: r}
+  - {key: block_demand_apparent_power_into_the_load_30863, name: "Block Demand Apparent Power Into the Load", group: demand, table: holding, address: 30863, type: float32, unit: "VA", access: r}
+  - {key: block_demand_apparent_power_out_of_the_load_30865, name: "Block Demand Apparent Power Out of the Load", group: demand, table: holding, address: 30865, type: float32, unit: "VA", access: r}
+  - {key: block_demand_apparent_power_total_30867, name: "Block Demand Apparent Power Total", group: demand, table: holding, address: 30867, type: float32, unit: "VA", access: r}
+  - {key: current_phase_a_3_second_150_180_cycles, name: "Current, Phase A 3 Second (150/180 Cycles)", group: power_quality, table: holding, address: 34351, type: float32, unit: "A", access: r}
+  - {key: current_phase_a_10_minute, name: "Current, Phase A 10 Minute", group: power_quality, table: holding, address: 34353, type: float32, unit: "A", access: r}
+  - {key: current_phase_b_3_second_150_180_cycles, name: "Current, Phase B 3 Second (150/180 Cycles)", group: power_quality, table: holding, address: 34357, type: float32, unit: "A", access: r}
+  - {key: current_phase_b_10_minute, name: "Current, Phase B 10 Minute", group: power_quality, table: holding, address: 34359, type: float32, unit: "A", access: r}
+  - {key: current_phase_c_3_second_150_180_cycles, name: "Current, Phase C 3 Second (150/180 Cycles)", group: power_quality, table: holding, address: 34363, type: float32, unit: "A", access: r}
+  - {key: current_phase_c_10_minute, name: "Current, Phase C 10 Minute", group: power_quality, table: holding, address: 34365, type: float32, unit: "A", access: r}
+  - {key: voltage_a_n_3_second_150_180_cycles, name: "Voltage, A-N 3 Second (150/180 Cycles)", group: power_quality, table: holding, address: 34399, type: float32, unit: "V", access: r}
+  - {key: voltage_a_n_10_minute, name: "Voltage, A-N 10 Minute", group: power_quality, table: holding, address: 34401, type: float32, unit: "V", access: r}
+  - {key: voltage_a_n_2_hour, name: "Voltage, A-N 2 Hour", group: power_quality, table: holding, address: 34403, type: float32, unit: "V", access: r}
+  - {key: voltage_b_n_3_second_150_180_cycles, name: "Voltage, B-N 3 Second (150/180 Cycles)", group: power_quality, table: holding, address: 34405, type: float32, unit: "V", access: r}
+  - {key: voltage_b_n_10_minute, name: "Voltage, B-N 10 Minute", group: power_quality, table: holding, address: 34407, type: float32, unit: "V", access: r}
+  - {key: voltage_b_n_2_hour, name: "Voltage, B-N 2 Hour", group: power_quality, table: holding, address: 34409, type: float32, unit: "V", access: r}
+  - {key: voltage_c_n_3_second_150_180_cycles, name: "Voltage, C-N 3 Second (150/180 Cycles)", group: power_quality, table: holding, address: 34411, type: float32, unit: "V", access: r}
+  - {key: voltage_c_n_10_minute, name: "Voltage, C-N 10 Minute", group: power_quality, table: holding, address: 34413, type: float32, unit: "V", access: r}
+  - {key: voltage_c_n_2_hour, name: "Voltage, C-N 2 Hour", group: power_quality, table: holding, address: 34415, type: float32, unit: "V", access: r}
+  - {key: unbalance_neg_seq_3_second_150_180_cycles, name: "Unbalance, Neg Seq 3 Second (150/180 Cycles)", group: power_quality, table: holding, address: 34459, type: float32, access: r}
+  - {key: unbalance_neg_seq_10_minute, name: "Unbalance, Neg Seq 10 Minute", group: power_quality, table: holding, address: 34461, type: float32, access: r}
+  - {key: unbalance_neg_seq_2_hour, name: "Unbalance, Neg Seq 2 Hour", group: power_quality, table: holding, address: 34463, type: float32, access: r}
+  - {key: unbalance_zero_seq_3_second_150_180_cycles, name: "Unbalance, Zero Seq 3 Second (150/180 Cycles)", group: power_quality, table: holding, address: 34465, type: float32, access: r}
+  - {key: unbalance_zero_seq_10_minute, name: "Unbalance, Zero Seq 10 Minute", group: power_quality, table: holding, address: 34467, type: float32, access: r}
+  - {key: unbalance_zero_seq_2_hour, name: "Unbalance, Zero Seq 2 Hour", group: power_quality, table: holding, address: 34469, type: float32, access: r}
+  - {key: power_frequency_3_second_150_180_cycles, name: "Power Frequency 3 Second (150/180 Cycles)", group: power_quality, table: holding, address: 34471, type: float32, unit: "Hz", access: r}
+  - {key: power_frequency_10_minute, name: "Power Frequency 10 Minute", group: power_quality, table: holding, address: 34473, type: float32, unit: "Hz", access: r}
+  - {key: power_frequency_2_hour, name: "Power Frequency 2 Hour", group: power_quality, table: holding, address: 34475, type: float32, unit: "Hz", access: r}
+  - {key: current_positive_sequence_magnitude_34610, name: "Current, Positive Sequence, Magnitude", group: power_quality, table: holding, address: 34610, type: float32, unit: "A", access: r}
+  - {key: current_positive_sequence_angle_34612, name: "Current, Positive Sequence, Angle", group: power_quality, table: holding, address: 34612, type: float32, unit: "°", access: r}
+  - {key: current_negative_sequence_magnitude_34614, name: "Current, Negative Sequence, Magnitude", group: power_quality, table: holding, address: 34614, type: float32, unit: "A", access: r}
+  - {key: current_negative_sequence_angle_34616, name: "Current, Negative Sequence, Angle", group: power_quality, table: holding, address: 34616, type: float32, unit: "°", access: r}
+  - {key: current_zero_sequence_magnitude_34618, name: "Current, Zero Sequence, Magnitude", group: power_quality, table: holding, address: 34618, type: float32, unit: "A", access: r}
+  - {key: current_zero_sequence_angle_34620, name: "Current, Zero Sequence, Angle", group: power_quality, table: holding, address: 34620, type: float32, unit: "°", access: r}
+  - {key: voltage_positive_sequence_magnitude_34622, name: "Voltage, Positive Sequence, Magnitude", group: power_quality, table: holding, address: 34622, type: float32, unit: "V", access: r}
+  - {key: voltage_positive_sequence_angle_34624, name: "Voltage, Positive Sequence, Angle", group: power_quality, table: holding, address: 34624, type: float32, unit: "°", access: r}
+  - {key: voltage_negative_sequence_magnitude_34626, name: "Voltage, Negative Sequence, Magnitude", group: power_quality, table: holding, address: 34626, type: float32, unit: "V", access: r}
+  - {key: voltage_negative_sequence_angle_34628, name: "Voltage, Negative Sequence, Angle", group: power_quality, table: holding, address: 34628, type: float32, unit: "°", access: r}
+  - {key: voltage_zero_sequence_magnitude_34630, name: "Voltage, Zero Sequence, Magnitude", group: power_quality, table: holding, address: 34630, type: float32, unit: "V", access: r}
+  - {key: voltage_zero_sequence_angle_34632, name: "Voltage, Zero Sequence, Angle", group: power_quality, table: holding, address: 34632, type: float32, unit: "°", access: r}
+  - {key: short_term_flicker_pst_a_n, name: "Short-Term Flicker (Pst), A-N", group: power_quality, table: holding, address: 34648, type: float32, access: r}
+  - {key: short_term_flicker_pst_b_n, name: "Short-Term Flicker (Pst), B-N", group: power_quality, table: holding, address: 34650, type: float32, access: r}
+  - {key: short_term_flicker_pst_c_n, name: "Short-Term Flicker (Pst), C-N", group: power_quality, table: holding, address: 34652, type: float32, access: r}
+  - {key: thd_voltage_a_n_39400, name: "THD Voltage A-N", group: power_quality, table: holding, address: 39400, type: float32, access: r}
+  - {key: thd_voltage_b_n_39402, name: "THD Voltage B-N", group: power_quality, table: holding, address: 39402, type: float32, access: r}
+  - {key: thd_voltage_c_n_39404, name: "THD Voltage C-N", group: power_quality, table: holding, address: 39404, type: float32, access: r}
+  - {key: voltage_positive_sequence_magnitude_39440, name: "Voltage, Positive Sequence, Magnitude", group: power_quality, table: holding, address: 39440, type: float32, unit: "V", access: r}
+  - {key: voltage_negative_sequence_magnitude_39444, name: "Voltage, Negative Sequence, Magnitude", group: power_quality, table: holding, address: 39444, type: float32, unit: "V", access: r}
+  - {key: voltage_zero_sequence_magnitude_39448, name: "Voltage, Zero Sequence, Magnitude", group: power_quality, table: holding, address: 39448, type: float32, unit: "V", access: r}
+  - {key: long_term_flicker_plt_a_n, name: "Long-Term Flicker (Plt), A-N", group: power_quality, table: holding, address: 39458, type: float32, access: r}
+  - {key: long_term_flicker_plt_b_n, name: "Long-Term Flicker (Plt), B-N", group: power_quality, table: holding, address: 39460, type: float32, access: r}
+  - {key: long_term_flicker_plt_c_n, name: "Long-Term Flicker (Plt), C-N", group: power_quality, table: holding, address: 39462, type: float32, access: r}

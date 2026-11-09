@@ -1,0 +1,71 @@
+# Transcribed from Klemsan's KLEA energy analyzer user manual; not yet checked against a meter.
+schema_version: 1
+vendor: Klemsan
+model: KLEA 320P
+aliases: [KLEA, KLEA Energy Analyzer, "606100"]
+category: power-analyzer
+summary: KLEA 320P network energy analyzer with RS485 Modbus RTU; measurements are 32-bit floats in holding registers.
+connection:
+  interfaces: [rtu]
+  default_byte_order: ABCD
+  notes:
+    - "Read with function 03; the manual's example frame reads address 0x0000, count 2, and decodes 43 5D 36 E0 as 221.2143555 V (big-endian float)."
+    - Every value spans two registers; read them in pairs.
+    - Tariff indexes are also available as 64-bit floats from register 1366 onward; only the 32-bit copies are listed here.
+sources:
+  - title: KLEA Energy Analyzer User Manual
+    publisher: Klemsan
+    version: "2022-08-24"
+    url: https://klemsan.com.tr/wp-content/uploads/downloads/606100/KLEA_EN_24082022.pdf
+    accessed: 2026-11-09
+    sha256: dfeef7518d4327f13a9ff989d3c7cb43a57e9372f1d72dbbfaf5d1eacece3e71
+    notes: Section 4, Table 4-4 Read-only Data. Linked from the KLEA 320P (606100) product page.
+registers:
+  - {key: voltage_avg_ln, name: "Average voltage of three phases", group: voltage, table: holding, address: 0, type: float32, unit: "V", access: r}
+  - {key: current_total, name: "Total current of three phases", group: current, table: holding, address: 2, type: float32, unit: "A", access: r}
+  - {key: active_power_total, name: "Total active power", group: power, table: holding, address: 4, type: float32, unit: "W", access: r}
+  - {key: reactive_power_total, name: "Total reactive power", group: power, table: holding, address: 6, type: float32, unit: "var", access: r}
+  - {key: apparent_power_total, name: "Total apparent power", group: power, table: holding, address: 8, type: float32, unit: "VA", access: r}
+  - {key: cos_phi_avg, name: "Average cos phi of three phases", group: power_factor, table: holding, address: 10, type: float32, access: r}
+  - {key: power_factor_avg, name: "Average power factor of three phases", group: power_factor, table: holding, address: 12, type: float32, access: r}
+  - {key: voltage_l1_l2, name: "Voltage V1-2", group: voltage, table: holding, address: 14, type: float32, unit: "V", access: r}
+  - {key: voltage_l2_l3, name: "Voltage V2-3", group: voltage, table: holding, address: 16, type: float32, unit: "V", access: r}
+  - {key: voltage_l3_l1, name: "Voltage V3-1", group: voltage, table: holding, address: 18, type: float32, unit: "V", access: r}
+  - {key: voltage_avg_ll, name: "Average line to line voltage", group: voltage, table: holding, address: 20, type: float32, unit: "V", access: r}
+  - {key: current_neutral, name: "Neutral current", group: current, table: holding, address: 22, type: float32, unit: "A", access: r}
+  - {key: thd_voltage_total, name: "Total voltage harmonic distortion", group: quality, table: holding, address: 24, type: float32, unit: "%", access: r}
+  - {key: thd_current_total, name: "Total current harmonic distortion", group: quality, table: holding, address: 26, type: float32, unit: "%", access: r, notes: "The manual describes this register as voltage distortion; its name (THDI tot.) says current."}
+  - {key: voltage_l1_n, name: "Phase 1 voltage", group: voltage, table: holding, address: 28, type: float32, unit: "V", access: r}
+  - {key: current_l1, name: "Phase 1 current", group: current, table: holding, address: 30, type: float32, unit: "A", access: r}
+  - {key: active_power_l1, name: "Phase 1 active power", group: power, table: holding, address: 32, type: float32, unit: "W", access: r}
+  - {key: reactive_power_l1, name: "Phase 1 reactive power", group: power, table: holding, address: 34, type: float32, unit: "var", access: r}
+  - {key: apparent_power_l1, name: "Phase 1 apparent power", group: power, table: holding, address: 36, type: float32, unit: "VA", access: r}
+  - {key: cos_phi_l1, name: "Phase 1 cos phi", group: power_factor, table: holding, address: 38, type: float32, access: r}
+  - {key: power_factor_l1, name: "Phase 1 power factor", group: power_factor, table: holding, address: 40, type: float32, access: r}
+  - {key: frequency_l1, name: "Phase 1 frequency", group: frequency, table: holding, address: 42, type: float32, unit: "Hz", access: r}
+  - {key: thd_voltage_l1, name: "Phase 1 voltage THD", group: quality, table: holding, address: 44, type: float32, unit: "%", access: r}
+  - {key: thd_current_l1, name: "Phase 1 current THD", group: quality, table: holding, address: 46, type: float32, unit: "%", access: r}
+  - {key: voltage_l2_n, name: "Phase 2 voltage", group: voltage, table: holding, address: 152, type: float32, unit: "V", access: r}
+  - {key: current_l2, name: "Phase 2 current", group: current, table: holding, address: 154, type: float32, unit: "A", access: r}
+  - {key: active_power_l2, name: "Phase 2 active power", group: power, table: holding, address: 156, type: float32, unit: "W", access: r}
+  - {key: reactive_power_l2, name: "Phase 2 reactive power", group: power, table: holding, address: 158, type: float32, unit: "var", access: r}
+  - {key: apparent_power_l2, name: "Phase 2 apparent power", group: power, table: holding, address: 160, type: float32, unit: "VA", access: r}
+  - {key: cos_phi_l2, name: "Phase 2 cos phi", group: power_factor, table: holding, address: 162, type: float32, access: r}
+  - {key: power_factor_l2, name: "Phase 2 power factor", group: power_factor, table: holding, address: 164, type: float32, access: r}
+  - {key: frequency_l2, name: "Phase 2 frequency", group: frequency, table: holding, address: 166, type: float32, unit: "Hz", access: r}
+  - {key: thd_voltage_l2, name: "Phase 2 voltage THD", group: quality, table: holding, address: 168, type: float32, unit: "%", access: r}
+  - {key: thd_current_l2, name: "Phase 2 current THD", group: quality, table: holding, address: 170, type: float32, unit: "%", access: r}
+  - {key: voltage_l3_n, name: "Phase 3 voltage", group: voltage, table: holding, address: 276, type: float32, unit: "V", access: r}
+  - {key: current_l3, name: "Phase 3 current", group: current, table: holding, address: 278, type: float32, unit: "A", access: r}
+  - {key: active_power_l3, name: "Phase 3 active power", group: power, table: holding, address: 280, type: float32, unit: "W", access: r}
+  - {key: reactive_power_l3, name: "Phase 3 reactive power", group: power, table: holding, address: 282, type: float32, unit: "var", access: r}
+  - {key: apparent_power_l3, name: "Phase 3 apparent power", group: power, table: holding, address: 284, type: float32, unit: "VA", access: r}
+  - {key: cos_phi_l3, name: "Phase 3 cos phi", group: power_factor, table: holding, address: 286, type: float32, access: r}
+  - {key: power_factor_l3, name: "Phase 3 power factor", group: power_factor, table: holding, address: 288, type: float32, access: r}
+  - {key: frequency_l3, name: "Phase 3 frequency", group: frequency, table: holding, address: 290, type: float32, unit: "Hz", access: r}
+  - {key: thd_voltage_l3, name: "Phase 3 voltage THD", group: quality, table: holding, address: 292, type: float32, unit: "%", access: r}
+  - {key: thd_current_l3, name: "Phase 3 current THD", group: quality, table: holding, address: 294, type: float32, unit: "%", access: r}
+  - {key: t1_import_active_energy, name: "Tariff 1 import active index", group: energy, table: holding, address: 404, type: float32, unit: "kWh", access: r}
+  - {key: t1_export_active_energy, name: "Tariff 1 export active index", group: energy, table: holding, address: 418, type: float32, unit: "kWh", access: r}
+  - {key: t1_import_reactive_energy, name: "Tariff 1 import reactive index", group: energy, table: holding, address: 432, type: float32, unit: "kvarh", access: r}
+  - {key: t1_export_reactive_energy, name: "Tariff 1 export reactive index", group: energy, table: holding, address: 446, type: float32, unit: "kvarh", access: r}

@@ -1,0 +1,74 @@
+# Transcribed from SolarEdge's SunSpec technical note; not yet checked against an inverter.
+schema_version: 1
+vendor: SolarEdge
+model: SunSpec Inverter
+aliases: [SolarEdge inverter, SE3000, SE5000, SE10K, SolarEdge Home Wave]
+category: inverter
+summary: SolarEdge single, split and three phase inverters through their SunSpec Modbus interface (models 1 and 101/102/103).
+connection:
+  interfaces: [tcp, rtu]
+  default_byte_order: ABCD
+  serial_defaults: 115200 baud, 8 data bits, no parity, 1 stop bit
+  notes:
+    - Read with function 03. Registers are big-endian; 32-bit values are high word first.
+    - "Value = raw x 10^scale_factor; the scale factors can change, so read them with the value."
+    - "Inverters set up with SetApp/SolarEdge Go support SunSpec; LCD models need firmware 3.xxxx or later."
+    - Modbus TCP works over LAN only (not Wi-Fi); the TCP server closes idle connections after two minutes.
+    - Unsupported values read as the SunSpec NOT_IMPLEMENTED value.
+sources:
+  - title: "Technical Note: SolarEdge Inverters - SunSpec Logging"
+    publisher: SolarEdge Technologies
+    version: "3.3 (October 2026)"
+    url: https://knowledge-center.solaredge.com/sites/kc/files/sunspec-implementation-technical-note.pdf
+    accessed: 2026-11-09
+    sha256: 612ca08ec937687a4a9165ec51f19d983728439c7fb59bc6e12c66455b1425bd
+    notes: Register tables with base-0 addresses. The site sits behind a browser check, so a plain command-line download may get an HTML page instead.
+  - title: SunSpec information model 103 (json/model_103.json)
+    publisher: SunSpec Alliance
+    version: "github.com/sunspec/models master @ 90b4a331dcca1d6eac69c1bead952fddcc5852e0"
+    url: https://raw.githubusercontent.com/sunspec/models/master/json/model_103.json
+    accessed: 2026-11-09
+    sha256: 5b5dd26a9cb8058e32c1f70f5c3a9681d326cbb37068d1f3b9765b5188fe7455
+    notes: Point types (scale factors are sunssf, int16) for the model the technical note references.
+registers:
+  - {key: sunspec_id, name: "SunSpec ID (\"SunS\")", group: common, table: holding, address: 40000, type: uint32, access: r, notes: "C_SunSpec_ID; 0x53756E53."}
+  - {key: manufacturer, name: "Manufacturer", group: common, table: holding, address: 40004, type: string, length: 16, access: r, notes: "C_Manufacturer; \"SolarEdge\"."}
+  - {key: model, name: "Model", group: common, table: holding, address: 40020, type: string, length: 16, access: r, notes: "C_Model, e.g. SE5000."}
+  - {key: version, name: "CPU software version", group: common, table: holding, address: 40044, type: string, length: 8, access: r, notes: "C_Version."}
+  - {key: serial_number, name: "Serial number", group: common, table: holding, address: 40052, type: string, length: 16, access: r, notes: "C_SerialNumber."}
+  - {key: device_address, name: "Modbus unit ID", group: common, table: holding, address: 40068, type: uint16, access: r, notes: "C_DeviceAddress."}
+  - {key: inverter_model_id, name: "Inverter model ID", group: inverter, table: holding, address: 40069, type: uint16, access: r, values: {"101": "single phase", "102": "split phase", "103": "three phase"}, notes: "C_SunSpec_DID."}
+  - {key: ac_current, name: "AC total current", group: inverter, table: holding, address: 40071, type: uint16, scale_factor: ac_current_sf, unit: "A", access: r}
+  - {key: ac_current_a, name: "AC phase A current", group: inverter, table: holding, address: 40072, type: uint16, scale_factor: ac_current_sf, unit: "A", access: r}
+  - {key: ac_current_b, name: "AC phase B current", group: inverter, table: holding, address: 40073, type: uint16, scale_factor: ac_current_sf, unit: "A", access: r}
+  - {key: ac_current_c, name: "AC phase C current", group: inverter, table: holding, address: 40074, type: uint16, scale_factor: ac_current_sf, unit: "A", access: r}
+  - {key: ac_current_sf, name: "AC current scale factor", group: inverter, table: holding, address: 40075, type: int16, access: r}
+  - {key: ac_voltage_ab, name: "AC voltage phase AB", group: inverter, table: holding, address: 40076, type: uint16, scale_factor: ac_voltage_sf, unit: "V", access: r}
+  - {key: ac_voltage_bc, name: "AC voltage phase BC", group: inverter, table: holding, address: 40077, type: uint16, scale_factor: ac_voltage_sf, unit: "V", access: r}
+  - {key: ac_voltage_ca, name: "AC voltage phase CA", group: inverter, table: holding, address: 40078, type: uint16, scale_factor: ac_voltage_sf, unit: "V", access: r}
+  - {key: ac_voltage_an, name: "AC voltage phase A to N", group: inverter, table: holding, address: 40079, type: uint16, scale_factor: ac_voltage_sf, unit: "V", access: r, notes: "The note marks the phase-to-neutral values as supported only in split-phase configurations."}
+  - {key: ac_voltage_bn, name: "AC voltage phase B to N", group: inverter, table: holding, address: 40080, type: uint16, scale_factor: ac_voltage_sf, unit: "V", access: r, notes: "The note marks the phase-to-neutral values as supported only in split-phase configurations."}
+  - {key: ac_voltage_cn, name: "AC voltage phase C to N", group: inverter, table: holding, address: 40081, type: uint16, scale_factor: ac_voltage_sf, unit: "V", access: r, notes: "The note marks the phase-to-neutral values as supported only in split-phase configurations."}
+  - {key: ac_voltage_sf, name: "AC voltage scale factor", group: inverter, table: holding, address: 40082, type: int16, access: r}
+  - {key: ac_power, name: "AC power", group: inverter, table: holding, address: 40083, type: int16, scale_factor: ac_power_sf, unit: "W", access: r}
+  - {key: ac_power_sf, name: "AC power scale factor", group: inverter, table: holding, address: 40084, type: int16, access: r}
+  - {key: ac_frequency, name: "AC frequency", group: inverter, table: holding, address: 40085, type: uint16, scale_factor: ac_frequency_sf, unit: "Hz", access: r}
+  - {key: ac_frequency_sf, name: "AC frequency scale factor", group: inverter, table: holding, address: 40086, type: int16, access: r}
+  - {key: ac_va, name: "Apparent power", group: inverter, table: holding, address: 40087, type: int16, scale_factor: ac_va_sf, unit: "VA", access: r}
+  - {key: ac_va_sf, name: "Apparent power scale factor", group: inverter, table: holding, address: 40088, type: int16, access: r}
+  - {key: ac_var, name: "Reactive power", group: inverter, table: holding, address: 40089, type: int16, scale_factor: ac_var_sf, unit: "var", access: r}
+  - {key: ac_var_sf, name: "Reactive power scale factor", group: inverter, table: holding, address: 40090, type: int16, access: r}
+  - {key: ac_pf, name: "Power factor", group: inverter, table: holding, address: 40091, type: int16, scale_factor: ac_pf_sf, unit: "%", access: r}
+  - {key: ac_pf_sf, name: "Power factor scale factor", group: inverter, table: holding, address: 40092, type: int16, access: r}
+  - {key: ac_energy_wh, name: "AC lifetime energy production", group: inverter, table: holding, address: 40093, type: uint32, scale_factor: ac_energy_wh_sf, unit: "Wh", access: r, notes: "acc32, always increasing."}
+  - {key: ac_energy_wh_sf, name: "AC energy scale factor", group: inverter, table: holding, address: 40095, type: int16, access: r, notes: "The technical note lists uint16; SunSpec model 103 defines WH_SF as sunssf (int16)."}
+  - {key: dc_current, name: "DC current", group: inverter, table: holding, address: 40096, type: uint16, scale_factor: dc_current_sf, unit: "A", access: r}
+  - {key: dc_current_sf, name: "DC current scale factor", group: inverter, table: holding, address: 40097, type: int16, access: r}
+  - {key: dc_voltage, name: "DC voltage", group: inverter, table: holding, address: 40098, type: uint16, scale_factor: dc_voltage_sf, unit: "V", access: r}
+  - {key: dc_voltage_sf, name: "DC voltage scale factor", group: inverter, table: holding, address: 40099, type: int16, access: r}
+  - {key: dc_power, name: "DC power", group: inverter, table: holding, address: 40100, type: int16, scale_factor: dc_power_sf, unit: "W", access: r}
+  - {key: dc_power_sf, name: "DC power scale factor", group: inverter, table: holding, address: 40101, type: int16, access: r}
+  - {key: heat_sink_temperature, name: "Heat sink temperature", group: inverter, table: holding, address: 40103, type: int16, scale_factor: temperature_sf, unit: "°C", access: r}
+  - {key: temperature_sf, name: "Temperature scale factor", group: inverter, table: holding, address: 40106, type: int16, access: r}
+  - {key: status, name: "Operating state", group: inverter, table: holding, address: 40107, type: uint16, access: r, values: {"1": "Off", "2": "Sleeping (night mode)", "3": "Grid monitoring / wake-up", "4": "Producing power (MPPT)", "5": "Production curtailed", "6": "Shutting down", "7": "Fault", "8": "Maintenance/setup"}, notes: "I_Status."}
+  - {key: status_vendor, name: "Vendor operating state", group: inverter, table: holding, address: 40108, type: uint16, access: r, notes: "I_Status_Vendor; see the SolarEdge installation guide for codes."}
